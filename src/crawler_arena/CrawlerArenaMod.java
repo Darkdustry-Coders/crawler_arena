@@ -114,7 +114,7 @@ public class CrawlerArenaMod extends Plugin {
         });
         Events.on(PlayerJoin.class, e -> {
             if(!units.containsKey(e.player.uuid()) || !money.containsKey(e.player.uuid())){
-                money.put(e.player.uuid(), new float[]{Mathf.pow(2.71f, 1f + wave / 2 + Mathf.pow(wave, 2) / 4000f) * 7f});
+                money.put(e.player.uuid(), new float[]{Mathf.pow(2.71f, 1f + wave / 2f + Mathf.pow(wave, 2) / 4000f) * 7f});
                 Unit spawnUnit = UnitTypes.dagger.spawn(worldCenterX, worldCenterY);
                 spawnUnit.add();
                 units.put(e.player.uuid(), spawnUnit);
@@ -155,8 +155,8 @@ public class CrawlerArenaMod extends Plugin {
                 gameIsOver = true;
                 Timer.schedule(() -> {Events.fire(new GameOverEvent(Team.crux));}, 2);
             };
-            timer += Time.delta / 60;
-            if(Mathf.chance(1 / 3000 * Time.delta)){
+            timer += Time.delta / 60f;
+            if(Mathf.chance(1f / 12000f * Time.delta)){
                 Call.sendMessage("[cyan]Do /info to view info about upgrading.");
             };
             if(!Groups.unit.contains(u -> {return u.team == Team.crux;}) && !waveIsOver){
@@ -171,7 +171,7 @@ public class CrawlerArenaMod extends Plugin {
                 };
                 respawnPlayers();
                 waveIsOver = true;
-                money.each((p, m) -> {m[0] += Mathf.pow(2.71f, 1f + wave / 2 + Mathf.pow(wave, 2) / 4000f) * 5f;});
+                money.each((p, m) -> {m[0] += Mathf.pow(2.71f, 1f + wave / 2f + Mathf.pow(wave, 2) / 4000f) * 5f;});
             };
             Groups.player.each(p -> {
                 try{
@@ -257,7 +257,7 @@ public class CrawlerArenaMod extends Plugin {
                 units.put(p.uuid(), UnitTypes.dagger.create(Team.sharded));
             };
             if(!money.containsKey(p.uuid())){
-                money.put(p.uuid(), new float[]{Mathf.pow(2.71f, 1f + wave / 2 + Mathf.pow(wave, 2) / 4000f) * 7f});
+                money.put(p.uuid(), new float[]{Mathf.pow(2.71f, 1f + wave / 2f + Mathf.pow(wave, 2) / 4000f) * 7f});
             };
           });
     }
@@ -311,7 +311,7 @@ public class CrawlerArenaMod extends Plugin {
         state.wave = wave;
         UnitTypes.crawler.health += 1 * wave;
         UnitTypes.crawler.speed += 0.003f * wave;
-        float crawlers = Mathf.pow(2.71f, 1f + wave / 2 + Mathf.pow(wave, 2) / 150) * Groups.player.size() / 20;
+        float crawlers = Mathf.pow(2.71f, 1f + wave / 2f + Mathf.pow(wave, 2) / 150) * Groups.player.size() / 20;
         switch(wave){
             case(21):
                 Call.sendMessage("[red]What makes you live for this long?");
@@ -328,7 +328,7 @@ public class CrawlerArenaMod extends Plugin {
                 UnitTypes.scepter.defaultController = ArenaAI::new;
                 Unit u = UnitTypes.reign.spawn(Team.crux, 32, 32);
                 u.apply(StatusEffects.boss);
-                u.health = 5000 * Groups.player.size();
+                u.health = 5000 * Math.max(Groups.player.size(), 4);
                 u.armor = 0;
                 u.abilities.add(new UnitSpawnAbility(UnitTypes.scepter, 1800 / Groups.player.size(), 0, -32));
                 break;
@@ -365,11 +365,11 @@ public class CrawlerArenaMod extends Plugin {
             arkyids = Mathf.floor(crawlers / 2000f);
             crawlers = Math.min(crawlers, 1000);
         };
-        for(int i = 0; i < crawlers; i++){
+        while(crawlers > 0 || atraxes > 0 || arkyids > 0 || toxopids > 0){
             int sx = 32;
             int sy = 32;
             int align;
-            align = Mathf.floor(Mathf.random(0,4));
+            align = Mathf.floor(Mathf.random(0f,4f));
             switch(align){
                 case 0:
                     sx = spawnX;
@@ -389,7 +389,9 @@ public class CrawlerArenaMod extends Plugin {
                     break;
             };
             Unit u;
-            UnitTypes.crawler.spawn(Team.crux, sx, sy);
+            if(crawlers > 0){
+                UnitTypes.crawler.spawn(Team.crux, sx, sy);
+            };
             if(arkyids > 0){
                 u = UnitTypes.arkyid.spawn(Team.crux, sx, sy);
                 u.health = 1000;
@@ -416,6 +418,7 @@ public class CrawlerArenaMod extends Plugin {
                 u.armor = 0;
                 toxopids--;
             };
+            crawlers--;
         }
     }
     @Override
@@ -437,6 +440,7 @@ public class CrawlerArenaMod extends Plugin {
                         newUnit.armor = 1000;
                         newUnit.abilities.add(new UnitSpawnAbility(UnitTypes.omura, 30f, 0f, -8f));
                     };
+                    newUnit.controller(new FlyingAI());
                     newUnit.add();
                     units.get(player.uuid()).kill();
                     gameIsOver = true;
