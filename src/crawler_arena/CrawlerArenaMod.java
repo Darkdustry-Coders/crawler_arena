@@ -495,10 +495,6 @@ public class CrawlerArenaMod extends Plugin {
         });
     }
 
-    public static Player findPlayer(String name) {
-        return Strings.canParseInt(name) ? Groups.player.getByID(Strings.parseInt(name)) : Groups.player.find(player -> Strings.stripGlyphs(Strings.stripColors(player.name)).equalsIgnoreCase(Strings.stripGlyphs(Strings.stripColors(name))) || Strings.stripGlyphs(Strings.stripColors(player.name)).contains(Strings.stripGlyphs(Strings.stripColors(name))));
-    }
-
     @Override
     public void registerClientCommands(CommandHandler handler) {
         handler.<Player>register("upgrade", "<type> [amount]", "Upgrade your unit.", (args, player) -> {
@@ -545,29 +541,6 @@ public class CrawlerArenaMod extends Plugin {
                 Bundle.bundled(player, "commands.upgrade.success");
 
             } else Bundle.bundled(player, "commands.upgrade.not-enough-money");
-        });
-
-        handler.<Player>register("givemoney", "<amount> <name...>", "Give some money to another player.", (args, player) -> {
-            if (!Strings.canParsePositiveInt(args[0])) {
-                Bundle.bundled(player, "exceptions.invalid-amount");
-                return;
-            }
-
-            Player target = findPlayer(args[1]);
-            if (target == null || target == player) {
-                Bundle.bundled(player, "commands.give.player-not-found");
-                return;
-            }
-
-            int amount = args[0].equalsIgnoreCase("all") ? money.get(player.uuid()) : Strings.parseInt(args[0]);
-
-            if (money.get(player.uuid()) >= amount) {
-                money.put(player.uuid(), money.get(player.uuid()) - amount);
-                money.put(target.uuid(), money.get(target.uuid()) + amount);
-                Bundle.bundled(player, "commands.give.success", amount, target.coloredName());
-                Bundle.bundled(target, "commands.give.money-recieved", amount, player.coloredName());
-
-            } else Bundle.bundled(player, "commands.give.not-enough-money");
         });
 
         handler.<Player>register("information", "Show info about the Crawler Arena gamemode.", (args, player) -> Bundle.bundled(player, "commands.information"));
