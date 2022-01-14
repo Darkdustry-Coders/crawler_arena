@@ -1,7 +1,10 @@
 package crawler_arena;
 
-import arc.struct.*;
-import mindustry.content.*;
+import arc.struct.ObjectFloatMap;
+import arc.struct.ObjectIntMap;
+import arc.struct.Seq;
+import mindustry.content.Blocks;
+import mindustry.content.UnitTypes;
 import mindustry.game.Team;
 import mindustry.type.UnitType;
 import mindustry.world.Block;
@@ -28,7 +31,6 @@ public class CVars {
     public static float crawlerHealthBase = 60f;
     public static float crawlerSpeedBase = 0.43f;
     public static float statScalingNormal = 1f / 100f;
-    public static float extraScalingRamp = 1f / 2f;
     public static float healthMultiplierBase = 1f / 5f;
 
     public static float firstWaveDelay = 15f;

@@ -14,7 +14,6 @@ public class SwarmAI extends FlyingAI {
     public float innerSwarmRange2 = 120f * 120f;
     public float avoidRange = 480f;
     public float avoidRange2 = avoidRange * avoidRange;
-    public float swarmCollectRange = 1200f;
     public float kiteRange = 0.8f;
     public int swarmCount = 10;
 

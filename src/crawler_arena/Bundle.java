@@ -37,9 +37,6 @@ public class Bundle {
         }
     }
 
-    private Bundle() {
-    }
-
     public static Locale defaultLocale() {
         return Structs.find(supportedLocales, l -> l.toString().equals("en"));
     }
