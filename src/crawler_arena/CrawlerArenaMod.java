@@ -105,6 +105,7 @@ public class CrawlerArenaMod extends Plugin {
                 state.rules.waveTimer = false;
                 state.rules.waves = true;
                 state.rules.unitCap = unitCap;
+                state.rules.modeName = "Arena";
                 Call.setRules(state.rules);
                 newGame();
             });
