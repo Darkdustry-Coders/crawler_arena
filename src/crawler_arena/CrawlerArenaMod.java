@@ -230,20 +230,19 @@ public class CrawlerArenaMod extends Plugin {
             } else {
                 block = Seq.with(aidBlockAmounts.keys()).random();
             }
+
             if (guaranteedAirdrops.contains(block) || Mathf.chance(blockDropChance)) {
                 int blockAmount = rare ? rareAidBlockAmounts.get(block) : aidBlockAmounts.get(block);
-                int range = 10;
-                int x = 0;
-                int y = 0;
+                int range = 10, x = 0, y = 0, j = 0;
                 IntSeq valids = new IntSeq();
-                int j = 0;
+
                 while ((j < maxAirdropSearches && valids.size < blockAmount) || world.tile(x, y) == null) {
                     x = world.width() / 2 + Mathf.random(-range, range);
                     y = world.height() / 2 + Mathf.random(-range, range);
                     boolean valid = true;
                     for (int xi = x - (block.size - 1) / 2; xi <= x + block.size / 2; xi++) {
                         for (int yi = y - (block.size - 1) / 2; yi <= y + block.size / 2; yi++) {
-                            if (world.tile(xi, yi).build != null || valids.contains(Point2.pack(xi, yi))) {
+                            if (world.build(xi, yi) != null || valids.contains(Point2.pack(xi, yi))) {
                                 valid = false;
                                 break;
                             }
@@ -255,6 +254,7 @@ public class CrawlerArenaMod extends Plugin {
                     range++;
                     j++;
                 }
+
                 valids.each(v -> {
                     Point2 unpacked = Point2.unpack(v);
                     float xf = unpacked.x * tilesize;
