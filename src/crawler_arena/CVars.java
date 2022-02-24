@@ -45,13 +45,10 @@ public class CVars {
     public static int reinforcementFactor = 3; // amount of reinforcements is integer-divided by this number
     public static int reinforcementScaling = 2;
     public static int reinforcementMax = 60 * reinforcementFactor;
-    public static int maxAirdropSearches = 100;
     public static float rareAidChance = 1f / 5f;
-    public static float blockDropChance = 1f / 25f;
 
     public static ObjectIntMap<Block> aidBlockAmounts = new ObjectIntMap<>();
     public static ObjectIntMap<Block> rareAidBlockAmounts = new ObjectIntMap<>();
-    public static Seq<Block> guaranteedAirdrops = Seq.with(Blocks.coreNucleus, Blocks.boulder);
     public static ObjectIntMap<UnitType> unitCosts = new ObjectIntMap<>();
 
     public static float playerCrawlerHealth = 400f;
@@ -76,6 +73,13 @@ public class CVars {
     public static ObjectIntMap<UnitType> enemyThresholds = new ObjectIntMap<>();
     public static ObjectIntMap<UnitType> enemyCrawlerCuts = new ObjectIntMap<>();
     public static ObjectFloatMap<UnitType> defaultEnemySpeeds = new ObjectFloatMap<>();
+    public static float crawlerHealthRamp = 1f;
+    public static float crawlerSpeedRamp = 0.003f;
+    public static int bossT1Cap = 2;
+    public static int bossT2Cap = 5;
+    public static int bossT3Cap = 8;
+    public static float bossHealthMultiplier = 6f;
+    public static float bossScepterDelayBase = 600f;
 
     static {
         enemyTypes.each(type -> defaultEnemySpeeds.put(type, type.speed));
@@ -164,14 +168,4 @@ public class CVars {
                 Blocks.overdriveDome, 4,
                 Blocks.boulder, 100);
     }
-
-    public static float crawlerHealthRamp = 1f;
-    public static float crawlerSpeedRamp = 0.003f;
-
-    public static int bossT1Cap = 2;
-    public static int bossT2Cap = 5;
-    public static int bossT3Cap = 8;
-    public static int bossBuffThreshold = 150000;
-    public static float bossHealthMultiplier = 6f;
-    public static float bossScepterDelayBase = 600f;
 }

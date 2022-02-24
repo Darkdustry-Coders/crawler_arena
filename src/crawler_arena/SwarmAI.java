@@ -3,7 +3,6 @@ package crawler_arena;
 import mindustry.ai.types.FlyingAI;
 import mindustry.entities.Units;
 import mindustry.entities.units.UnitCommand;
-import mindustry.gen.Posc;
 import mindustry.gen.Unit;
 import mindustry.world.meta.BlockFlag;
 
@@ -23,16 +22,13 @@ public class SwarmAI extends FlyingAI {
             if (!unit.type.circleTarget) {
                 if (Units.count(unit.x, unit.y, swarmRange, u -> u.type == unit.type && u.team == unit.team) > swarmCount) {
                     moveTo(target, unit.type.range * kiteRange);
-                } else if (target != null) {
-                    Posc targetPosc = target;
-                    if (unit.dst2(targetPosc) > avoidRange2) {
+                } else {
+                    if (unit.dst2(target) > avoidRange2) {
                         Unit targetSameType = Units.closest(unit.team, unit.x, unit.y, u -> u.type == unit.type && unit.dst2(u) > innerSwarmRange2);
                         moveTo(targetSameType != null ? targetSameType : target, unit.hitSize * 2f);
                     } else {
                         moveTo(target, avoidRange * 1.1f);
                     }
-                } else {
-                    moveTo(null, avoidRange);
                 }
                 unit.lookAt(target);
             } else {

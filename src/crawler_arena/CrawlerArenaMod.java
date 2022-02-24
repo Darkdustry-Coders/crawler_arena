@@ -2,9 +2,7 @@ package crawler_arena;
 
 import arc.Core;
 import arc.Events;
-import arc.graphics.Color;
 import arc.math.Mathf;
-import arc.math.geom.Point2;
 import arc.struct.IntSeq;
 import arc.struct.ObjectIntMap;
 import arc.struct.ObjectMap;
@@ -12,10 +10,8 @@ import arc.struct.Seq;
 import arc.util.*;
 import arc.util.pooling.Pools;
 import mindustry.ai.types.FlyingAI;
-import mindustry.content.Fx;
 import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
-import mindustry.entities.Units;
 import mindustry.entities.abilities.UnitSpawnAbility;
 import mindustry.entities.bullet.SapBulletType;
 import mindustry.entities.units.StatusEntry;
@@ -130,7 +126,7 @@ public class CrawlerArenaMod extends Plugin {
                 if (unitIDs.containsKey(event.player.uuid())) {
                     Unit swapTo = Groups.unit.getByID(unitIDs.get(event.player.uuid()));
                     if (swapTo != null) {
-                        if (swapTo.getPlayer() != null && unitIDs.containsKey(swapTo.getPlayer().uuid())) {
+                        if (swapTo.isPlayer() && unitIDs.containsKey(swapTo.getPlayer().uuid())) {
                             Player intruder = swapTo.getPlayer();
                             Unit swapIntruderTo = Groups.unit.getByID(unitIDs.get(intruder.uuid()));
                             if (swapIntruderTo != null) {
@@ -182,9 +178,8 @@ public class CrawlerArenaMod extends Plugin {
                 });
                 waveIsOver = true;
             }
-            if (!waveIsOver) {
-                enemyTypes.each(type -> type.speed += enemySpeedBoost * Time.delta * statScaling);
-            }
+
+            if (!waveIsOver) enemyTypes.each(type -> type.speed += enemySpeedBoost * Time.delta * statScaling);
         });
 
         netServer.admins.addActionFilter(action -> action.type != Administration.ActionType.breakBlock && action.type != Administration.ActionType.placeBlock);
@@ -222,60 +217,17 @@ public class CrawlerArenaMod extends Plugin {
         }
 
         for (int i = 0; i < megas.size; i++) {
-            Block block;
-            boolean rare = false;
-            if (Mathf.chance(rareAidChance / aidBlockAmounts.size)) {
-                block = Seq.with(rareAidBlockAmounts.keys()).random();
-                rare = true;
-            } else {
-                block = Seq.with(aidBlockAmounts.keys()).random();
-            }
+            boolean rare = Mathf.chance(rareAidChance / aidBlockAmounts.size);
+            Block block = rare ? Seq.with(rareAidBlockAmounts.keys()).random() : Seq.with(aidBlockAmounts.keys()).random();
 
-            if (guaranteedAirdrops.contains(block) || Mathf.chance(blockDropChance)) {
-                int blockAmount = rare ? rareAidBlockAmounts.get(block) : aidBlockAmounts.get(block);
-                int range = 10, x = 0, y = 0, j = 0;
-                IntSeq valids = new IntSeq();
-
-                while ((j < maxAirdropSearches && valids.size < blockAmount) || world.tile(x, y) == null) {
-                    x = world.width() / 2 + Mathf.random(-range, range);
-                    y = world.height() / 2 + Mathf.random(-range, range);
-                    boolean valid = true;
-                    for (int xi = x - (block.size - 1) / 2; xi <= x + block.size / 2; xi++) {
-                        for (int yi = y - (block.size - 1) / 2; yi <= y + block.size / 2; yi++) {
-                            if (world.build(xi, yi) != null || valids.contains(Point2.pack(xi, yi))) {
-                                valid = false;
-                                break;
-                            }
-                        }
-                        if (!valid) break;
-                    }
-                    valid = valid && !Units.anyEntities(x * tilesize + block.offset - block.size * tilesize / 2f, y * tilesize + block.offset - block.size * tilesize / 2f, block.size * tilesize, block.size * tilesize);
-                    if (valid) valids.add(Point2.pack(x, y));
-                    range++;
-                    j++;
-                }
-
-                valids.each(v -> {
-                    Point2 unpacked = Point2.unpack(v);
-                    float xf = unpacked.x * tilesize;
-                    float yf = unpacked.y * tilesize;
-                    Call.effect(Fx.blockCrash, xf, yf, 0, Color.white, block);
-                    Time.run(100f, () -> {
-                        Call.soundAt(Sounds.explosionbig, xf, yf, 1, 1);
-                        Call.effect(Fx.spawnShockwave, xf, yf, block.size * 60f, Color.white);
-                        world.tileWorld(xf, yf).setNet(block, state.rules.defaultTeam, 0);
-                    });
-                });
-                blocks.put(block, 0);
-            } else {
-                blocks.put(block, rare ? rareAidBlockAmounts.get(block) : aidBlockAmounts.get(block));
-            }
+            blocks.put(block, rare ? rareAidBlockAmounts.get(block) : aidBlockAmounts.get(block));
         }
 
         blocks.each((block, amount) -> {
             for (int i = 0; i < amount; i++) {
-                if (megas.get(megas.size - 1) instanceof Payloadc pay)
+                if (megas.get(megas.size - 1) instanceof Payloadc pay) {
                     pay.addPayload(new BuildPayload(block, state.rules.defaultTeam));
+                }
             }
             megas.remove(megas.size - 1);
         });
@@ -294,7 +246,7 @@ public class CrawlerArenaMod extends Plugin {
             }
 
             Unit unit = type.spawn(tile.worldx(), tile.worldy());
-            setUnit(unit);
+            applyUnit(unit);
             p.unit(unit);
             unitIDs.put(p.uuid(), unit.id);
             return;
@@ -307,28 +259,23 @@ public class CrawlerArenaMod extends Plugin {
     }
 
 
-    public void applyStatus(Unit unit, float duration, int amount, StatusEffect... effects) {
+    public void applyStatus(Unit unit, float duration, StatusEffect... effects) {
         Seq<StatusEntry> entries = new Seq<>();
-        for (int i = 0; i < amount; i++) {
-            for (StatusEffect effect : effects) {
-                StatusEntry entry = Pools.obtain(StatusEntry.class, StatusEntry::new);
-                entry.set(effect, duration);
-                entries.add(entry);
-            }
+
+        for (StatusEffect effect : effects) {
+            StatusEntry entry = Pools.obtain(StatusEntry.class, StatusEntry::new);
+            entry.set(effect, duration);
+            entries.add(entry);
         }
+
 
         for (Field field : unit.getClass().getFields()) {
             if (field.getName().equals("statuses")) {
                 try {
                     ((Seq<StatusEntry>) field.get(unit)).addAll(entries);
-                } catch (Exception ignored) {
-                }
+                } catch (Exception ignored) {}
             }
         }
-    }
-
-    public void applyStatus(Unit unit, float duration, StatusEffect... effects) {
-        applyStatus(unit, duration, 1, effects);
     }
 
     public void spawnEnemy(UnitType unit, int spX, int spY) {
@@ -354,6 +301,7 @@ public class CrawlerArenaMod extends Plugin {
 
         if (unit == UnitTypes.reign) {
             u.apply(StatusEffects.boss);
+
             if (Groups.player.size() > bossT1Cap) {
                 u.apply(StatusEffects.overclock);
             }
@@ -363,13 +311,7 @@ public class CrawlerArenaMod extends Plugin {
             if (Groups.player.size() > bossT3Cap) {
                 applyStatus(u, Float.MAX_VALUE, StatusEffects.overdrive, StatusEffects.overclock);
             }
-            float totalHealth = 0f;
-            for (Unit un : Groups.unit) {
-                totalHealth += un.maxHealth * (un.team == state.rules.defaultTeam ? 1 : 0);
-            }
-            if (totalHealth >= bossBuffThreshold) {
-                applyStatus(u, Float.MAX_VALUE, (int) totalHealth / bossBuffThreshold, StatusEffects.overdrive, StatusEffects.overclock);
-            }
+
             u.maxHealth *= bossHealthMultiplier * Mathf.sqrt(Groups.player.size());
             u.health = u.maxHealth;
             u.abilities.add(new UnitSpawnAbility(UnitTypes.scepter, bossScepterDelayBase / Groups.player.size(), 0, -32));
@@ -400,9 +342,7 @@ public class CrawlerArenaMod extends Plugin {
             return;
         }
 
-        if (crawlers > crawlersCeiling) {
-            crawlers = crawlersCeiling;
-        }
+        crawlers = Math.min(crawlers, crawlersCeiling);
 
         UnitTypes.crawler.health += crawlerHealthRamp * wave * statScaling;
         UnitTypes.crawler.speed += crawlerSpeedRamp * wave * statScaling;
@@ -419,17 +359,15 @@ public class CrawlerArenaMod extends Plugin {
             crawlers -= typeCount * enemyCrawlerCuts.get(type) / 2;
             type.speed = defaultEnemySpeeds.get(type, 1f);
         }
-        crawlers = Math.min(crawlers, keepCrawlers);
-
+        typeCounts.put(UnitTypes.crawler, Math.min(crawlers, keepCrawlers));
         typeCounts.forEach(entry -> spawnEnemies(entry.key, entry.value, spreadX, spreadY));
-        spawnEnemies(UnitTypes.crawler, crawlers, spreadX, spreadY);
     }
 
     public void spawnEnemies(UnitType unit, int amount, int spX, int spY) {
         for (int i = 0; i < amount; i++) spawnEnemy(unit, spX, spY);
     }
 
-    public void setUnit(Unit unit, boolean ultraEligible) {
+    public void applyUnit(Unit unit, boolean ultraEligible) {
         if (unit.type == UnitTypes.crawler) {
             unit.maxHealth = playerCrawlerHealth;
             unit.health = unit.maxHealth;
@@ -471,13 +409,13 @@ public class CrawlerArenaMod extends Plugin {
             unit.health = unit.maxHealth;
             unit.armor = ultraDaggerArmor;
             unit.abilities.add(new UnitSpawnAbility(UnitTypes.dagger, ultraDaggerCooldown, 0f, -1f));
-            applyStatus(unit, Float.MAX_VALUE, 3, StatusEffects.overclock, StatusEffects.overdrive, StatusEffects.boss);
+            applyStatus(unit, Float.MAX_VALUE, StatusEffects.overclock, StatusEffects.overdrive, StatusEffects.boss);
         }
         unit.controller(new FlyingAI());
     }
 
-    public void setUnit(Unit unit) {
-        setUnit(unit, false);
+    public void applyUnit(Unit unit) {
+        applyUnit(unit, false);
     }
 
     public void reset() {
@@ -526,7 +464,7 @@ public class CrawlerArenaMod extends Plugin {
                 if (!player.dead() && player.unit().type == newUnitType || amount > 1) {
                     for (int i = 0; i < amount; i++) {
                         Unit newUnit = newUnitType.spawn(player.x + Mathf.random(), player.y + Mathf.random());
-                        setUnit(newUnit);
+                        applyUnit(newUnit);
                     }
                     money.put(player.uuid(), money.get(player.uuid()) - unitCosts.get(newUnitType) * amount);
                     Bundle.bundled(player, "commands.upgrade.already");
@@ -534,7 +472,7 @@ public class CrawlerArenaMod extends Plugin {
                 }
 
                 Unit newUnit = newUnitType.spawn(player.x, player.y);
-                setUnit(newUnit, true);
+                applyUnit(newUnit, true);
                 player.unit(newUnit);
                 money.put(player.uuid(), money.get(player.uuid()) - unitCosts.get(newUnitType));
                 units.put(player.uuid(), newUnitType);
