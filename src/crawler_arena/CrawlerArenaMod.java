@@ -69,12 +69,12 @@ public class CrawlerArenaMod extends Plugin {
         UnitTypes.aegires.flying = true;
         UnitTypes.navanax.flying = true;
 
-        UnitTypes.crawler.maxRange = 8000f;
-        UnitTypes.atrax.maxRange = 8000f;
-        UnitTypes.spiroct.maxRange = 8000f;
-        UnitTypes.arkyid.maxRange = 8000f;
-        UnitTypes.toxopid.maxRange = 8000f;
-        UnitTypes.reign.maxRange = 8000f;
+        UnitTypes.crawler.maxRange = 80000f;
+        UnitTypes.atrax.maxRange = 80000f;
+        UnitTypes.spiroct.maxRange = 80000f;
+        UnitTypes.arkyid.maxRange = 80000f;
+        UnitTypes.toxopid.maxRange = 80000f;
+        UnitTypes.reign.maxRange = 80000f;
 
         UnitTypes.poly.maxRange = 2000f;
         UnitTypes.poly.abilities.add(new UnitSpawnAbility(UnitTypes.poly, 480f, 0f, -32f));
@@ -86,8 +86,8 @@ public class CrawlerArenaMod extends Plugin {
         });
 
         Events.on(WorldLoadEvent.class, event -> {
-            Core.app.post(() -> state.rules.defaultTeam.cores().each(core -> core.tile.removeNet()));
-            Core.app.post(this::newGame);
+            Core.app.post(() -> state.rules.defaultTeam.cores().each(Building::kill));
+
             Core.app.post(() -> {
                 state.rules.canGameOver = false;
                 state.rules.waveTimer = false;
@@ -95,6 +95,7 @@ public class CrawlerArenaMod extends Plugin {
                 state.rules.unitCap = unitCap;
                 state.rules.modeName = "Crawler";
                 Call.setRules(state.rules);
+                newGame();
             });
 
             worldWidth = world.width() * tilesize;
@@ -119,6 +120,8 @@ public class CrawlerArenaMod extends Plugin {
         });
 
         Events.run(Trigger.update, () -> {
+            if (isGameOver) return;
+
             if (!Groups.unit.contains(u -> u.team == state.rules.defaultTeam) && firstWaveLaunched) {
                 isGameOver = true;
                 if (wave > bossWave) {
@@ -131,7 +134,7 @@ public class CrawlerArenaMod extends Plugin {
                 return;
             }
 
-            if (!Groups.unit.contains(u -> u.team == state.rules.waveTeam) && !isWaveGoing) {
+            if (!Groups.unit.contains(u -> u.team == state.rules.waveTeam) && isWaveGoing) {
                 if (wave < reinforcementMinWave || wave % reinforcementSpacing != 0) {
                     Bundle.sendToChat("events.wave", waveDelay);
                     Timer.schedule(this::nextWave, waveDelay);
@@ -144,7 +147,7 @@ public class CrawlerArenaMod extends Plugin {
                     respawnPlayer(p);
                     money.put(p.uuid(), (int) (money.get(p.uuid(), 0) + Mathf.pow(moneyExpBase, 1f + wave * moneyRamp + Mathf.pow(wave, 2) * extraMoneyRamp) * moneyMultiplier));
                 });
-                isWaveGoing = true;
+                isWaveGoing = false;
             }
 
             if (isWaveGoing) enemyTypes.each(type -> type.speed += enemySpeedBoost * Time.delta * statScaling);
@@ -161,7 +164,7 @@ public class CrawlerArenaMod extends Plugin {
     }
 
     public void newGame() {
-        if (firstWaveLaunched || !isGameOver) return;
+        if (firstWaveLaunched) return;
 
         if (Groups.player.size() <= 0) {
             Timer.schedule(this::newGame, 6f);
@@ -264,7 +267,6 @@ public class CrawlerArenaMod extends Plugin {
         wave++;
         state.wave = wave;
         statScaling = 1f + wave * statScalingNormal;
-        isWaveGoing = true;
 
         int crawlers = Mathf.ceil(Mathf.pow(crawlersExpBase, 1f + wave * crawlersRamp + Mathf.pow(wave, 2f) * extraCrawlersRamp) * Groups.player.size() * crawlersMultiplier);
 
@@ -315,6 +317,8 @@ public class CrawlerArenaMod extends Plugin {
 
         typeCounts.put(UnitTypes.crawler, Math.min(crawlers, keepCrawlers));
         typeCounts.forEach(entry -> spawnEnemies(entry.key, entry.value, spreadX, spreadY));
+
+        Timer.schedule(() -> isWaveGoing = true, 1f);
     }
 
     public void spawnEnemies(UnitType unit, int amount, int spX, int spY) {
