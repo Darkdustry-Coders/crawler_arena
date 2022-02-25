@@ -1,16 +1,24 @@
 package crawler_arena;
 
-import mindustry.Vars;
+import arc.math.geom.Geometry;
+import arc.math.geom.Point2;
 import mindustry.ai.types.GroundAI;
-import mindustry.entities.Predict;
 import mindustry.entities.Units;
 import mindustry.gen.Building;
 import mindustry.gen.Hitboxc;
 import mindustry.gen.Teamc;
+import mindustry.world.Tile;
 import mindustry.world.blocks.distribution.Conveyor;
 import mindustry.world.blocks.liquid.Conduit;
+import mindustry.world.blocks.storage.CoreBlock;
+import mindustry.world.meta.BlockGroup;
+
+import static mindustry.Vars.tilesize;
+import static mindustry.Vars.world;
 
 public class ArenaAI extends GroundAI {
+
+    public boolean blockedByBlocks;
 
     @Override
     public void updateUnit() {
@@ -26,17 +34,37 @@ public class ArenaAI extends GroundAI {
 
         if (!Units.invalidateTarget(target, unit, unit.range()) && unit.hasWeapons()) {
             rotate = true;
-            shoot = unit.within(target, unit.type.weapons.first().bullet.range() + (target instanceof Building ? 1.5f * Vars.tilesize / 2f : ((Hitboxc) target).hitSize() / 2f));
+            shoot = unit.within(target, unit.type.weapons.first().bullet.range() + (target instanceof Building b ? b.block.size * tilesize / 2f : ((Hitboxc) target).hitSize() / 2f));
 
-            if (unit.type.hasWeapons())
-                unit.aimLook(Predict.intercept(unit, target, unit.type.weapons.first().bullet.speed));
+            if (!(target instanceof Building build && !(build.block instanceof CoreBlock) && (build.block.group == BlockGroup.walls || build.block.group == BlockGroup.liquids || build.block.group == BlockGroup.transportation))) {
+                blockedByBlocks = false;
+
+                boolean blocked = world.raycast(unit.tileX(), unit.tileY(), target.tileX(), target.tileY(), (x, y) -> {
+                    for (Point2 p : Geometry.d4c) {
+                        Tile tile = world.tile(x + p.x, y + p.y);
+                        if (tile != null && tile.build == target) return false;
+                        if (tile != null && tile.build != null && tile.build.team != unit.team()) {
+                            blockedByBlocks = true;
+                            return true;
+                        } else {
+                            return tile == null || tile.solid();
+                        }
+                    }
+                    return false;
+                });
+
+                if (blockedByBlocks) {
+                    shoot = true;
+                }
+
+                if (!blocked) {
+                    unit.movePref(vec.set(target).sub(unit).limit(unit.speed()));
+                }
+            }
         }
 
-        if (target != null) {
-            unit.moveAt(vec.set(target).sub(unit).limit(unit.speed()));
-            if (unit.moving()) unit.lookAt(unit.vel().angle());
-            unit.controlWeapons(rotate, shoot);
-        }
+        unit.controlWeapons(rotate, shoot);
+        faceTarget();
     }
 
     @Override

@@ -9,10 +9,10 @@ import mindustry.world.meta.BlockFlag;
 import static mindustry.Vars.state;
 
 public class SwarmAI extends FlyingAI {
+
     public float swarmRange = 320f;
-    public float innerSwarmRange2 = 120f * 120f;
+    public float innerSwarmRange = 120f;
     public float avoidRange = 480f;
-    public float avoidRange2 = avoidRange * avoidRange;
     public float kiteRange = 0.8f;
     public int swarmCount = 10;
 
@@ -23,8 +23,8 @@ public class SwarmAI extends FlyingAI {
                 if (Units.count(unit.x, unit.y, swarmRange, u -> u.type == unit.type && u.team == unit.team) > swarmCount) {
                     moveTo(target, unit.type.range * kiteRange);
                 } else {
-                    if (unit.dst2(target) > avoidRange2) {
-                        Unit targetSameType = Units.closest(unit.team, unit.x, unit.y, u -> u.type == unit.type && unit.dst2(u) > innerSwarmRange2);
+                    if (unit.dst(target) > avoidRange) {
+                        Unit targetSameType = Units.closest(unit.team, unit.x, unit.y, u -> u.type == unit.type && unit.dst(u) > innerSwarmRange);
                         moveTo(targetSameType != null ? targetSameType : target, unit.hitSize * 2f);
                     } else {
                         moveTo(target, avoidRange * 1.1f);
