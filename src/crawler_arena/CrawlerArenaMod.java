@@ -52,7 +52,6 @@ public class CrawlerArenaMod extends Plugin {
         UnitTypes.toxopid.defaultController = ArenaAI::new;
 
         UnitTypes.poly.defaultController = SwarmAI::new;
-        UnitTypes.mega.defaultController = ReinforcementAI::new;
 
         UnitTypes.scepter.defaultController = ArenaAI::new;
         UnitTypes.reign.defaultController = ArenaAI::new;
@@ -203,7 +202,9 @@ public class CrawlerArenaMod extends Plugin {
 
         for (int i = 0; i < megasFactor; i += reinforcementFactor) {
             Unit u = UnitTypes.mega.spawn(reinforcementTeam, 32, worldCenterY + Mathf.random(-80, 80));
-            u.health = Float.MAX_VALUE;
+            u.maxHealth(Float.MAX_VALUE);
+            u.health(u.maxHealth);
+            u.controller(new ReinforcementAI());
             megas.add(u);
         }
 
@@ -400,14 +401,14 @@ public class CrawlerArenaMod extends Plugin {
                 player.unit(spawned.random());
                 Bundle.bundled(player, "commands.upgrade.success", amount, type.name);
 
-            } else Bundle.bundled(player, "commands.upgrade.not-enough-money");
+            } else Bundle.bundled(player, "commands.upgrade.not-enough-money", unitCosts.get(type) * amount, money.get(player.uuid()));
         });
 
         handler.<Player>register("information", "Show info about the Crawler Arena gamemode.", (args, player) -> Bundle.bundled(player, "commands.information"));
 
         handler.<Player>register("upgrades", "Show units you can upgrade to.", (args, player) -> {
             StringBuilder upgrades = new StringBuilder(Bundle.format("commands.upgrades.header", Bundle.findLocale(player)));
-            unitCosts.each((type, cost) -> upgrades.append("[gold] - [accent]").append(type.name).append(" [lightgray](").append(cost).append(")\n"));
+            unitCosts.each((type, cost) -> upgrades.append("[gold] - [accent]").append(type.name).append(" [lightgray](").append(cost >= money.get(player.uuid()) ? "[lime]" : "[scarlet]").append(cost).append("[lightgray])\n"));
             player.sendMessage(upgrades.toString());
         });
     }
