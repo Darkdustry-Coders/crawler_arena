@@ -6,11 +6,11 @@ import arc.struct.OrderedMap;
 import arc.struct.Seq;
 import mindustry.content.Blocks;
 import mindustry.content.UnitTypes;
-import mindustry.game.Team;
 import mindustry.type.UnitType;
 import mindustry.world.Block;
 
 public class CrawlerVars {
+
     public static int unitCap = 96;
     public static float tipChance = 1f / 30000f;
 
@@ -40,10 +40,9 @@ public class CrawlerVars {
     public static float reinforcementWaveDelayRamp = 3f;
     public static float reinforcementWaveDelayMax = 90f;
 
-    public static Team reinforcementTeam = Team.blue;
     public static int reinforcementMinWave = 8;
     public static int reinforcementSpacing = 2;
-    public static int reinforcementFactor = 3; // amount of reinforcements is integer-divided by this number
+    public static int reinforcementFactor = 3;
     public static int reinforcementScaling = 2;
     public static int reinforcementMax = 60 * reinforcementFactor;
     public static float rareAidChance = 1f / 20f;

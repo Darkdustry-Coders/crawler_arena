@@ -3,17 +3,22 @@ package crawler_arena;
 import arc.Core;
 import arc.Events;
 import arc.math.Mathf;
-import arc.struct.*;
+import arc.struct.ObjectIntMap;
+import arc.struct.ObjectMap;
+import arc.struct.Seq;
 import arc.util.*;
 import mindustry.ai.types.FlyingAI;
+import mindustry.content.Fx;
 import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
 import mindustry.entities.abilities.UnitSpawnAbility;
 import mindustry.entities.bullet.SapBulletType;
+import mindustry.game.EventType.PlayerLeave;
 import mindustry.game.EventType.GameOverEvent;
 import mindustry.game.EventType.PlayerJoin;
 import mindustry.game.EventType.Trigger;
 import mindustry.game.EventType.WorldLoadEvent;
+import mindustry.game.Team;
 import mindustry.gen.*;
 import mindustry.graphics.Pal;
 import mindustry.mod.Plugin;
@@ -34,6 +39,7 @@ public class CrawlerArenaMod extends Plugin {
     public static float statScaling = 1f;
 
     public static ObjectIntMap<String> money = new ObjectIntMap<>();
+    public static ObjectIntMap<String> leftUnits = new ObjectIntMap<>();
     public static ObjectMap<String, UnitType> units = new ObjectMap<>();
 
     public static long timer = Time.millis();
@@ -111,10 +117,24 @@ public class CrawlerArenaMod extends Plugin {
                 Bundle.bundled(event.player, "events.join.welcome");
                 money.put(event.player.uuid(), (int) (money.get(event.player.uuid(), 0) + Mathf.pow(moneyExpBase, 1f + wave * moneyRamp + Mathf.pow(wave, 2) * extraMoneyRamp) * moneyMultiplier));
                 units.put(event.player.uuid(), UnitTypes.dagger);
-                respawnPlayer(event.player);
             } else {
                 Bundle.bundled(event.player, "events.join.already-played");
-                respawnPlayer(event.player);
+            }
+
+            if (leftUnits.containsKey(event.player.uuid())) {
+                Unit unit = Groups.unit.getByID(leftUnits.remove(event.player.uuid()));
+                if (unit != null && !unit.isPlayer()) {
+                    event.player.unit(unit);
+                    return;
+                }
+            }
+
+            respawnPlayer(event.player);
+        });
+
+        Events.on(PlayerLeave.class, event -> {
+            if (!event.player.dead()) {
+                leftUnits.put(event.player.uuid(), event.player.unit().id);
             }
         });
 
@@ -201,11 +221,11 @@ public class CrawlerArenaMod extends Plugin {
         int megasFactor = (int) Math.min(wave * reinforcementScaling * statScaling, reinforcementMax);
 
         for (int i = 0; i < megasFactor; i += reinforcementFactor) {
-            Unit u = UnitTypes.mega.spawn(reinforcementTeam, 32, worldCenterY + Mathf.random(-80, 80));
-            u.maxHealth(Float.MAX_VALUE);
-            u.health(u.maxHealth);
-            u.controller(new ReinforcementAI());
-            megas.add(u);
+            Unit unit = UnitTypes.mega.spawn(Team.get(Mathf.random(6, 256)), 32, worldCenterY + Mathf.range(120));
+            unit.maxHealth(Float.MAX_VALUE);
+            unit.health(unit.maxHealth);
+            unit.controller(new ReinforcementAI());
+            megas.add(unit);
         }
 
         for (int i = 0; i < megas.size; i++) {
@@ -225,10 +245,10 @@ public class CrawlerArenaMod extends Plugin {
         });
     }
 
-    public void respawnPlayer(Player p) {
-        if (p.dead()) {
+    public void respawnPlayer(Player player) {
+        if (player.dead()) {
             Tile tile = world.tile(worldCenterX / 8 + Mathf.random(-3, 3), worldCenterY / 8 + Mathf.random(-3, 3));
-            UnitType type = units.get(p.uuid(), () -> UnitTypes.dagger);
+            UnitType type = units.get(player.uuid(), () -> UnitTypes.dagger);
 
             if (!type.flying && tile.solid()) {
                 tile.removeNet();
@@ -236,32 +256,15 @@ public class CrawlerArenaMod extends Plugin {
 
             Unit unit = type.spawn(tile.worldx(), tile.worldy());
             applyUnit(unit);
-            p.unit(unit);
+            player.unit(unit);
             return;
         }
 
-        if (p.unit().health < p.unit().maxHealth) {
-            p.unit().heal();
-            Bundle.bundled(p, "events.heal", Pal.heal);
+        if (player.unit().health < player.unit().maxHealth) {
+            Call.effect(Fx.greenCloud, player.unit().x, player.unit().y, 0f, Pal.heal);
+            player.unit().heal();
+            Bundle.bundled(player, "events.heal", Pal.heal);
         }
-    }
-
-    public Unit spawnEnemy(UnitType type, int spX, int spY) {
-        Tile tile = emptyTile;
-
-        switch (Mathf.random(0, 3)) {
-            case 0 -> tile = world.tileWorld(worldWidth - 32, worldCenterY + Mathf.random(-spY, spY));
-            case 1 -> tile = world.tileWorld(worldCenterX + Mathf.random(-spX, spX), worldHeight - 32);
-            case 2 -> tile = world.tileWorld(32, worldCenterY + Mathf.random(-spY, spY));
-            case 3 -> tile = world.tileWorld(worldCenterX + Mathf.random(-spX, spX), 32);
-        }
-
-        if (tile == null) return Nulls.unit;
-
-        Unit unit = type.spawn(state.rules.waveTeam, tile.worldx(), tile.worldy());
-        unit.maxHealth *= statScaling * healthMultiplierBase;
-        unit.health = unit.maxHealth;
-        return unit;
     }
 
     public void nextWave() {
@@ -322,8 +325,26 @@ public class CrawlerArenaMod extends Plugin {
         Timer.schedule(() -> isWaveGoing = true, 1f);
     }
 
-    public void spawnEnemies(UnitType unit, int amount, int spX, int spY) {
-        for (int i = 0; i < amount; i++) spawnEnemy(unit, spX, spY);
+    public void spawnEnemies(UnitType type, int amount, int spX, int spY) {
+        for (int i = 0; i < amount; i++) spawnEnemy(type, spX, spY);
+    }
+
+    public Unit spawnEnemy(UnitType type, int spX, int spY) {
+        Tile tile = null;
+
+        switch (Mathf.random(0, 3)) {
+            case 0 -> tile = world.tileWorld(worldWidth - 32, worldCenterY + Mathf.random(-spY, spY));
+            case 1 -> tile = world.tileWorld(worldCenterX + Mathf.random(-spX, spX), worldHeight - 32);
+            case 2 -> tile = world.tileWorld(32, worldCenterY + Mathf.random(-spY, spY));
+            case 3 -> tile = world.tileWorld(worldCenterX + Mathf.random(-spX, spX), 32);
+        }
+
+        if (tile == null || tile.solid()) return Nulls.unit;
+
+        Unit unit = type.spawn(state.rules.waveTeam, tile.worldx(), tile.worldy());
+        unit.maxHealth *= statScaling * healthMultiplierBase;
+        unit.health = unit.maxHealth;
+        return unit;
     }
 
     public void applyUnit(Unit unit) {
@@ -398,17 +419,20 @@ public class CrawlerArenaMod extends Plugin {
 
                 money.put(player.uuid(), money.get(player.uuid()) - unitCosts.get(type) * amount);
                 units.put(player.uuid(), type);
-                player.unit(spawned.random());
+                Unit unit = spawned.random();
+                player.unit(unit);
                 Bundle.bundled(player, "commands.upgrade.success", amount, type.name);
 
-            } else Bundle.bundled(player, "commands.upgrade.not-enough-money", unitCosts.get(type) * amount, money.get(player.uuid()));
+            } else {
+                Bundle.bundled(player, "commands.upgrade.not-enough-money", unitCosts.get(type) * amount, money.get(player.uuid()));
+            }
         });
 
         handler.<Player>register("information", "Show info about the Crawler Arena gamemode.", (args, player) -> Bundle.bundled(player, "commands.information"));
 
         handler.<Player>register("upgrades", "Show units you can upgrade to.", (args, player) -> {
             StringBuilder upgrades = new StringBuilder(Bundle.format("commands.upgrades.header", Bundle.findLocale(player)));
-            unitCosts.each((type, cost) -> upgrades.append("[gold] - [accent]").append(type.name).append(" [lightgray](").append(cost >= money.get(player.uuid()) ? "[lime]" : "[scarlet]").append(cost).append("[lightgray])\n"));
+            unitCosts.each((type, cost) -> upgrades.append("[gold] - [accent]").append(type.name).append(" [lightgray](").append(cost <= money.get(player.uuid(), 0) ? "[lime]" : "[scarlet]").append(cost).append("[lightgray])\n"));
             player.sendMessage(upgrades.toString());
         });
     }

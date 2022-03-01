@@ -6,8 +6,6 @@ import mindustry.entities.units.UnitCommand;
 import mindustry.gen.Unit;
 import mindustry.world.meta.BlockFlag;
 
-import static mindustry.Vars.state;
-
 public class SwarmAI extends FlyingAI {
 
     public float swarmRange = 320f;
@@ -34,10 +32,6 @@ public class SwarmAI extends FlyingAI {
             } else {
                 attack(120f);
             }
-        }
-
-        if (target == null && command() == UnitCommand.attack && state.rules.waves && unit.team == state.rules.defaultTeam) {
-            moveTo(getClosestSpawner(), state.rules.dropZoneRadius + 120f);
         }
 
         if (command() == UnitCommand.rally) {
