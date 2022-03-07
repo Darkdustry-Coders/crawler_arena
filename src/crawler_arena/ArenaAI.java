@@ -17,7 +17,7 @@ public class ArenaAI extends GroundAI {
         }
 
         if (retarget()) {
-            target = target(unit.x, unit.y, unit.range(), unit.type.targetAir, unit.type.targetGround);
+            target = target(unit.x, unit.y, unit.range(), true, true);
         }
 
         boolean rotate = false, shoot = false;
