@@ -123,8 +123,11 @@ public class CrawlerArenaMod extends Plugin {
 
             if (leftUnits.containsKey(event.player.uuid())) {
                 Unit unit = Groups.unit.getByID(leftUnits.remove(event.player.uuid()));
-                if (unit != null && !unit.isPlayer()) {
-                    event.player.unit(unit);
+                if (unit != null) {
+                    if (unit.isPlayer()) {
+                        unit.getPlayer().clearUnit();
+                    }
+                    Time.run(60f, () -> event.player.unit(unit));
                     return;
                 }
             }
@@ -198,6 +201,7 @@ public class CrawlerArenaMod extends Plugin {
         UnitTypes.crawler.health = crawlerHealthBase;
         money.clear();
         units.clear();
+        leftUnits.clear();
         Groups.player.each(p -> {
             money.put(p.uuid(), 0);
             units.put(p.uuid(), UnitTypes.dagger);

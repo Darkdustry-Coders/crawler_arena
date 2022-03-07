@@ -94,47 +94,47 @@ public class CrawlerVars {
         );
 
         unitCosts.putAll(
-                UnitTypes.nova, 100,
-                UnitTypes.pulsar, 300,
-                UnitTypes.quasar, 2000,
-                UnitTypes.vela, 15000,
-                UnitTypes.corvus, 250000,
-
                 UnitTypes.dagger, 25,
-                UnitTypes.mace, 200,
-                UnitTypes.fortress, 1500,
-                UnitTypes.scepter, 20000,
-                UnitTypes.reign, 250000,
-
-                UnitTypes.crawler, 7500,
-                UnitTypes.atrax, 250,
-                UnitTypes.spiroct, 1500,
-                UnitTypes.arkyid, 25000,
-                UnitTypes.toxopid, 325000,
-
                 UnitTypes.flare, 75,
+                UnitTypes.nova, 100,
+                UnitTypes.mace, 200,
+                UnitTypes.atrax, 250,
+
                 UnitTypes.horizon, 250,
-                UnitTypes.zenith, 2500,
-                UnitTypes.antumbra, 18000,
-                UnitTypes.eclipse, 175000,
-
+                UnitTypes.pulsar, 300,
                 UnitTypes.retusa, 400,
-                UnitTypes.oxynoe, 850,
-                UnitTypes.cyerce, 5000,
-                UnitTypes.aegires, 30000,
-                UnitTypes.navanax, 350000,
-
                 UnitTypes.risso, 500,
                 UnitTypes.minke, 750,
-                UnitTypes.bryde, 5000,
-                UnitTypes.sei, 75000,
-                UnitTypes.omura, 1500000,
 
-                UnitTypes.mono, 3750000,
-                UnitTypes.poly, 100000,
+                UnitTypes.oxynoe, 850,
+                UnitTypes.fortress, 1500,
+                UnitTypes.spiroct, 1500,
+                UnitTypes.quasar, 2000,
                 UnitTypes.mega, 2500,
+
+                UnitTypes.zenith, 2500,
+                UnitTypes.cyerce, 5000,
+                UnitTypes.bryde, 5000,
+                UnitTypes.crawler, 7500,
+                UnitTypes.vela, 15000,
+
+                UnitTypes.antumbra, 18000,
+                UnitTypes.scepter, 20000,
                 UnitTypes.quad, 25000,
-                UnitTypes.oct, 250000
+                UnitTypes.arkyid, 25000,
+                UnitTypes.aegires, 30000,
+
+                UnitTypes.sei, 75000,
+                UnitTypes.poly, 100000,
+                UnitTypes.eclipse, 175000,
+                UnitTypes.corvus, 250000,
+                UnitTypes.reign, 250000,
+
+                UnitTypes.oct, 250000,
+                UnitTypes.toxopid, 325000,
+                UnitTypes.navanax, 350000,
+                UnitTypes.omura, 1500000,
+                UnitTypes.mono, 3750000
         );
 
         aidBlockAmounts.putAll(
