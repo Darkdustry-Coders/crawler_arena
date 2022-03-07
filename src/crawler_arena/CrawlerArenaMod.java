@@ -297,6 +297,8 @@ public class CrawlerArenaMod extends Plugin {
             boss.maxHealth *= bossHealthMultiplier * Mathf.sqrt(Groups.player.size());
             boss.health = boss.maxHealth;
             boss.abilities.add(new UnitSpawnAbility(UnitTypes.scepter, bossScepterDelayBase / Groups.player.size(), 0, -32));
+
+            Timer.schedule(() -> isWaveGoing = true, 1f);
             return;
         } else if (wave == bossWave + 1) {
             Bundle.sendToChat("events.victory", Time.timeSinceMillis(timer));
