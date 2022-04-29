@@ -46,9 +46,11 @@ public class CrawlerArenaMod extends Plugin {
 
     @Override
     public void init() {
-        content.units().each(u -> {
-            u.payloadCapacity = (6f * 6f) * tilePayload;
-            u.defaultController = FlyingAI::new;
+        logic = new CrawlerArenaLogic();
+
+        content.units().each(type -> {
+            type.payloadCapacity = (6f * 6f) * tilePayload;
+            type.defaultController = FlyingAI::new;
         });
 
         UnitTypes.crawler.defaultController = ArenaAI::new;
@@ -272,16 +274,14 @@ public class CrawlerArenaMod extends Plugin {
     }
 
     public void nextWave() {
+        logic.runWave();
         wave++;
         state.wave = wave;
-        statScaling = 1f + wave * statScalingNormal;
+        statScaling = 1f + state.wave * statScalingNormal;
 
         int crawlers = Mathf.ceil(Mathf.pow(crawlersExpBase, 1f + wave * crawlersRamp + Mathf.pow(wave, 2f) * extraCrawlersRamp) * Groups.player.size() * crawlersMultiplier);
 
-        if (wave == bossWave - 5) Bundle.sendToChat("events.good-game");
-        else if (wave == bossWave - 3) Bundle.sendToChat("events.what-so-long");
-        else if (wave == bossWave - 1) Bundle.sendToChat("events.why-alive");
-        else if (wave == bossWave) {
+        if (wave == bossWave) {
             Bundle.sendToChat("events.boss");
             Unit boss = spawnEnemy(UnitTypes.reign, 32, 32);
             boss.apply(StatusEffects.boss);
