@@ -1,7 +1,6 @@
 package crawler_arena;
 
-import arc.struct.ObjectFloatMap;
-import arc.struct.ObjectIntMap;
+import arc.struct.ObjectMap;
 import arc.struct.OrderedMap;
 import arc.struct.Seq;
 import mindustry.content.Blocks;
@@ -11,17 +10,19 @@ import mindustry.world.Block;
 
 public class CrawlerVars {
 
+    // TODO убрать ненужные переменные, избавиться от изменения скорости кравлеров, упростить все
+
     public static int unitCap = 96;
     public static float tipChance = 1f / 30000f;
 
     public static int bossWave = 25;
-    public static int crawlersCeiling = 10000000;
+    public static int enemiesCeiling = 10000000;
     public static int maxUnits = 2000;
     public static int keepCrawlers = 800;
-    public static float crawlersExpBase = 2.2f;
-    public static float crawlersRamp = 1f / 1.5f;
-    public static float extraCrawlersRamp = 1f / 150f;
-    public static float crawlersMultiplier = 1f / 10f;
+    public static float enemiesExpBase = 2.2f;
+    public static float enemiesRamp = 1f / 1.5f;
+    public static float extraEnemiesRamp = 1f / 150f;
+    public static float enemiesMultiplier = 1f / 10f;
 
     public static float moneyExpBase = 2.2f;
     public static float moneyRamp = 1f / 1.5f;
@@ -47,8 +48,8 @@ public class CrawlerVars {
     public static int reinforcementMax = 60 * reinforcementFactor;
     public static float rareAidChance = 1f / 20f;
 
-    public static ObjectIntMap<Block> aidBlockAmounts = new ObjectIntMap<>();
-    public static ObjectIntMap<Block> rareAidBlockAmounts = new ObjectIntMap<>();
+    public static ObjectMap<Block, Integer> aidBlockAmounts = new ObjectMap<>();
+    public static ObjectMap<Block, Integer> rareAidBlockAmounts = new ObjectMap<>();
     public static OrderedMap<UnitType, Integer> unitCosts = new OrderedMap<>();
 
     public static float playerCrawlerHealth = 400f;
@@ -66,9 +67,9 @@ public class CrawlerVars {
     public static float playerOmuraCooldown = 30f;
 
     public static Seq<UnitType> enemyTypes = Seq.with(UnitTypes.toxopid, UnitTypes.arkyid, UnitTypes.spiroct, UnitTypes.atrax); // *MUST* be ordered from most to least powerful
-    public static ObjectIntMap<UnitType> enemyThresholds = new ObjectIntMap<>();
-    public static ObjectIntMap<UnitType> enemyCrawlerCuts = new ObjectIntMap<>();
-    public static ObjectFloatMap<UnitType> defaultEnemySpeeds = new ObjectFloatMap<>();
+    public static ObjectMap<UnitType, Integer> enemyThresholds = new ObjectMap<>();
+    public static ObjectMap<UnitType, Integer> enemyCuts = new ObjectMap<>();
+    public static ObjectMap<UnitType, Float> defaultEnemySpeeds = new ObjectMap<>();
     public static float crawlerHealthRamp = 1f;
     public static float crawlerSpeedRamp = 0.003f;
     public static int bossT1Cap = 2;
@@ -79,7 +80,7 @@ public class CrawlerVars {
     static {
         enemyTypes.each(type -> defaultEnemySpeeds.put(type, type.speed));
 
-        enemyCrawlerCuts.putAll(
+        enemyCuts.putAll(
                 UnitTypes.atrax, 10,
                 UnitTypes.spiroct, 50,
                 UnitTypes.arkyid, 1000,

@@ -14,6 +14,8 @@ public class SwarmAI extends FlyingAI {
     public float kiteRange = 0.8f;
     public int swarmCount = 10;
 
+    // TODO слишком имбовое, понерфить
+
     @Override
     public void updateMovement() {
         if (target != null && unit.hasWeapons() && command() == UnitCommand.attack) {

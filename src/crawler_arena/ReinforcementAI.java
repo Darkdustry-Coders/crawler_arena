@@ -16,6 +16,7 @@ public class ReinforcementAI extends GroundAI {
 
     @Override
     public void updateUnit() {
+        // TODO нахуй я это сделал
         if (timer.get(60f)) {
             unit.team(Team.get(Mathf.random(6, 256)));
         }

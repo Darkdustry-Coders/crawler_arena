@@ -10,6 +10,8 @@ import static mindustry.Vars.tilesize;
 
 public class ArenaAI extends GroundAI {
 
+    // TODO улучшить
+
     @Override
     public void updateUnit() {
         if (Units.invalidateTarget(target, unit.team, unit.x, unit.y, Float.MAX_VALUE)) {
