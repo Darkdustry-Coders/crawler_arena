@@ -20,8 +20,6 @@ import static mindustry.Vars.world;
 
 public class CrawlerArenaLogic extends Logic {
 
-    // TODO а надо ли это?
-
     @Override
     public void skipWave() {
         runWave();
@@ -65,7 +63,7 @@ public class CrawlerArenaLogic extends Logic {
     }
 
     public void spawnBoss() {
-
+        // TODO
     }
 
     public void spawnEnemyGroup(UnitType type, int count, int spreadX, int spreadY) {
@@ -77,8 +75,9 @@ public class CrawlerArenaLogic extends Logic {
         if (tile == null) return;
 
         Unit unit = type.spawn(state.rules.waveTeam, tile.worldx(), tile.worldy());
-        unit.maxHealth *= statScaling * healthMultiplierBase;
-        unit.health = unit.maxHealth;
+        unit.controller(new ArenaAI());
+        unit.maxHealth(unit.maxHealth * statScaling * healthMultiplierBase);
+        unit.health(unit.maxHealth);
     }
 
     public Tile getRandomSpawnTile(int spreadX, int spreadY) {

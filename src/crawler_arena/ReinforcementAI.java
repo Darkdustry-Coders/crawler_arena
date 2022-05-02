@@ -2,25 +2,16 @@ package crawler_arena;
 
 import arc.math.Mathf;
 import arc.math.geom.Vec2;
-import arc.util.Interval;
-import mindustry.ai.types.GroundAI;
-import mindustry.game.Team;
+import mindustry.entities.units.AIController;
 import mindustry.gen.Call;
 
 import static mindustry.Vars.tilesize;
 import static mindustry.Vars.world;
 
-public class ReinforcementAI extends GroundAI {
-
-    public Interval timer = new Interval();
+public class ReinforcementAI extends AIController {
 
     @Override
     public void updateUnit() {
-        // TODO нахуй я это сделал
-        if (timer.get(60f)) {
-            unit.team(Team.get(Mathf.random(6, 256)));
-        }
-
         unit.moveAt(new Vec2().trns(Mathf.atan2(world.width() * 4 - unit.x, world.height() * 4 - unit.y), unit.speed()));
 
         if (world.width() * tilesize / 2f - unit.x < 120f) {

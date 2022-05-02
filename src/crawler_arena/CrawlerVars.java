@@ -69,7 +69,6 @@ public class CrawlerVars {
     public static Seq<UnitType> enemyTypes = Seq.with(UnitTypes.toxopid, UnitTypes.arkyid, UnitTypes.spiroct, UnitTypes.atrax); // *MUST* be ordered from most to least powerful
     public static ObjectMap<UnitType, Integer> enemyThresholds = new ObjectMap<>();
     public static ObjectMap<UnitType, Integer> enemyCuts = new ObjectMap<>();
-    public static ObjectMap<UnitType, Float> defaultEnemySpeeds = new ObjectMap<>();
     public static float crawlerHealthRamp = 1f;
     public static float crawlerSpeedRamp = 0.003f;
     public static int bossT1Cap = 2;
@@ -78,8 +77,6 @@ public class CrawlerVars {
     public static float bossScepterDelayBase = 600f;
 
     static {
-        enemyTypes.each(type -> defaultEnemySpeeds.put(type, type.speed));
-
         enemyCuts.putAll(
                 UnitTypes.atrax, 10,
                 UnitTypes.spiroct, 50,

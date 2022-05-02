@@ -3,7 +3,6 @@ package crawler_arena;
 import arc.Core;
 import arc.Events;
 import arc.math.Mathf;
-import arc.struct.ObjectIntMap;
 import arc.struct.ObjectMap;
 import arc.struct.Seq;
 import arc.util.*;
@@ -12,12 +11,7 @@ import mindustry.content.Fx;
 import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
 import mindustry.entities.abilities.UnitSpawnAbility;
-import mindustry.entities.bullet.SapBulletType;
-import mindustry.game.EventType.PlayerLeave;
-import mindustry.game.EventType.GameOverEvent;
-import mindustry.game.EventType.PlayerJoin;
-import mindustry.game.EventType.Trigger;
-import mindustry.game.EventType.WorldLoadEvent;
+import mindustry.game.EventType.*;
 import mindustry.game.Team;
 import mindustry.gen.*;
 import mindustry.graphics.Pal;
@@ -38,9 +32,8 @@ public class CrawlerArenaMod extends Plugin {
     public static int wave = 1;
     public static float statScaling = 1f;
 
-    // TODO поменять на простой ObjectMap
-    public static ObjectIntMap<String> money = new ObjectIntMap<>();
-    public static ObjectIntMap<String> leftUnits = new ObjectIntMap<>();
+    public static ObjectMap<String, Integer> money = new ObjectMap<>();
+    public static ObjectMap<String, Integer> leftUnits = new ObjectMap<>();
     public static ObjectMap<String, UnitType> units = new ObjectMap<>();
 
     public static long timer = Time.millis();
@@ -54,18 +47,6 @@ public class CrawlerArenaMod extends Plugin {
             type.defaultController = FlyingAI::new;
         });
 
-        // TODO нахер так задавать
-        UnitTypes.crawler.defaultController = ArenaAI::new;
-        UnitTypes.atrax.defaultController = ArenaAI::new;
-        UnitTypes.spiroct.defaultController = ArenaAI::new;
-        UnitTypes.arkyid.defaultController = ArenaAI::new;
-        UnitTypes.toxopid.defaultController = ArenaAI::new;
-
-        UnitTypes.poly.defaultController = SwarmAI::new;
-
-        UnitTypes.scepter.defaultController = ArenaAI::new;
-        UnitTypes.reign.defaultController = ArenaAI::new;
-
         UnitTypes.risso.flying = true;
         UnitTypes.minke.flying = true;
         UnitTypes.bryde.flying = true;
@@ -78,6 +59,8 @@ public class CrawlerArenaMod extends Plugin {
         UnitTypes.aegires.flying = true;
         UnitTypes.navanax.flying = true;
 
+        UnitTypes.poly.defaultController = SwarmAI::new;
+
         // TODO изменить ИИ чтобы не требовал maxRange и убрать это
         UnitTypes.crawler.maxRange = 80000f;
         UnitTypes.atrax.maxRange = 80000f;
@@ -86,7 +69,6 @@ public class CrawlerArenaMod extends Plugin {
         UnitTypes.toxopid.maxRange = 80000f;
         UnitTypes.reign.maxRange = 80000f;
 
-        UnitTypes.poly.maxRange = 2000f;
         UnitTypes.poly.abilities.add(new UnitSpawnAbility(UnitTypes.poly, 480f, 0f, -32f));
         UnitTypes.poly.health = 125f;
         UnitTypes.poly.speed = 1.5f;
