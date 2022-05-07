@@ -33,7 +33,6 @@ public class CrawlerArenaMod extends Plugin {
     public static float statScaling = 1f;
 
     public static ObjectMap<String, Integer> money = new ObjectMap<>();
-    public static ObjectMap<String, Integer> leftUnits = new ObjectMap<>();
     public static ObjectMap<String, UnitType> units = new ObjectMap<>();
 
     public static long timer = Time.millis();
@@ -102,25 +101,7 @@ public class CrawlerArenaMod extends Plugin {
                 Bundle.bundled(event.player, "events.join.already-played");
             }
 
-            if (leftUnits.containsKey(event.player.uuid())) {
-                Unit unit = Groups.unit.getByID(leftUnits.remove(event.player.uuid()));
-                if (unit != null) {
-                    if (unit.isPlayer()) {
-                        unit.getPlayer().clearUnit();
-                    }
-                    Time.run(60f, () -> event.player.unit(unit));
-                    return;
-                }
-            }
-
             respawnPlayer(event.player);
-        });
-
-        // TODO переделать систему сохранения юнита
-        Events.on(PlayerLeave.class, event -> {
-            if (!event.player.dead()) {
-                leftUnits.put(event.player.uuid(), event.player.unit().id);
-            }
         });
 
         // TODO упростить
@@ -155,8 +136,6 @@ public class CrawlerArenaMod extends Plugin {
                 isWaveGoing = false;
             }
 
-            if (isWaveGoing) enemyTypes.each(type -> type.speed += enemySpeedBoost * Time.delta * statScaling);
-
             Groups.player.each(p -> Call.setHudText(p.con, Bundle.format("ui.money", Bundle.findLocale(p), money.get(p.uuid()))));
 
             if (Mathf.chance(tipChance * Time.delta)) Bundle.sendToChat("events.tip.info");
@@ -184,7 +163,6 @@ public class CrawlerArenaMod extends Plugin {
         UnitTypes.crawler.health = crawlerHealthBase;
         money.clear();
         units.clear();
-        leftUnits.clear();
         Groups.player.each(p -> {
             money.put(p.uuid(), 0);
             units.put(p.uuid(), UnitTypes.dagger);
@@ -209,7 +187,7 @@ public class CrawlerArenaMod extends Plugin {
         int megasFactor = (int) Math.min(wave * reinforcementScaling * statScaling, reinforcementMax);
 
         for (int i = 0; i < megasFactor; i += reinforcementFactor) {
-            Unit unit = UnitTypes.mega.spawn(Team.get(Mathf.random(6, 256)), 32, world.unitHeight() / 2f + Mathf.range(120));
+            Unit unit = UnitTypes.mega.spawn(Team.blue, 32, world.unitHeight() / 2f + Mathf.range(120));
             unit.maxHealth(Float.MAX_VALUE);
             unit.health(unit.maxHealth);
             unit.controller(new ReinforcementAI());
@@ -270,7 +248,7 @@ public class CrawlerArenaMod extends Plugin {
             unit.maxHealth = playerMonoHealth;
             unit.health = unit.maxHealth;
             unit.armor = playerMonoArmor;
-            unit.abilities.add(new UnitSpawnAbility(playerMonoSpawnTypes.random(), playerMonoCooldown, 0f, -8f));
+            unit.abilities.add(new UnitSpawnAbility(UnitTypes.navanax, playerMonoCooldown, 0f, -8f));
             unit.apply(StatusEffects.boss);
             unit.apply(StatusEffects.overclock, Float.MAX_VALUE);
             unit.apply(StatusEffects.overdrive, Float.MAX_VALUE);
@@ -346,9 +324,5 @@ public class CrawlerArenaMod extends Plugin {
             unitCosts.each((type, cost) -> upgrades.append("[gold] - [accent]").append(type.name).append(" [lightgray](").append(cost <= money.get(player.uuid(), 0) ? "[lime]" : "[scarlet]").append(cost).append("[lightgray])\n"));
             player.sendMessage(upgrades.toString());
         });
-    }
-
-    public void registerServerCommands(CommandHandler handler) {
-        handler.register("kill", "Kill all enemies in the current wave.", args -> Groups.unit.each(u -> u.team == state.rules.waveTeam, Unitc::kill));
     }
 }

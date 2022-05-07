@@ -7,6 +7,7 @@ import arc.struct.ObjectMap.Entry;
 import arc.util.Timer;
 import mindustry.content.UnitTypes;
 import mindustry.core.Logic;
+import mindustry.entities.abilities.UnitSpawnAbility;
 import mindustry.game.EventType.WaveEvent;
 import mindustry.gen.Groups;
 import mindustry.gen.Unit;
@@ -46,8 +47,7 @@ public class CrawlerArenaLogic extends Logic {
         int totalEnemies = Math.min(Mathf.ceil(Mathf.pow(enemiesExpBase, 1f + wave * enemiesRamp + Mathf.pow(wave, 2f) * extraEnemiesRamp) * Groups.player.size() * enemiesMultiplier), enemiesCeiling);
         int totalTarget = maxUnits - keepCrawlers;
 
-        int spreadX = Math.max(world.unitWidth() / 2 - 160 - state.wave * 10, 160);
-        int spreadY = Math.max(world.unitHeight() / 2 - 160 - state.wave * 10, 160);
+        int spreadX = Math.max(world.width() / 2 - 20 - state.wave, 20), spreadY = Math.max(world.height() / 2 - 20 - state.wave, 20);
 
         ObjectMap<UnitType, Integer> enemies = new ObjectMap<>();
         for (Entry<UnitType, Integer> enemy : enemyCuts) {
@@ -63,7 +63,14 @@ public class CrawlerArenaLogic extends Logic {
     }
 
     public void spawnBoss() {
-        // TODO
+        Tile tile = getRandomSpawnTile(20, 20);
+        if (tile == null) return;
+
+        Unit boss = UnitTypes.reign.spawn(state.rules.waveTeam, tile.worldx(), tile.worldy());
+        boss.controller(new ArenaAI());
+        boss.maxHealth(boss.maxHealth * bossHealthMultiplier * Groups.player.size());
+        boss.health(boss.maxHealth);
+        boss.abilities.add(new UnitSpawnAbility(UnitTypes.scepter, bossScepterDelayBase, -32f, -32f));
     }
 
     public void spawnEnemyGroup(UnitType type, int count, int spreadX, int spreadY) {
@@ -82,10 +89,10 @@ public class CrawlerArenaLogic extends Logic {
 
     public Tile getRandomSpawnTile(int spreadX, int spreadY) {
         return switch (Mathf.random(0, 3)) {
-            case 0 -> world.tileWorld(world.unitWidth() - 32, world.unitHeight() / 2f + Mathf.range(spreadY));
-            case 1 -> world.tileWorld(world.unitWidth() / 2f + Mathf.range(spreadX), world.unitHeight() - 32);
-            case 2 -> world.tileWorld(32, world.unitHeight() / 2f + Mathf.range(spreadY));
-            case 3 -> world.tileWorld(world.unitWidth() / 2f + Mathf.range(spreadX), 32);
+            case 0 -> world.tile(world.width() - 4, world.height() / 2 + Mathf.range(spreadY));
+            case 1 -> world.tile(world.width() / 2 + Mathf.range(spreadX), world.height() - 4);
+            case 2 -> world.tile(4, world.height() / 2 + Mathf.range(spreadY));
+            case 3 -> world.tile(world.width() / 2 + Mathf.range(spreadX), 4);
             default -> null;
         };
     }

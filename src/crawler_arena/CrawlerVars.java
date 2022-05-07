@@ -2,7 +2,6 @@ package crawler_arena;
 
 import arc.struct.ObjectMap;
 import arc.struct.OrderedMap;
-import arc.struct.Seq;
 import mindustry.content.Blocks;
 import mindustry.content.UnitTypes;
 import mindustry.type.UnitType;
@@ -29,7 +28,6 @@ public class CrawlerVars {
     public static float extraMoneyRamp = 1f / 4000f;
     public static float moneyMultiplier = 4f;
 
-    public static float enemySpeedBoost = 0.00002f;
     public static float crawlerHealthBase = 60f;
     public static float crawlerSpeedBase = 0.43f;
     public static float statScalingNormal = 1f / 100f;
@@ -58,7 +56,6 @@ public class CrawlerVars {
     public static float playerMonoHealth = 100000f;
     public static float playerMonoArmor = 20f;
     public static float playerMonoCooldown = 300f;
-    public static Seq<UnitType> playerMonoSpawnTypes = Seq.with(UnitTypes.navanax, UnitTypes.toxopid, UnitTypes.corvus);
     public static float playerPolyHealth = 500f;
     public static float playerPolyArmor = 100f;
     public static float playerPolyCooldown = 60f;
@@ -66,15 +63,10 @@ public class CrawlerVars {
     public static float playerOmuraArmor = 20f;
     public static float playerOmuraCooldown = 30f;
 
-    public static Seq<UnitType> enemyTypes = Seq.with(UnitTypes.toxopid, UnitTypes.arkyid, UnitTypes.spiroct, UnitTypes.atrax); // *MUST* be ordered from most to least powerful
     public static ObjectMap<UnitType, Integer> enemyThresholds = new ObjectMap<>();
     public static ObjectMap<UnitType, Integer> enemyCuts = new ObjectMap<>();
-    public static float crawlerHealthRamp = 1f;
-    public static float crawlerSpeedRamp = 0.003f;
-    public static int bossT1Cap = 2;
-    public static int bossT2Cap = 5;
     public static float bossHealthMultiplier = 6f;
-    public static float bossScepterDelayBase = 600f;
+    public static float bossScepterDelayBase = 300f;
 
     static {
         enemyCuts.putAll(
