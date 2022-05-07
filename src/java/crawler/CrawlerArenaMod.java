@@ -1,4 +1,4 @@
-package crawler_arena;
+package crawler;
 
 import arc.Core;
 import arc.Events;
@@ -22,7 +22,7 @@ import mindustry.world.Block;
 import mindustry.world.Tile;
 import mindustry.world.blocks.payloads.BuildPayload;
 
-import static crawler_arena.CrawlerVars.*;
+import static crawler.CrawlerVars.*;
 import static mindustry.Vars.*;
 
 public class CrawlerArenaMod extends Plugin {

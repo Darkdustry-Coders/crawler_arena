@@ -1,4 +1,4 @@
-package crawler_arena;
+package crawler;
 
 import arc.files.Fi;
 import arc.struct.ObjectMap;

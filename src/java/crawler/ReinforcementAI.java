@@ -1,4 +1,4 @@
-package crawler_arena;
+package crawler;
 
 import arc.math.Mathf;
 import arc.math.geom.Vec2;

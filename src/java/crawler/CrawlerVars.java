@@ -1,4 +1,4 @@
-package crawler_arena;
+package crawler;
 
 import arc.struct.ObjectMap;
 import arc.struct.OrderedMap;

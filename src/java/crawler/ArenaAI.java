@@ -1,4 +1,4 @@
-package crawler_arena;
+package crawler;
 
 import mindustry.ai.types.GroundAI;
 import mindustry.entities.Units;

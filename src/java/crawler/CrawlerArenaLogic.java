@@ -1,4 +1,4 @@
-package crawler_arena;
+package crawler;
 
 import arc.Events;
 import arc.math.Mathf;
@@ -14,8 +14,8 @@ import mindustry.gen.Unit;
 import mindustry.type.UnitType;
 import mindustry.world.Tile;
 
-import static crawler_arena.CrawlerArenaMod.*;
-import static crawler_arena.CrawlerVars.*;
+import static crawler.CrawlerArenaMod.*;
+import static crawler.CrawlerVars.*;
 import static mindustry.Vars.state;
 import static mindustry.Vars.world;
 
