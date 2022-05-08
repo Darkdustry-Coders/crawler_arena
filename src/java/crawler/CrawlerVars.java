@@ -63,7 +63,7 @@ public class CrawlerVars {
     public static float playerOmuraArmor = 20f;
     public static float playerOmuraCooldown = 30f;
 
-    public static ObjectMap<UnitType, Integer> enemyThresholds = new ObjectMap<>();
+    // public static ObjectMap<UnitType, Integer> enemyThresholds = new ObjectMap<>();
     public static ObjectMap<UnitType, Integer> enemyCuts = new ObjectMap<>();
     public static float bossHealthMultiplier = 6f;
     public static float bossScepterDelayBase = 300f;
@@ -76,12 +76,12 @@ public class CrawlerVars {
                 UnitTypes.toxopid, 20000
         );
 
-        enemyThresholds.putAll(
-                UnitTypes.atrax, 100,
-                UnitTypes.spiroct, 400,
-                UnitTypes.arkyid, 1000,
-                UnitTypes.toxopid, 20000
-        );
+        // enemyThresholds.putAll(
+        //         UnitTypes.atrax, 100,
+        //         UnitTypes.spiroct, 400,
+        //         UnitTypes.arkyid, 1000,
+        //         UnitTypes.toxopid, 20000
+        // );
 
         unitCosts.putAll(
                 UnitTypes.dagger, 25,

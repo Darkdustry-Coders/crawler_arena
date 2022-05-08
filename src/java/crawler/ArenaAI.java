@@ -10,6 +10,8 @@ import static mindustry.Vars.tilesize;
 
 public class ArenaAI extends GroundAI {
 
+    public static final float range = 80000f;
+
     // TODO улучшить
 
     @Override
@@ -19,7 +21,7 @@ public class ArenaAI extends GroundAI {
         }
 
         if (retarget()) {
-            target = target(unit.x, unit.y, unit.range(), true, true);
+            target = target(unit.x, unit.y, range, true, true);
         }
 
         boolean rotate = false, shoot = false;

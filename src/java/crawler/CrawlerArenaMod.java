@@ -25,7 +25,7 @@ import mindustry.world.blocks.payloads.BuildPayload;
 import static crawler.CrawlerVars.*;
 import static mindustry.Vars.*;
 
-public class CrawlerArenaMod extends Plugin {
+public class Main extends Plugin {
 
     public static boolean firstWaveLaunched = false, isWaveGoing = false, isGameOver = false;
 
@@ -35,7 +35,7 @@ public class CrawlerArenaMod extends Plugin {
     public static ObjectMap<String, Integer> money = new ObjectMap<>();
     public static ObjectMap<String, UnitType> units = new ObjectMap<>();
 
-    public static long timer = Time.millis();
+    // public static long timer = Time.millis();
 
     @Override
     public void init() {
@@ -88,7 +88,7 @@ public class CrawlerArenaMod extends Plugin {
 
             firstWaveLaunched = false;
             isWaveGoing = false;
-            timer = Time.millis();
+            // timer = Time.millis();
         });
 
         // TODO переделать систему сохранения юнита

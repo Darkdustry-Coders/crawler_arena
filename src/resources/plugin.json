@@ -1,7 +1,7 @@
 {
   "name": "Crawler Arena",
   "author": "[USMP]Ilya246 & Darkness6030",
-  "main": "crawler_arena.CrawlerArenaMod",
+  "main": "crawler.MainNew",
   "description": "Fight against hordes of crawlers",
-  "version": 2.0
+  "version": "3.0"
 }

@@ -14,7 +14,7 @@ import mindustry.gen.Unit;
 import mindustry.type.UnitType;
 import mindustry.world.Tile;
 
-import static crawler.CrawlerArenaMod.*;
+import static crawler.Main.*;
 import static crawler.CrawlerVars.*;
 import static mindustry.Vars.state;
 import static mindustry.Vars.world;
