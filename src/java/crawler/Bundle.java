@@ -21,7 +21,7 @@ public class Bundle {
     private static final ObjectMap<Locale, MessageFormat> formats = new ObjectMap<>();
 
     static {
-        Fi[] files = mods.list().find(mod -> mod.main instanceof MainNew).root.child("bundles").list();
+        Fi[] files = mods.list().find(mod -> mod.main instanceof Main).root.child("bundles").list();
         supportedLocales = new Locale[files.length + 1];
         supportedLocales[files.length] = new Locale("router");
 

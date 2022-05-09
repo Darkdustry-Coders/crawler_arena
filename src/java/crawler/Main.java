@@ -1,23 +1,29 @@
 package crawler;
 
 import arc.Events;
+import arc.math.Mathf;
+import arc.struct.Seq;
 import arc.util.CommandHandler;
+import arc.util.Strings;
 import arc.util.Timer;
 import mindustry.mod.Plugin;
 import mindustry.net.Administration.ActionType;
+import mindustry.type.UnitType;
 import mindustry.ai.types.FlyingAI;
+import mindustry.content.UnitTypes;
 import mindustry.game.Rules;
 import mindustry.game.EventType.*;
 import mindustry.gen.Call;
 import mindustry.gen.Player;
+import mindustry.gen.Unit;
 import mindustry.gen.WaterMovec;
 
 import static arc.Core.*;
 import static mindustry.Vars.*;
 import static crawler.Bundle.*;
-import static crawler.CrawlerVarsNew.*;
+import static crawler.CrawlerVars.*;
 
-public class MainNew extends Plugin {
+public class Main extends Plugin {
 
     public static final Rules rules = new Rules();
 
@@ -26,8 +32,8 @@ public class MainNew extends Plugin {
 
     @Override
     public void init() {
-        CrawlerVarsNew.load();
-        CrawlerLogicNew.load();
+        CrawlerVars.load();
+        CrawlerLogic.load();
 
         netServer.admins.addActionFilter(action -> action.type != ActionType.breakBlock && action.type != ActionType.placeBlock);
 
@@ -37,8 +43,15 @@ public class MainNew extends Plugin {
             type.defaultController = FlyingAI::new;
         });
 
-        Events.on(WorldLoadEvent.class, event -> app.post(CrawlerLogicNew::play));
-        Events.on(PlayerJoin.class, event -> CrawlerLogicNew.join(event.player));
+        UnitTypes.poly.defaultController = SwarmAI::new;
+
+        // TODO: Dark checkni эto
+        // UnitTypes.poly.abilities.add(new UnitSpawnAbility(UnitTypes.poly, 480f, 0f, -32f));
+        // UnitTypes.poly.health = 125f;
+        // UnitTypes.poly.speed = 1.5f;
+
+        Events.on(WorldLoadEvent.class, event -> app.post(CrawlerLogic::play));
+        Events.on(PlayerJoin.class, event -> CrawlerLogic.join(event.player));
 
         Timer.schedule(() -> sendToChat("events.tip.info"), 90f, 180f);
         Timer.schedule(() -> sendToChat("events.tip.upgrades"), 180f, 180f);
@@ -64,12 +77,12 @@ public class MainNew extends Plugin {
 
                 int delay = waveDelay;
                 if (state.wave > helpMinWave && state.wave % helpSpacing == 0) {
-                    CrawlerLogicNew.spawnReinforcement();
+                    CrawlerLogic.spawnReinforcement();
                     delay += helpExtraTime; // megas need time to deliver help
                 }
 
-                sendToChat(state.wave == 1 ? "events.first-wave" : "events.wave", delay);
-                Timer.schedule(CrawlerLogicNew::runWave, delay);
+                sendToChat(state.wave == 1 ? "events.first-wave" : "events.next-wave", delay);
+                Timer.schedule(CrawlerLogic::runWave, delay);
                 PlayerData.each(PlayerData::update);
             }
 
@@ -79,6 +92,39 @@ public class MainNew extends Plugin {
 
     @Override
     public void registerClientCommands(CommandHandler handler) {
+        handler.<Player>register("upgrade", "<type> [amount]", "Upgrade your unit.", (args, player) -> {
+            if (args.length == 2 && Strings.parseInt(args[1]) < 0) {
+                bundled(player, "commands.upgrade.invalid-amount");
+                return;
+            }
+
+            UnitType type = Seq.with(costs.keys()).find(u -> u.name.equalsIgnoreCase(args[0]));
+            if (type == null) {
+                bundled(player, "commands.upgrade.unit-not-found");
+                return;
+            }
+
+            int amount = args.length == 2 ? Strings.parseInt(args[1]) : 1;
+            if (rules.defaultTeam.data().countType(type) + amount > unitCap) {
+                bundled(player, "commands.upgrade.too-many-units");
+                return;
+            }
+
+            PlayerData data = PlayerData.datas.get(player.uuid());
+            if (data.money < costs.get(type) * amount) {
+                bundled(player, "commands.upgrade.not-enough-money", costs.get(type) * amount, data.money);
+                return;
+            }
+
+            for (int i = 0; i < amount; i++) {
+                Unit unit = type.spawn(player.x + Mathf.range(8f), player.y + Mathf.range(8f));
+                data.applyUnit(unit);
+            }
+
+            data.money -= costs.get(type) * amount;
+            bundled(player, "commands.upgrade.success", amount, type.name);
+        });
+
         handler.<Player>register("info", "Show info about the Crawler Arena gamemode.", (args, player) -> bundled(player, "commands.information"));
 
         handler.<Player>register("upgrades", "Show units you can upgrade to.", (args, player) -> {
