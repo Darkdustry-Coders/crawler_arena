@@ -44,11 +44,8 @@ public class Main extends Plugin {
         });
 
         UnitTypes.poly.defaultController = SwarmAI::new;
-
-        // TODO: Dark checkni эto
-        // UnitTypes.poly.abilities.add(new UnitSpawnAbility(UnitTypes.poly, 480f, 0f, -32f));
-        // UnitTypes.poly.health = 125f;
-        // UnitTypes.poly.speed = 1.5f;
+        UnitTypes.poly.health = 125f;
+        UnitTypes.poly.speed = 1.5f;
 
         Events.on(WorldLoadEvent.class, event -> app.post(CrawlerLogic::play));
         Events.on(PlayerJoin.class, event -> CrawlerLogic.join(event.player));

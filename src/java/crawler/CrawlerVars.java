@@ -11,7 +11,11 @@ public class CrawlerVars {
     public static int bossWave = 25;
     public static int waveDelay = 10;
 
+    /** The maximum number of units a players can spawn */
     public static int unitCap = 96;
+    /** The maximum number of units of the same type that can be spawned at the start of a wave */
+    public static int maxUnits = 2000;
+    /** The higher this number, the slower unit's stats grow */
     public static int statDiv = 100;
 
     /** Minimum required wave to spawn reinforcement */
@@ -21,30 +25,25 @@ public class CrawlerVars {
     /** Extra time needed to get support */
     public static int helpExtraTime = 50;
 
+    // money multipliers (no one knows how it works)
     public static float moneyBase = 2.2f;
     public static float moneyRamp = 1f / 1.5f;
     public static float extraMoneyRamp = 1f / 4000f;
 
+    // enemies multipliers (same)
     public static float enemiesBase = 2.2f;
     public static float enemiesRamp = 1f / 1.5f;
     public static float extraEnemiesRamp = 1f / 150f;
 
-    public static int reinforcementMinWave = 8;
-    public static int reinforcementSpacing = 2;
-    public static int reinforcementFactor = 3;
-    public static int reinforcementScaling = 2;
-    public static int reinforcementMax = 60 * reinforcementFactor;
-    public static float rareAidChance = 1f / 20f;
-
-    public static OrderedMap<Block, Integer> aidBlockAmounts = new OrderedMap<>();
-    public static OrderedMap<Block, Integer> rareAidBlockAmounts = new OrderedMap<>();
+    public static OrderedMap<Block, Integer> aidBlocks = new OrderedMap<>();
+    public static OrderedMap<Block, Integer> aidBlocksRare = new OrderedMap<>();
 
     public static OrderedMap<UnitType, Integer> enemy;
     public static OrderedMap<UnitType, Integer> costs;
     public static OrderedMap<UnitType, Special> ultra;
 
     public static void load() {
-        aidBlockAmounts.putAll(
+        aidBlocks.putAll(
                 Blocks.liquidSource,       4,
                 Blocks.powerSource,        4,
                 Blocks.itemSource,         6,
@@ -70,7 +69,7 @@ public class CrawlerVars {
                 Blocks.foreshadow,         1
         );
 
-        rareAidBlockAmounts.putAll(
+        aidBlocksRare.putAll(
                 Blocks.largeConstructor, 1,
                 Blocks.groundFactory,    1,
                 Blocks.airFactory,       1,
@@ -80,10 +79,10 @@ public class CrawlerVars {
         );
 
         enemy = OrderedMap.of(
-                UnitTypes.crawler, 3,
-                UnitTypes.atrax, 10,
+                UnitTypes.crawler, 5,
+                UnitTypes.atrax,   10,
                 UnitTypes.spiroct, 50,
-                UnitTypes.arkyid, 1000,
+                UnitTypes.arkyid,  1000,
                 UnitTypes.toxopid, 20000
         );
 

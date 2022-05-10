@@ -1,8 +1,7 @@
 package crawler;
 
 import arc.math.Mathf;
-import arc.struct.ObjectMap;
-import arc.struct.Seq;
+import arc.struct.OrderedMap;
 import arc.struct.ObjectMap.Entry;
 import mindustry.content.UnitTypes;
 import mindustry.entities.abilities.UnitSpawnAbility;
@@ -63,7 +62,7 @@ public class CrawlerLogic {
             int typeCount = totalEnemies / entry.value;
             totalEnemies -= typeCount;
 
-            for (int i = 0; i < typeCount; i++) spawnEnemy(entry.key, spreadX, spreadY);
+            for (int i = 0; i < Math.min(typeCount, maxUnits); i++) spawnEnemy(entry.key, spreadX, spreadY);
         }
     }
 
@@ -86,37 +85,21 @@ public class CrawlerLogic {
         boss.abilities.add(new UnitSpawnAbility(UnitTypes.scepter, 300f, -32f, -32f));
     }
 
-    // TODO: ADI remade
     public static void spawnReinforcement() {
         sendToChat("events.aid");
 
-        Seq<Unit> megas = new Seq<>();
-        ObjectMap<Block, Integer> blocks = new ObjectMap<>();
-        int megasFactor = (int) Math.min(state.wave * reinforcementScaling * statScaling, reinforcementMax);
-
-        for (int i = 0; i < megasFactor; i += reinforcementFactor) {
-            Unit unit = UnitTypes.mega.spawn(Team.blue, 32, world.unitHeight() / 2f + Mathf.range(120));
+        for (int i = 0; i < state.wave; i++) {
+            Unit unit = UnitTypes.mega.spawn(Team.blue, 0, world.unitHeight() / 2f + Mathf.range(120));
+            unit.controller(new ReinforcementAI());
             unit.maxHealth(Float.MAX_VALUE);
             unit.health(unit.maxHealth);
-            unit.controller(new ReinforcementAI());
-            megas.add(unit);
+
+            OrderedMap<Block, Integer> amount = Mathf.chance(.05d) ? aidBlocksRare : aidBlocks;
+            Block block = amount.keys().toSeq().random();
+
+            Payloadc pay = (Payloadc) unit; // add blocks to unit payload component
+            for (int j = 0; j < amount.get(block); j++) pay.addPayload(new BuildPayload(block, state.rules.defaultTeam));
         }
-
-        for (int i = 0; i < megas.size; i++) {
-            boolean rare = Mathf.chance(rareAidChance);
-            Block block = rare ? Seq.with(rareAidBlockAmounts.keys()).random() : Seq.with(aidBlockAmounts.keys()).random();
-
-            blocks.put(block, rare ? rareAidBlockAmounts.get(block) : aidBlockAmounts.get(block));
-        }
-
-        blocks.each((block, amount) -> {
-            for (int i = 0; i < amount; i++) {
-                if (megas.get(megas.size - 1) instanceof Payloadc pay) {
-                    pay.addPayload(new BuildPayload(block, state.rules.defaultTeam));
-                }
-            }
-            megas.remove(megas.size - 1);
-        });
     }
 
     public static Tile spawnTile(int spreadX, int spreadY) {
@@ -140,9 +123,5 @@ public class CrawlerLogic {
             datas.put(uuid, new PlayerData(player));
             bundled(player, "events.join.welcome");
         }
-    }
-
-    public static int waveMoney() { // what the
-        return (int) Mathf.pow(moneyBase, 1f + state.wave * moneyRamp + Mathf.pow(state.wave, 2) * extraMoneyRamp) * 4;
     }
 }

@@ -18,7 +18,6 @@ import mindustry.world.Tile;
 import java.util.Locale;
 
 import static mindustry.Vars.*;
-import static crawler.CrawlerLogic.*;
 import static crawler.Bundle.*;
 import static crawler.CrawlerVars.*;
 
@@ -52,7 +51,7 @@ public class PlayerData {
     }
 
     public void update() {
-        money += waveMoney() * 100;
+        money += Mathf.pow(moneyBase, 1f + state.wave * moneyRamp + Mathf.pow(state.wave, 2) * extraMoneyRamp) * 4;
 
         if (player.dead()) {
             Tile tile = world.tile(world.width() / 2 + Mathf.random(-3, 3), world.height() / 2 + Mathf.random(-3, 3));
