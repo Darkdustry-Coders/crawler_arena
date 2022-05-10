@@ -3,6 +3,7 @@ package crawler;
 import arc.math.Mathf;
 import arc.struct.OrderedMap;
 import arc.struct.ObjectMap.Entry;
+import arc.util.Timer;
 import mindustry.content.UnitTypes;
 import mindustry.entities.abilities.UnitSpawnAbility;
 import mindustry.game.Team;
@@ -42,7 +43,7 @@ public class CrawlerLogic {
         statScaling = 1f;
 
         datas.clear(); // recreate PlayerData
-        Groups.player.each(CrawlerLogic::join);
+        Timer.schedule(() -> Groups.player.each(CrawlerLogic::join), 1f);
     }
 
     public static void runWave() {
