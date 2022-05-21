@@ -2,26 +2,27 @@ package crawler;
 
 import arc.Events;
 import arc.math.Mathf;
-import arc.struct.Seq;
 import arc.util.CommandHandler;
 import arc.util.Strings;
 import arc.util.Timer;
-import mindustry.mod.Plugin;
-import mindustry.net.Administration.ActionType;
-import mindustry.type.UnitType;
 import mindustry.ai.types.FlyingAI;
 import mindustry.content.UnitTypes;
+import mindustry.game.EventType.GameOverEvent;
+import mindustry.game.EventType.PlayerJoin;
+import mindustry.game.EventType.WorldLoadEvent;
 import mindustry.game.Rules;
-import mindustry.game.EventType.*;
 import mindustry.gen.Call;
 import mindustry.gen.Player;
 import mindustry.gen.Unit;
 import mindustry.gen.WaterMovec;
+import mindustry.mod.Plugin;
+import mindustry.net.Administration.ActionType;
+import mindustry.type.UnitType;
 
-import static arc.Core.*;
-import static mindustry.Vars.*;
+import static arc.Core.app;
 import static crawler.Bundle.*;
 import static crawler.CrawlerVars.*;
+import static mindustry.Vars.*;
 
 public class Main extends Plugin {
 
@@ -75,12 +76,12 @@ public class Main extends Plugin {
                 int delay = waveDelay;
                 if (state.wave > helpMinWave && state.wave % helpSpacing == 0) {
                     CrawlerLogic.spawnReinforcement();
-                    delay += helpExtraTime; // megas need time to deliver help
+                    delay += helpExtraTime;
                 }
 
                 sendToChat(state.wave == 1 ? "events.first-wave" : "events.next-wave", delay);
                 Timer.schedule(CrawlerLogic::runWave, delay);
-                PlayerData.each(PlayerData::update);
+                PlayerData.each(PlayerData::afterWave);
             }
 
             PlayerData.each(data -> Call.setHudText(data.player.con, format("ui.money", data.locale, data.money)));
@@ -95,7 +96,7 @@ public class Main extends Plugin {
                 return;
             }
 
-            UnitType type = Seq.with(costs.keys()).find(u -> u.name.equalsIgnoreCase(args[0]));
+            UnitType type = costs.keys().toSeq().find(u -> u.name.equalsIgnoreCase(args[0]));
             if (type == null) {
                 bundled(player, "commands.upgrade.unit-not-found");
                 return;

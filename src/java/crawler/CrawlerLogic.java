@@ -111,7 +111,7 @@ public class CrawlerLogic {
             case 1 -> world.tile(world.width() / 2 + Mathf.range(spreadX), world.height() - 4);
             case 2 -> world.tile(4, world.height() / 2 + Mathf.range(spreadY));
             case 3 -> world.tile(world.width() / 2 + Mathf.range(spreadX), 4);
-            default -> null;
+            default -> null; // Because java sucks
         };
     }
 

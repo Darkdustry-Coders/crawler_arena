@@ -3,10 +3,10 @@ package crawler;
 import arc.func.Cons;
 import arc.math.Mathf;
 import arc.struct.ObjectMap;
-import arc.struct.Seq;
 import mindustry.content.Fx;
 import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
+import mindustry.entities.Units;
 import mindustry.entities.abilities.UnitSpawnAbility;
 import mindustry.gen.Call;
 import mindustry.gen.Player;
@@ -17,9 +17,11 @@ import mindustry.world.Tile;
 
 import java.util.Locale;
 
-import static mindustry.Vars.*;
-import static crawler.Bundle.*;
+import static crawler.Bundle.bundled;
+import static crawler.Bundle.findLocale;
 import static crawler.CrawlerVars.*;
+import static mindustry.Vars.state;
+import static mindustry.Vars.world;
 
 public class PlayerData {
 
@@ -31,10 +33,6 @@ public class PlayerData {
     public int money;
     public UnitType type;
 
-    public static Seq<PlayerData> datas() {
-        return datas.values().toSeq();
-    }
-
     public static void each(Cons<PlayerData> cons) {
         datas.each((uuid, data) -> cons.get(data));
     }
@@ -42,7 +40,7 @@ public class PlayerData {
     public PlayerData(Player player) {
         this.handlePlayerJoin(player);
         this.type = UnitTypes.dagger;
-        this.update();
+        this.afterWave();
     }
 
     public void handlePlayerJoin(Player player) {
@@ -50,10 +48,17 @@ public class PlayerData {
         this.locale = findLocale(player);
     }
 
-    public void update() {
+    public void afterWave() {
+        if (!player.con.isConnected()) return;
         money += Mathf.pow(moneyBase, 1f + state.wave * moneyRamp + Mathf.pow(state.wave, 2) * extraMoneyRamp) * 4;
 
         if (player.dead()) {
+            Unit unit = Units.closest(player.team(), player.x, player.y, u -> u.type == type);
+            if (unit != null) {
+                player.unit(unit);
+                return;
+            }
+
             Tile tile = world.tile(world.width() / 2 + Mathf.random(-3, 3), world.height() / 2 + Mathf.random(-3, 3));
             if (!type.flying && tile.solid()) tile.removeNet();
 

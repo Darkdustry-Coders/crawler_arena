@@ -9,6 +9,7 @@ import mindustry.world.meta.BlockFlag;
 
 public class SwarmAI extends FlyingAI {
 
+    public float targetRange = 2000f;
     public float swarmRange = 320f;
     public float innerSwarmRange = 120f;
     public float avoidRange = 480f;
@@ -38,7 +39,7 @@ public class SwarmAI extends FlyingAI {
 
     @Override
     public Teamc findTarget(float x, float y, float range, boolean air, boolean ground) {
-        Teamc result = findMainTarget(x, y, 2000f, air, ground);
-        return checkTarget(result, x, y, 2000f) ? target(x, y, 2000f, air, ground) : result;
+        Teamc result = findMainTarget(x, y, targetRange, air, ground);
+        return checkTarget(result, x, y, targetRange) ? target(x, y, targetRange, air, ground) : result;
     }
 }
