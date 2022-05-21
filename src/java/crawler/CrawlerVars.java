@@ -8,7 +8,7 @@ import mindustry.world.Block;
 
 public class CrawlerVars {
 
-    public static int bossWave = 25;
+    public static int bossWave = 2;
     public static int waveDelay = 10;
 
     /** The maximum number of units a players can spawn */

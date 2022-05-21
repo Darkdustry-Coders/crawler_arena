@@ -4,6 +4,7 @@ import arc.math.Mathf;
 import arc.struct.OrderedMap;
 import arc.struct.ObjectMap.Entry;
 import arc.util.Timer;
+import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
 import mindustry.entities.abilities.UnitSpawnAbility;
 import mindustry.game.Team;
@@ -35,8 +36,9 @@ public class CrawlerLogic {
     }
 
     public static void play() {
-        Call.setRules(rules);
+        state.wave = 0;
         state.rules = rules;
+        Call.setRules(rules);
 
         rules.defaultTeam.cores().each(Building::kill);
         isWaveGoing = true;
@@ -77,6 +79,8 @@ public class CrawlerLogic {
     }
 
     public static void spawnBoss() {
+        sendToChat("events.boss");
+
         Tile tile = spawnTile(20, 20);
         Unit boss = UnitTypes.reign.spawn(state.rules.waveTeam, tile.worldx(), tile.worldy());
 
@@ -84,6 +88,10 @@ public class CrawlerLogic {
         boss.maxHealth(boss.maxHealth * Groups.player.size() * 6f);
         boss.health(boss.maxHealth);
         boss.abilities.add(new UnitSpawnAbility(UnitTypes.scepter, 300f, -32f, -32f));
+
+        boss.apply(StatusEffects.overclock, Float.POSITIVE_INFINITY);
+        boss.apply(StatusEffects.overdrive, Float.POSITIVE_INFINITY);
+        boss.apply(StatusEffects.boss, Float.POSITIVE_INFINITY);
     }
 
     public static void spawnReinforcement() {

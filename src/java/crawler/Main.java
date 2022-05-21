@@ -79,7 +79,7 @@ public class Main extends Plugin {
                     delay += helpExtraTime;
                 }
 
-                sendToChat(state.wave == 1 ? "events.first-wave" : "events.next-wave", delay);
+                sendToChat(state.wave == 0 ? "events.first-wave" : "events.next-wave", delay);
                 Timer.schedule(CrawlerLogic::runWave, delay);
                 PlayerData.each(PlayerData::afterWave);
             }
