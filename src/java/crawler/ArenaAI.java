@@ -21,7 +21,7 @@ public class ArenaAI extends GroundAI {
             target = target(unit.x, unit.y, range, true, true);
         }
 
-        boolean rotate = false, shoot = false;
+        boolean rotate, shoot = false;
 
         if (rotate = !Units.invalidateTarget(target, unit, range)) {
             shoot = unit.within(target, unit.type.weapons.first().bullet.range() + (target instanceof Building b ? b.block.size * tilesize : ((Hitboxc) target).hitSize()) / 2f);

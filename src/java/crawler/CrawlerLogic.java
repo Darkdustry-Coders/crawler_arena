@@ -31,6 +31,7 @@ public class CrawlerLogic {
         rules.canGameOver = false;
         rules.waveTimer = false;
         rules.waves = true;
+        rules.waitEnemies = true;
         rules.unitCap = unitCap;
         rules.modeName = "Crawler Arena";
     }
@@ -58,7 +59,7 @@ public class CrawlerLogic {
             return; // during the boss battle do not spawn small enemies
         }
 
-        int totalEnemies = (int) Mathf.pow(enemiesBase, 1f + state.wave * enemiesRamp + Mathf.pow(state.wave, 2f) * extraEnemiesRamp) * Groups.player.size();
+        int totalEnemies = Math.max((int) Mathf.pow(enemiesBase, 1f + state.wave * enemiesRamp + Mathf.pow(state.wave, 2f) * extraEnemiesRamp) * Groups.player.size(), 1);
         int spreadX = world.width() / 2 - 20 - state.wave, spreadY = world.height() / 2 - 20 - state.wave;
 
         for (Entry<UnitType, Integer> entry : enemy) {
@@ -79,7 +80,7 @@ public class CrawlerLogic {
     }
 
     public static void spawnBoss() {
-        sendToChat("events.boss");
+        Groups.player.each(player -> Call.announce(player.con, Bundle.format("events.boss", findLocale(player))));
 
         Tile tile = spawnTile(20, 20);
         Unit boss = UnitTypes.reign.spawn(state.rules.waveTeam, tile.worldx(), tile.worldy());
@@ -87,11 +88,12 @@ public class CrawlerLogic {
         boss.controller(new ArenaAI());
         boss.maxHealth(boss.maxHealth * Groups.player.size() * 6f);
         boss.health(boss.maxHealth);
-        boss.abilities.add(new UnitSpawnAbility(UnitTypes.scepter, 300f, -32f, -32f));
 
-        boss.apply(StatusEffects.overclock, Float.POSITIVE_INFINITY);
-        boss.apply(StatusEffects.overdrive, Float.POSITIVE_INFINITY);
-        boss.apply(StatusEffects.boss, Float.POSITIVE_INFINITY);
+        boss.abilities.add(new UnitSpawnAbility(UnitTypes.horizon, 180f, -16f, 16f));
+        boss.abilities.add(new UnitSpawnAbility(UnitTypes.horizon, 180f, 16f, 16f));
+        boss.abilities.add(new UnitSpawnAbility(UnitTypes.zenith, 240f, 0, -32f));
+
+        boss.apply(StatusEffects.boss);
     }
 
     public static void spawnReinforcement() {

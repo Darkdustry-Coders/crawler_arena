@@ -41,6 +41,7 @@ public class Main extends Plugin {
         content.units().each(unit -> unit instanceof WaterMovec, unit -> unit.flying = true);
         content.units().each(type -> {
             type.payloadCapacity = 6f * 6f * tilePayload;
+            type.maxRange = Float.MAX_VALUE;
             type.defaultController = FlyingAI::new;
         });
 
