@@ -5,6 +5,7 @@ import arc.math.Mathf;
 import arc.util.CommandHandler;
 import arc.util.Strings;
 import arc.util.Timer;
+import crawler.boss.BossBullets;
 import mindustry.ai.types.FlyingAI;
 import mindustry.content.UnitTypes;
 import mindustry.game.EventType.GameOverEvent;
@@ -12,6 +13,7 @@ import mindustry.game.EventType.PlayerJoin;
 import mindustry.game.EventType.WorldLoadEvent;
 import mindustry.game.Rules;
 import mindustry.gen.Call;
+import mindustry.gen.Groups;
 import mindustry.gen.Player;
 import mindustry.gen.Unit;
 import mindustry.gen.WaterMovec;
@@ -55,8 +57,9 @@ public class Main extends Plugin {
         Timer.schedule(() -> sendToChat("events.tip.info"), 90f, 180f);
         Timer.schedule(() -> sendToChat("events.tip.upgrades"), 180f, 180f);
 
+        Timer.schedule(BossBullets::update, 0f, .1f);
         Timer.schedule(() -> {
-            if (state.gameOver || PlayerData.datas.isEmpty()) return;
+            if (state.gameOver || Groups.player.isEmpty()) return;
 
             if (rules.defaultTeam.data().unitCount == 0) {
                 isWaveGoing = false;
@@ -77,7 +80,7 @@ public class Main extends Plugin {
                 int delay = waveDelay;
                 if (state.wave > helpMinWave && state.wave % helpSpacing == 0) {
                     CrawlerLogic.spawnReinforcement();
-                    delay += helpExtraTime;
+                    delay += helpExtraTime; // megas need time to deliver blocks
                 }
 
                 sendToChat(state.wave == 0 ? "events.first-wave" : "events.next-wave", delay);
@@ -131,6 +134,22 @@ public class Main extends Plugin {
             StringBuilder upgrades = new StringBuilder(format("commands.upgrades.header", data.locale));
             costs.each((type, cost) -> upgrades.append("[gold] - [accent]").append(type.name).append(" [lightgray](").append(data.money < cost ? "[scarlet]" : "[lime]").append(cost).append("[])\n"));
             player.sendMessage(upgrades.toString());
+        });
+
+        handler.<Player>register("spawn1", "", (args, player) -> {
+            BossBullets.timer(player.x + Mathf.range(200f), player.y + Mathf.range(200f), BossBullets::toxomount);
+        });
+
+        handler.<Player>register("spawn2", "", (args, player) -> {
+            BossBullets.timer(player.x + Mathf.range(200f), player.y + Mathf.range(200f), BossBullets::fusetitanium);
+        });
+
+        handler.<Player>register("spawn3", "", (args, player) -> {
+            BossBullets.timer(player.x + Mathf.range(200f), player.y + Mathf.range(200f), BossBullets::fusethorium);
+        });
+
+        handler.<Player>register("spawn4", "", (args, player) -> {
+            BossBullets.atomic(player.x + Mathf.range(200f), player.y + Mathf.range(200f));
         });
     }
 }
