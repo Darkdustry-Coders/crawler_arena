@@ -32,6 +32,11 @@ public class BossBullets {
         new StarBullet(x, y, 200, 3, 8f, weapon.bullet, weapon.shootSound);
     }
 
+    public static void corvuslaser(float x, float y) {
+        Weapon weapon = UnitTypes.corvus.weapons.get(0);
+        new SnakeBullet(x, y, 200, 20f, 10f, weapon.bullet, weapon.shootSound);
+    }
+
     public static void fusetitanium(float x, float y) {
         ItemTurret turret = (ItemTurret) Blocks.fuse;
         new StarBullet(x, y, 120, 5, 16f, turret.ammoTypes.get(Items.titanium), turret.shootSound);

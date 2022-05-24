@@ -47,6 +47,7 @@ public class CrawlerLogic {
         isWaveGoing = true;
         statScaling = 1f;
 
+        BossBullets.bullets.clear(); // it can kill everyone after new game
         datas.clear(); // recreate PlayerData
         Timer.schedule(() -> Groups.player.each(CrawlerLogic::join), 1f);
     }
@@ -99,11 +100,12 @@ public class CrawlerLogic {
             boss.abilities.add(new UnitSpawnAbility(UnitTypes.horizon, 180f, 16f, 16f));
             boss.abilities.add(new UnitSpawnAbility(UnitTypes.zenith, 240f, 0, -32f));
 
-            boss.abilities.add(new BulletSpawnAbility((x1, y1) -> BossBullets.timer(x1, y1, BossBullets::toxomount)));
-            boss.abilities.add(new BulletSpawnAbility((x1, y1) -> BossBullets.timer(x1, y1, BossBullets::fusetitanium)));
-            boss.abilities.add(new BulletSpawnAbility((x1, y1) -> BossBullets.timer(x1, y1, BossBullets::fusethorium)));
-            boss.abilities.add(new BulletSpawnAbility((x1, y1) -> BossBullets.arclight(x1, y1), 600f, 300f));
-            boss.abilities.add(new BulletSpawnAbility((x1, y1) -> BossBullets.atomic(x1, y1)));
+            boss.abilities.add(new BulletSpawnAbility(BossBullets::toxomount));
+            boss.abilities.add(new BulletSpawnAbility(BossBullets::corvuslaser, 1800f));
+            boss.abilities.add(new BulletSpawnAbility(BossBullets::fusetitanium));
+            boss.abilities.add(new BulletSpawnAbility(BossBullets::fusethorium));
+            boss.abilities.add(new BulletSpawnAbility(BossBullets::arclight, 300f));
+            boss.abilities.add(new BulletSpawnAbility(BossBullets::atomic));
         });
     }
 
