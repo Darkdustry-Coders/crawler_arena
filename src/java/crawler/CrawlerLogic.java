@@ -4,6 +4,8 @@ import arc.math.Mathf;
 import arc.struct.OrderedMap;
 import arc.struct.ObjectMap.Entry;
 import arc.util.Timer;
+import crawler.boss.BossBullets;
+import crawler.boss.BulletSpawnAbility;
 import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
 import mindustry.entities.abilities.UnitSpawnAbility;
@@ -80,20 +82,28 @@ public class CrawlerLogic {
     }
 
     public static void spawnBoss() {
-        Groups.player.each(player -> Call.announce(player.con, Bundle.format("events.boss", findLocale(player))));
+        PlayerData.each(data -> Call.announce(data.player.con, Bundle.get("events.boss", data.locale)));
 
-        Tile tile = spawnTile(20, 20);
-        Unit boss = UnitTypes.reign.spawn(state.rules.waveTeam, tile.worldx(), tile.worldy());
+        BossBullets.timer(world.width() * 4f, world.height() * 4f, (x, y) -> {
+            BossBullets.impact(x, y); // some cool effects
+            Unit boss = UnitTypes.eclipse.spawn(state.rules.waveTeam, x, y);
 
-        boss.controller(new ArenaAI());
-        boss.maxHealth(boss.maxHealth * Groups.player.size() * 6f);
-        boss.health(boss.maxHealth);
+            boss.controller(new ArenaAI()); // increasing armor to keep the bar boss working
+            boss.armor(statScaling * Groups.player.size() * 10000f);
+            boss.damageMultiplier = statScaling * 10f;
 
-        boss.abilities.add(new UnitSpawnAbility(UnitTypes.horizon, 180f, -16f, 16f));
-        boss.abilities.add(new UnitSpawnAbility(UnitTypes.horizon, 180f, 16f, 16f));
-        boss.abilities.add(new UnitSpawnAbility(UnitTypes.zenith, 240f, 0, -32f));
+            boss.apply(StatusEffects.boss);
+            boss.apply(StatusEffects.overclock);
 
-        boss.apply(StatusEffects.boss);
+            boss.abilities.add(new UnitSpawnAbility(UnitTypes.horizon, 180f, -16f, 16f));
+            boss.abilities.add(new UnitSpawnAbility(UnitTypes.horizon, 180f, 16f, 16f));
+            boss.abilities.add(new UnitSpawnAbility(UnitTypes.zenith, 240f, 0, -32f));
+
+            boss.abilities.add(new BulletSpawnAbility((x1, y1) -> BossBullets.timer(x1, y1, BossBullets::toxomount)));
+            boss.abilities.add(new BulletSpawnAbility((x1, y1) -> BossBullets.timer(x1, y1, BossBullets::fusetitanium)));
+            boss.abilities.add(new BulletSpawnAbility((x1, y1) -> BossBullets.timer(x1, y1, BossBullets::fusethorium)));
+            boss.abilities.add(new BulletSpawnAbility((x1, y1) -> BossBullets.atomic(x1, y1)));
+        });
     }
 
     public static void spawnReinforcement() {
