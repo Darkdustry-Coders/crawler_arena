@@ -53,7 +53,7 @@ public class PlayerData {
         money += Mathf.pow(moneyBase, 1f + state.wave * moneyRamp + Mathf.pow(state.wave, 2) * extraMoneyRamp) * 4;
 
         if (player.dead()) {
-            Unit unit = Units.closest(player.team(), player.x, player.y, u -> u.type == type);
+            Unit unit = Units.closest(player.team(), player.x, player.y, u -> u.type == type && !u.isPlayer());
             if (unit != null) {
                 player.unit(unit);
                 return;

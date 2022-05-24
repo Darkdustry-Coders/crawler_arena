@@ -14,7 +14,7 @@ public class CrawlerVars {
     /** The maximum number of units a players can spawn */
     public static int unitCap = 96;
     /** The maximum number of units of the same type that can be spawned at the start of a wave */
-    public static int maxUnits = 2000;
+    public static int maxUnits = 1800;
     /** The higher this number, the slower unit's stats grow */
     public static float statDiv = 80f;
 

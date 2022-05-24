@@ -56,7 +56,7 @@ public class CrawlerLogic {
         state.wave++;
         statScaling += state.wave / statDiv;
 
-        if(state.wave == bossWave) {
+        if(state.wave % bossWave == 0) {
             spawnBoss();
             return; // during the boss battle do not spawn small enemies
         }
@@ -89,7 +89,7 @@ public class CrawlerLogic {
             Unit boss = UnitTypes.eclipse.spawn(state.rules.waveTeam, x, y);
 
             boss.controller(new ArenaAI()); // increasing armor to keep the bar boss working
-            boss.armor(statScaling * Groups.player.size() * 10000f);
+            boss.armor(statScaling * Groups.player.size() * 30000f);
             boss.damageMultiplier = statScaling * 10f;
 
             boss.apply(StatusEffects.boss);
@@ -102,6 +102,7 @@ public class CrawlerLogic {
             boss.abilities.add(new BulletSpawnAbility((x1, y1) -> BossBullets.timer(x1, y1, BossBullets::toxomount)));
             boss.abilities.add(new BulletSpawnAbility((x1, y1) -> BossBullets.timer(x1, y1, BossBullets::fusetitanium)));
             boss.abilities.add(new BulletSpawnAbility((x1, y1) -> BossBullets.timer(x1, y1, BossBullets::fusethorium)));
+            boss.abilities.add(new BulletSpawnAbility((x1, y1) -> BossBullets.arclight(x1, y1), 600f, 300f));
             boss.abilities.add(new BulletSpawnAbility((x1, y1) -> BossBullets.atomic(x1, y1)));
         });
     }

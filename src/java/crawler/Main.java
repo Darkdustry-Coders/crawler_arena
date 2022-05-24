@@ -40,7 +40,7 @@ public class Main extends Plugin {
 
         netServer.admins.addActionFilter(action -> action.type != ActionType.breakBlock && action.type != ActionType.placeBlock);
 
-        content.units().each(unit -> unit instanceof WaterMovec, unit -> unit.flying = true);
+        content.units().each(unit -> unit.constructor.get() instanceof WaterMovec, unit -> unit.flying = true);
         content.units().each(type -> {
             type.payloadCapacity = 6f * 6f * tilePayload;
             type.maxRange = Float.MAX_VALUE;
@@ -61,7 +61,7 @@ public class Main extends Plugin {
         Timer.schedule(() -> {
             if (state.gameOver || Groups.player.isEmpty()) return;
 
-            if (rules.defaultTeam.data().unitCount == 0) {
+            if (rules.defaultTeam.data().unitCount == 0 && state.wave > 0) {
                 isWaveGoing = false;
 
                 if (state.wave > bossWave) {

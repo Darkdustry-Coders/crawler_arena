@@ -14,6 +14,7 @@ import mindustry.gen.Call;
 import mindustry.gen.Sounds;
 import mindustry.type.Weapon;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
+import mindustry.world.blocks.defense.turrets.PowerTurret;
 
 public class BossBullets {
 
@@ -39,6 +40,11 @@ public class BossBullets {
     public static void fusethorium(float x, float y) {
         ItemTurret turret = (ItemTurret) Blocks.fuse;
         new StarBullet(x, y, 120, 5, 16f, turret.ammoTypes.get(Items.thorium), turret.shootSound);
+    }
+
+    public static void arclight(float x, float y) {
+        PowerTurret turret = (PowerTurret) Blocks.arc;
+        new StarBullet(x, y, 80, 8, 24f, turret.shootType, turret.shootSound);
     }
 
     public static void atomic(float x, float y) {

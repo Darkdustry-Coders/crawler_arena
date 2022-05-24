@@ -20,7 +20,7 @@ public class BulletSpawnAbility extends Ability {
 
     public BulletSpawnAbility(Cons2<Float, Float> bullet, float range, float delay) {
         this.bullet = unit -> bullet.get(unit.x + Mathf.range(range), unit.y + Mathf.range(range));
-        this.time = Time.time = Mathf.range(delay, 2 * delay);
+        this.time = Time.time + Mathf.range(delay, 2 * delay);
         this.delay = delay;
     }
 
