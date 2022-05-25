@@ -44,8 +44,9 @@ public class CrawlerLogic {
         Call.setRules(rules);
 
         rules.defaultTeam.cores().each(Building::kill);
-        isWaveGoing = true;
         statScaling = 1f;
+
+        firstWaveLaunched = false;
 
         BossBullets.bullets.clear(); // it can kill everyone after new game
         datas.clear(); // recreate PlayerData
@@ -62,8 +63,8 @@ public class CrawlerLogic {
             return; // during the boss battle do not spawn small enemies
         }
 
-        int totalEnemies = Math.max((int) Mathf.pow(enemiesBase, 1f + state.wave * enemiesRamp + Mathf.pow(state.wave, 2f) * extraEnemiesRamp) * Groups.player.size(), 1);
-        int spreadX = world.width() / 2 - 20 - state.wave, spreadY = world.height() / 2 - 20 - state.wave;
+        int totalEnemies = (int) Mathf.pow(enemiesBase, 1f + state.wave * enemiesRamp) * Groups.player.size();
+        int spreadX = world.width() / 2 - 20, spreadY = world.height() / 2 - 20;
 
         for (Entry<UnitType, Integer> entry : enemy) {
             int typeCount = totalEnemies / entry.value;
@@ -94,10 +95,9 @@ public class CrawlerLogic {
             boss.damageMultiplier = statScaling * 10f;
 
             boss.apply(StatusEffects.boss);
-            boss.apply(StatusEffects.overclock);
 
-            boss.abilities.add(new UnitSpawnAbility(UnitTypes.horizon, 180f, -16f, 16f));
-            boss.abilities.add(new UnitSpawnAbility(UnitTypes.horizon, 180f, 16f, 16f));
+            boss.abilities.add(new UnitSpawnAbility(UnitTypes.flare, 120f, -16f, 16f));
+            boss.abilities.add(new UnitSpawnAbility(UnitTypes.flare, 120f, 16f, 16f));
             boss.abilities.add(new UnitSpawnAbility(UnitTypes.zenith, 240f, 0, -32f));
 
             boss.abilities.add(new BulletSpawnAbility(BossBullets::toxomount));

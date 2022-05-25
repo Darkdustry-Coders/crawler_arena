@@ -8,7 +8,7 @@ import mindustry.world.Block;
 
 public class CrawlerVars {
 
-    public static int bossWave = 2;
+    public static int bossWave = 25;
     public static int waveDelay = 10;
 
     /** The maximum number of units a players can spawn */
@@ -26,14 +26,12 @@ public class CrawlerVars {
     public static int helpExtraTime = 50;
 
     // money multipliers (no one knows how it works)
-    public static float moneyBase = 2.2f;
-    public static float moneyRamp = 1f / 1.5f;
-    public static float extraMoneyRamp = 1f / 4000f;
+    public static float moneyBase = 4.5f;
+    public static float moneyRamp = 0.5f;
 
     // enemies multipliers (same)
-    public static float enemiesBase = 2.2f;
-    public static float enemiesRamp = 1f / 1.5f;
-    public static float extraEnemiesRamp = 1f / 150f;
+    public static float enemiesBase = 3f;
+    public static float enemiesRamp = 0.5f;
 
     public static OrderedMap<Block, Integer> aidBlocks = new OrderedMap<>();
     public static OrderedMap<Block, Integer> aidBlocksRare = new OrderedMap<>();

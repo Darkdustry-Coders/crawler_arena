@@ -39,7 +39,7 @@ public class PlayerData {
 
     public PlayerData(Player player) {
         this.handlePlayerJoin(player);
-        this.type = UnitTypes.dagger;
+        this.type = UnitTypes.eclipse;
         this.afterWave();
     }
 
@@ -50,7 +50,7 @@ public class PlayerData {
 
     public void afterWave() {
         if (!player.con.isConnected()) return;
-        money += Mathf.pow(moneyBase, 1f + state.wave * moneyRamp + Mathf.pow(state.wave, 2) * extraMoneyRamp) * 4;
+        money += Mathf.pow(moneyBase, 1f + state.wave * moneyRamp);
 
         if (player.dead()) {
             Unit unit = Units.closest(player.team(), player.x, player.y, u -> u.type == type && !u.isPlayer());
@@ -66,10 +66,10 @@ public class PlayerData {
         }
 
         if (player.unit().health < player.unit().maxHealth) {
-            Call.effect(Fx.greenCloud, player.unit().x, player.unit().y, 0f, Pal.heal);
-            bundled(player, "events.heal", Pal.heal);
-            
             player.unit().heal();
+            Call.effect(Fx.greenCloud, player.unit().x, player.unit().y, 0f, Pal.heal);
+
+            bundled(player, "events.heal", Pal.heal);
         }
     }
 

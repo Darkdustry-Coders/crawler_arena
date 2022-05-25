@@ -30,7 +30,7 @@ public class Main extends Plugin {
 
     public static final Rules rules = new Rules();
 
-    public static boolean isWaveGoing;
+    public static boolean isWaveGoing, firstWaveLaunched;
     public static float statScaling;
 
     @Override
@@ -61,6 +61,12 @@ public class Main extends Plugin {
         Timer.schedule(() -> {
             if (state.gameOver || Groups.player.isEmpty()) return;
 
+            if (state.wave == 0 && !firstWaveLaunched) {
+                firstWaveLaunched = true;
+                sendToChat("events.first-wave", waveDelay);
+                Timer.schedule(CrawlerLogic::runWave, waveDelay);
+            }
+
             if (rules.defaultTeam.data().unitCount == 0 && state.wave > 0) {
                 isWaveGoing = false;
 
@@ -83,7 +89,7 @@ public class Main extends Plugin {
                     delay += helpExtraTime; // megas need time to deliver blocks
                 }
 
-                sendToChat(state.wave == 0 ? "events.first-wave" : "events.next-wave", delay);
+                sendToChat("events.next-wave", delay);
                 Timer.schedule(CrawlerLogic::runWave, delay);
                 PlayerData.each(PlayerData::afterWave);
             }
@@ -150,6 +156,14 @@ public class Main extends Plugin {
 
         handler.<Player>register("spawn4", "", (args, player) -> {
             BossBullets.atomic(player.x + Mathf.range(200f), player.y + Mathf.range(200f));
+        });
+
+        handler.<Player>register("spawn5", "", (args, player) -> {
+            BossBullets.arclight(player.x + Mathf.range(200f), player.y + Mathf.range(200f));
+        });
+
+        handler.<Player>register("spawn6", "", (args, player) -> {
+            BossBullets.corvuslaser(player.x + Mathf.range(200f), player.y + Mathf.range(200f));
         });
     }
 }
