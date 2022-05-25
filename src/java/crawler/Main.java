@@ -62,7 +62,7 @@ public class Main extends Plugin {
             if (state.gameOver || Groups.player.isEmpty()) return;
 
             if (state.wave == 0 && !firstWaveLaunched) {
-                firstWaveLaunched = true;
+                firstWaveLaunched = true; // useless
                 sendToChat("events.first-wave", waveDelay);
                 Timer.schedule(CrawlerLogic::runWave, waveDelay);
             }

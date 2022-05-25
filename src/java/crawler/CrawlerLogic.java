@@ -6,9 +6,9 @@ import arc.struct.ObjectMap.Entry;
 import arc.util.Timer;
 import crawler.boss.BossBullets;
 import crawler.boss.BulletSpawnAbility;
+import crawler.boss.GroupSpawnAbility;
 import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
-import mindustry.entities.abilities.UnitSpawnAbility;
 import mindustry.game.Team;
 import mindustry.gen.Building;
 import mindustry.gen.Call;
@@ -96,9 +96,9 @@ public class CrawlerLogic {
 
             boss.apply(StatusEffects.boss);
 
-            boss.abilities.add(new UnitSpawnAbility(UnitTypes.flare, 120f, -16f, 16f));
-            boss.abilities.add(new UnitSpawnAbility(UnitTypes.flare, 120f, 16f, 16f));
-            boss.abilities.add(new UnitSpawnAbility(UnitTypes.zenith, 240f, 0, -32f));
+            boss.abilities.add(new GroupSpawnAbility(UnitTypes.flare, 5, -64f, 64f));
+            boss.abilities.add(new GroupSpawnAbility(UnitTypes.flare, 5, 64f, 64f));
+            boss.abilities.add(new GroupSpawnAbility(UnitTypes.zenith, 3, 0, -96f));
 
             boss.abilities.add(new BulletSpawnAbility(BossBullets::toxomount));
             boss.abilities.add(new BulletSpawnAbility(BossBullets::corvuslaser, 1800f));

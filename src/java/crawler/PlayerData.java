@@ -39,7 +39,7 @@ public class PlayerData {
 
     public PlayerData(Player player) {
         this.handlePlayerJoin(player);
-        this.type = UnitTypes.eclipse;
+        this.type = UnitTypes.dagger;
         this.afterWave();
     }
 
