@@ -54,14 +54,14 @@ public class CrawlerLogic {
     }
 
     public static void runWave() {
-        isWaveGoing = true;
         state.wave++;
         statScaling += state.wave / statDiv;
 
         if(state.wave % bossWave == 0) {
             spawnBoss();
+            Timer.schedule(() -> isWaveGoing=true, 5f); // hold the next wave until the boss spawns
             return; // during the boss battle do not spawn small enemies
-        }
+        } else isWaveGoing = true;
 
         int totalEnemies = (int) Mathf.pow(enemiesBase, 1f + state.wave * enemiesRamp) * Groups.player.size();
         int spreadX = world.width() / 2 - 20, spreadY = world.height() / 2 - 20;

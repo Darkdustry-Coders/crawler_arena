@@ -70,7 +70,7 @@ public class Main extends Plugin {
             if (rules.defaultTeam.data().unitCount == 0 && state.wave > 0) {
                 isWaveGoing = false;
 
-                if (state.wave > bossWave) {
+                if (state.wave > winWave) {
                     sendToChat("events.gameover.win");
                     Events.fire(new GameOverEvent(state.rules.defaultTeam));
                 } else {

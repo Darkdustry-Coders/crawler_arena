@@ -8,6 +8,7 @@ import mindustry.world.Block;
 
 public class CrawlerVars {
 
+    public static int winWave = 100;
     public static int bossWave = 25;
     public static int waveDelay = 10;
 

@@ -69,7 +69,7 @@ public class PlayerData {
             player.unit().heal();
             Call.effect(Fx.greenCloud, player.unit().x, player.unit().y, 0f, Pal.heal);
 
-            bundled(player, "events.heal", Pal.heal);
+            bundled(player, "events.heal");
         }
     }
 
