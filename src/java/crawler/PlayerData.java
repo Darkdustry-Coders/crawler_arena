@@ -50,6 +50,7 @@ public class PlayerData {
 
     public void afterWave() {
         if (!player.con.isConnected()) return;
+
         money += Mathf.pow(moneyBase, 1f + state.wave * moneyRamp);
 
         if (player.dead()) {
@@ -78,8 +79,9 @@ public class PlayerData {
         Special special = ultra.get(type = unit.type);
         
         if (special == null) return;
+
         unit.maxHealth = special.health();
-        unit.heal(unit.maxHealth);
+        unit.health(unit.maxHealth);
         unit.armor = special.armor();
 
         if (special.unit() != null) unit.abilities.add(new UnitSpawnAbility(special.unit(), special.cooldown(), 0f, -8f));

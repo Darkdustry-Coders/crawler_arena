@@ -57,9 +57,8 @@ public class CrawlerLogic {
         state.wave++;
         statScaling += state.wave / statDiv;
 
-        if(state.wave % bossWave == 0) {
+        if (state.wave % bossWave == 0) {
             spawnBoss();
-            Timer.schedule(() -> isWaveGoing=true, 5f); // hold the next wave until the boss spawns
             return; // during the boss battle do not spawn small enemies
         } else isWaveGoing = true;
 
@@ -106,6 +105,8 @@ public class CrawlerLogic {
             boss.abilities.add(new BulletSpawnAbility(BossBullets::fusethorium));
             boss.abilities.add(new BulletSpawnAbility(BossBullets::arclight, 300f));
             boss.abilities.add(new BulletSpawnAbility(BossBullets::atomic));
+
+            isWaveGoing = true;
         });
     }
 

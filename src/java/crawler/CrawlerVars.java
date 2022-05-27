@@ -131,7 +131,7 @@ public class CrawlerVars {
 
         ultra = OrderedMap.of(
                 UnitTypes.crawler, new Special(400f,    10f,  60f,  UnitTypes.crawler),
-                UnitTypes.mono,    new Special(100000f, 20f,  300f, UnitTypes.navanax),
+                UnitTypes.mono,    new Special(100000f, 20f,  900f, UnitTypes.navanax),
                 UnitTypes.poly,    new Special(500f,    100f, 60f,  UnitTypes.poly),
                 UnitTypes.omura,   new Special(100000f, 20f,  30f,  null)
         );

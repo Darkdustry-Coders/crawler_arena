@@ -4,8 +4,10 @@ import arc.func.Cons;
 import arc.math.Angles;
 import arc.math.Mathf;
 import arc.util.Time;
+import mindustry.content.Fx;
 import mindustry.entities.abilities.Ability;
 import mindustry.game.Team;
+import mindustry.gen.Call;
 import mindustry.gen.Unit;
 import mindustry.type.UnitType;
 
@@ -26,6 +28,7 @@ public class GroupSpawnAbility extends Ability {
             for (float deg = 0; deg < 360f; deg += 360f / amount) {
                 float dx = sx + Mathf.cosDeg(deg) * unit.hitSize;
                 float dy = sy + Mathf.sinDeg(deg) * unit.hitSize;
+                Call.effect(Fx.mineHuge, dx, dy, 0f, Team.crux.color);
                 unit.spawn(Team.crux, dx, dy);
             }
         };
