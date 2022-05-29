@@ -7,7 +7,6 @@ import arc.util.Strings;
 import arc.util.Timer;
 import crawler.ai.DefaultAI;
 import crawler.boss.BossBullets;
-import mindustry.game.EventType.GameOverEvent;
 import mindustry.game.EventType.PlayerJoin;
 import mindustry.game.EventType.WorldLoadEvent;
 import mindustry.game.Rules;
@@ -25,7 +24,7 @@ public class Main extends Plugin {
 
     public static final Rules rules = new Rules();
 
-    public static boolean isWaveGoing, firstWaveLaunched;
+    public static boolean isWaveGoing;
     public static float statScaling;
 
     @Override
@@ -51,32 +50,20 @@ public class Main extends Plugin {
         Timer.schedule(BossBullets::update, 0f, .1f);
 
         Timer.schedule(() -> {
-            if (state.gameOver || Groups.player.isEmpty()) return;
+            if (state.gameOver || Groups.player.isEmpty() || !isWaveGoing) return;
 
-            if (state.wave == 0 && !firstWaveLaunched) {
-                firstWaveLaunched = true;
-                sendToChat("events.first-wave", waveDelay);
-                Timer.schedule(CrawlerLogic::runWave, waveDelay);
+            if (rules.defaultTeam.data().unitCount == 0) {
+                isWaveGoing = false;
+
+                CrawlerLogic.gameOver();
+                return;
             }
 
-            if (rules.defaultTeam.data().unitCount == 0 && isWaveGoing) {
+            if (rules.waveTeam.data().unitCount == 0) {
                 isWaveGoing = false;
 
-                PlayerData.each(data -> Call.infoMessage(data.player.con, Bundle.get("events.lose", data.locale)));
-                Timer.schedule(() -> Events.fire(new GameOverEvent(state.rules.waveTeam)), 3f);
-
-                Call.hideHudText();
-                return;
-            } else if (rules.waveTeam.data().unitCount == 0 && isWaveGoing) {
-                isWaveGoing = false;
-
+                // it can kill somebody
                 BossBullets.bullets.clear();
-
-                if (state.wave >= winWave) {
-                    PlayerData.each(data -> Call.infoMessage(data.player.con, Bundle.get("events.victory", data.locale)));
-                    Timer.schedule(() -> Events.fire(new GameOverEvent(state.rules.defaultTeam)), 3f);
-                    return;
-                }
 
                 int delay = waveDelay;
                 if (state.wave >= helpMinWave && state.wave % helpSpacing == 0) {
@@ -84,7 +71,7 @@ public class Main extends Plugin {
                     delay += helpExtraTime; // megas need time to deliver blocks
                 }
 
-                sendToChat("events.next-wave", delay);
+                sendToChat(state.wave == 0 ? "events.first-wave" : "events.next-wave", delay);
                 Timer.schedule(CrawlerLogic::runWave, delay);
                 PlayerData.each(PlayerData::afterWave);
             }
@@ -97,25 +84,25 @@ public class Main extends Plugin {
     public void registerClientCommands(CommandHandler handler) {
         handler.<Player>register("upgrade", "<type> [amount]", "Upgrade your unit.", (args, player) -> {
             if (args.length == 2 && Strings.parseInt(args[1]) <= 0) {
-                bundled(player, "commands.upgrade.invalid-amount");
+                bundled(player, "upgrade.invalid-amount");
                 return;
             }
 
             UnitType type = costs.keys().toSeq().find(u -> u.name.equalsIgnoreCase(args[0]));
             if (type == null) {
-                bundled(player, "commands.upgrade.unit-not-found");
+                bundled(player, "upgrade.unit-not-found");
                 return;
             }
 
             int amount = args.length == 2 ? Strings.parseInt(args[1]) : 1;
             if (rules.defaultTeam.data().countType(type) + amount > unitCap) {
-                bundled(player, "commands.upgrade.too-many-units");
+                bundled(player, "upgrade.too-many-units");
                 return;
             }
 
             PlayerData data = PlayerData.datas.get(player.uuid());
             if (data.money < costs.get(type) * amount) {
-                bundled(player, "commands.upgrade.not-enough-money", costs.get(type) * amount, data.money);
+                bundled(player, ".upgrade.not-enough-money", costs.get(type) * amount, data.money);
                 return;
             }
 
@@ -125,12 +112,12 @@ public class Main extends Plugin {
             }
 
             data.money -= costs.get(type) * amount;
-            bundled(player, "commands.upgrade.success", amount, type.name);
+            bundled(player, "upgrade.success", amount, type.name);
         });
 
         handler.<Player>register("upgrades", "Show units you can upgrade to.", (args, player) -> {
             PlayerData data = PlayerData.datas.get(player.uuid());
-            StringBuilder upgrades = new StringBuilder(format("commands.upgrades.header", data.locale));
+            StringBuilder upgrades = new StringBuilder(format("upgrades", data.locale));
             costs.each((type, cost) -> upgrades.append("[gold] - [accent]").append(type.name).append(" [lightgray](").append(data.money < cost ? "[scarlet]" : "[lime]").append(cost).append("[])\n"));
             player.sendMessage(upgrades.toString());
         });

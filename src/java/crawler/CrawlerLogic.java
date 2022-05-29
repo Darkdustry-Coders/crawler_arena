@@ -1,5 +1,6 @@
 package crawler;
 
+import arc.Events;
 import arc.math.Mathf;
 import arc.struct.ObjectMap.Entry;
 import arc.struct.OrderedMap;
@@ -12,6 +13,7 @@ import crawler.boss.GroupSpawnAbility;
 import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
 import mindustry.game.Team;
+import mindustry.game.EventType.GameOverEvent;
 import mindustry.gen.*;
 import mindustry.type.UnitType;
 import mindustry.world.Block;
@@ -45,20 +47,39 @@ public class CrawlerLogic {
         rules.defaultTeam.cores().each(Building::kill);
         statScaling = 1f;
 
-        firstWaveLaunched = false;
-
         BossBullets.bullets.clear(); // it can kill everyone after new game
         datas.clear(); // recreate PlayerData
-        Timer.schedule(() -> Groups.player.each(CrawlerLogic::join), 1f);
+        Timer.schedule(() -> {
+            Groups.player.each(CrawlerLogic::join);
+            isWaveGoing = true;
+        }, 1f);
+    }
+
+    public static void gameOver() {
+        String msg = state.wave > bossWave ? "events.victory" : "events.lose";
+        PlayerData.each(data -> Call.infoMessage(data.player.con, Bundle.get(msg, data.locale)));
+
+        Team team = state.wave > bossWave ? rules.defaultTeam : rules.waveTeam;
+        BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(team)));
+
+        Call.hideHudText();
+
+        for (int i = 0; i < world.width() * world.height() / 1000; i++) // boom!
+            BossBullets.atomic(Mathf.random(world.unitWidth()), Mathf.random(world.unitHeight()));
     }
 
     public static void runWave() {
         state.wave++;
         statScaling += state.wave / statDiv;
 
-        if (state.wave % bossSpacing == 0) {
+        if (state.wave == bossWave) {
             spawnBoss();
             return; // during the boss battle do not spawn small enemies
+        }
+
+        if (state.wave > bossWave) {
+            gameOver();
+            return; // it is the end
         }
 
         int totalEnemies = (int) Mathf.pow(enemiesBase, 1f + state.wave * enemiesRamp) * Groups.player.size();

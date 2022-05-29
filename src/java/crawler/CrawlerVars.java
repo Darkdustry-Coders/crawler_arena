@@ -10,8 +10,9 @@ public class CrawlerVars {
 
     public static float AIRange = 80000f;
 
-    public static int winWave = 100;
-    public static int bossSpacing = 25;
+    /** Wave when it's over */
+    public static int bossWave = 25;
+    /** Interval between waves in seconds */
     public static int waveDelay = 10;
 
     /** The maximum number of units a players can spawn */
