@@ -1,15 +1,14 @@
-package crawler;
+package crawler.ai;
 
 import mindustry.ai.types.GroundAI;
 import mindustry.entities.Units;
 import mindustry.gen.Building;
 import mindustry.gen.Hitboxc;
 
+import static crawler.CrawlerVars.AIRange;
 import static mindustry.Vars.tilesize;
 
 public class ArenaAI extends GroundAI {
-
-    public static final float range = 80000f;
 
     @Override
     public void updateUnit() {
@@ -18,12 +17,12 @@ public class ArenaAI extends GroundAI {
         }
 
         if (retarget()) {
-            target = target(unit.x, unit.y, range, true, true);
+            target = target(unit.x, unit.y, AIRange, true, true);
         }
 
         boolean rotate, shoot = false;
 
-        if (rotate = !Units.invalidateTarget(target, unit, range)) {
+        if (rotate = !Units.invalidateTarget(target, unit, AIRange)) {
             shoot = unit.within(target, unit.type.weapons.first().bullet.range() + (target instanceof Building b ? b.block.size * tilesize : ((Hitboxc) target).hitSize()) / 2f);
             unit.movePref(vec.set(target).sub(unit).limit(unit.speed()));
         }

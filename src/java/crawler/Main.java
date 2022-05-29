@@ -5,9 +5,8 @@ import arc.math.Mathf;
 import arc.util.CommandHandler;
 import arc.util.Strings;
 import arc.util.Timer;
+import crawler.ai.DefaultAI;
 import crawler.boss.BossBullets;
-import mindustry.ai.types.FlyingAI;
-import mindustry.content.UnitTypes;
 import mindustry.game.EventType.GameOverEvent;
 import mindustry.game.EventType.PlayerJoin;
 import mindustry.game.EventType.WorldLoadEvent;
@@ -40,12 +39,8 @@ public class Main extends Plugin {
         content.units().each(type -> {
             type.payloadCapacity = 6f * 6f * tilePayload;
             type.maxRange = Float.MAX_VALUE;
-            type.defaultController = FlyingAI::new;
+            type.defaultController = DefaultAI::new;
         });
-
-        UnitTypes.poly.defaultController = SwarmAI::new;
-        UnitTypes.poly.health = 125f;
-        UnitTypes.poly.speed = 1.5f;
 
         Events.on(WorldLoadEvent.class, event -> app.post(CrawlerLogic::play));
         Events.on(PlayerJoin.class, event -> CrawlerLogic.join(event.player));
@@ -59,24 +54,32 @@ public class Main extends Plugin {
             if (state.gameOver || Groups.player.isEmpty()) return;
 
             if (state.wave == 0 && !firstWaveLaunched) {
-                firstWaveLaunched = true; // useless
+                firstWaveLaunched = true;
                 sendToChat("events.first-wave", waveDelay);
                 Timer.schedule(CrawlerLogic::runWave, waveDelay);
             }
 
-            if (rules.defaultTeam.data().unitCount == 0 && state.wave > 0) {
+            if (rules.defaultTeam.data().unitCount == 0 && isWaveGoing) {
                 isWaveGoing = false;
 
-                sendToChat("events.gameover.lose");
-                Events.fire(new GameOverEvent(state.rules.waveTeam));
+                PlayerData.each(data -> Call.infoMessage(data.player.con, Bundle.get("events.lose", data.locale)));
+                Timer.schedule(() -> Events.fire(new GameOverEvent(state.rules.waveTeam)), 3f);
 
                 Call.hideHudText();
                 return;
             } else if (rules.waveTeam.data().unitCount == 0 && isWaveGoing) {
                 isWaveGoing = false;
 
+                BossBullets.bullets.clear();
+
+                if (state.wave >= winWave) {
+                    PlayerData.each(data -> Call.infoMessage(data.player.con, Bundle.get("events.victory", data.locale)));
+                    Timer.schedule(() -> Events.fire(new GameOverEvent(state.rules.defaultTeam)), 3f);
+                    return;
+                }
+
                 int delay = waveDelay;
-                if (state.wave > helpMinWave && state.wave % helpSpacing == 0) {
+                if (state.wave >= helpMinWave && state.wave % helpSpacing == 0) {
                     CrawlerLogic.spawnReinforcement();
                     delay += helpExtraTime; // megas need time to deliver blocks
                 }

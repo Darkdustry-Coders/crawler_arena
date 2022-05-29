@@ -12,7 +12,7 @@ import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import static mindustry.Vars.*;
+import static mindustry.Vars.mods;
 
 public class Bundle {
 

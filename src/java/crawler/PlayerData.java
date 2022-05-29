@@ -33,14 +33,14 @@ public class PlayerData {
     public int money;
     public UnitType type;
 
-    public static void each(Cons<PlayerData> cons) {
-        datas.each((uuid, data) -> cons.get(data));
-    }
-
     public PlayerData(Player player) {
         this.handlePlayerJoin(player);
         this.type = UnitTypes.dagger;
         this.afterWave();
+    }
+
+    public static void each(Cons<PlayerData> cons) {
+        datas.each((uuid, data) -> cons.get(data));
     }
 
     public void handlePlayerJoin(Player player) {
@@ -77,7 +77,7 @@ public class PlayerData {
     public void applyUnit(Unit unit) {
         player.unit(unit);
         Special special = ultra.get(type = unit.type);
-        
+
         if (special == null) return;
 
         unit.maxHealth = special.health();

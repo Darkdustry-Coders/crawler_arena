@@ -1,31 +1,30 @@
 package crawler;
 
 import arc.math.Mathf;
-import arc.struct.OrderedMap;
 import arc.struct.ObjectMap.Entry;
+import arc.struct.OrderedMap;
 import arc.util.Timer;
+import crawler.ai.ArenaAI;
+import crawler.ai.ReinforcementAI;
 import crawler.boss.BossBullets;
 import crawler.boss.BulletSpawnAbility;
 import crawler.boss.GroupSpawnAbility;
 import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
 import mindustry.game.Team;
-import mindustry.gen.Building;
-import mindustry.gen.Call;
-import mindustry.gen.Groups;
-import mindustry.gen.Payloadc;
-import mindustry.gen.Player;
-import mindustry.gen.Unit;
+import mindustry.gen.*;
 import mindustry.type.UnitType;
 import mindustry.world.Block;
 import mindustry.world.Tile;
 import mindustry.world.blocks.payloads.BuildPayload;
 
-import static crawler.Main.*;
-import static crawler.PlayerData.*;
-import static crawler.Bundle.*;
+import static crawler.Bundle.bundled;
+import static crawler.Bundle.sendToChat;
 import static crawler.CrawlerVars.*;
-import static mindustry.Vars.*;
+import static crawler.Main.*;
+import static crawler.PlayerData.datas;
+import static mindustry.Vars.state;
+import static mindustry.Vars.world;
 
 public class CrawlerLogic {
 
@@ -57,10 +56,10 @@ public class CrawlerLogic {
         state.wave++;
         statScaling += state.wave / statDiv;
 
-        if (state.wave % bossWave == 0) {
+        if (state.wave % bossSpacing == 0) {
             spawnBoss();
             return; // during the boss battle do not spawn small enemies
-        } else isWaveGoing = true;
+        }
 
         int totalEnemies = (int) Mathf.pow(enemiesBase, 1f + state.wave * enemiesRamp) * Groups.player.size();
         int spreadX = world.width() / 2 - 20, spreadY = world.height() / 2 - 20;
@@ -71,6 +70,8 @@ public class CrawlerLogic {
 
             for (int i = 0; i < Math.min(typeCount, maxUnits); i++) spawnEnemy(entry.key, spreadX, spreadY);
         }
+
+        isWaveGoing = true;
     }
 
     public static void spawnEnemy(UnitType type, int spreadX, int spreadY) {
@@ -90,8 +91,8 @@ public class CrawlerLogic {
             Unit boss = UnitTypes.eclipse.spawn(state.rules.waveTeam, x, y);
 
             boss.controller(new ArenaAI()); // increasing armor to keep the bar boss working
-            boss.armor(statScaling * Groups.player.size() * 30000f);
-            boss.damageMultiplier = statScaling * 10f;
+            boss.armor(statScaling * Groups.player.size() * 24000f);
+            boss.damageMultiplier = statScaling * 8f;
 
             boss.apply(StatusEffects.boss);
 
@@ -123,7 +124,8 @@ public class CrawlerLogic {
             Block block = amount.keys().toSeq().random();
 
             Payloadc pay = (Payloadc) unit; // add blocks to unit payload component
-            for (int j = 0; j < amount.get(block); j++) pay.addPayload(new BuildPayload(block, state.rules.defaultTeam));
+            for (int j = 0; j < amount.get(block); j++)
+                pay.addPayload(new BuildPayload(block, state.rules.defaultTeam));
         }
     }
 

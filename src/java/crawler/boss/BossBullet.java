@@ -8,7 +8,7 @@ public class BossBullet extends Vec2 {
 
     public BossBullet(float x, float y, int lifetime) {
         super(x, y);
-        
+
         this.lifetime = lifetime;
         BossBullets.bullets.add(this);
     }
