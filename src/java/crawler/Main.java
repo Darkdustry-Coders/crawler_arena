@@ -9,6 +9,7 @@ import crawler.ai.DefaultAI;
 import crawler.boss.BossBullets;
 import mindustry.game.EventType.PlayerJoin;
 import mindustry.game.EventType.WorldLoadEvent;
+import mindustry.content.UnitTypes;
 import mindustry.game.Rules;
 import mindustry.gen.*;
 import mindustry.mod.Plugin;
@@ -35,10 +36,9 @@ public class Main extends Plugin {
         netServer.admins.addActionFilter(action -> action.type != ActionType.breakBlock && action.type != ActionType.placeBlock);
 
         content.units().each(unit -> unit.constructor.get() instanceof WaterMovec, unit -> unit.flying = true);
-        content.units().each(type -> {
-            type.payloadCapacity = 6f * 6f * tilePayload;
-            type.maxRange = Float.MAX_VALUE;
-            type.defaultController = DefaultAI::new;
+        content.units().each(unit -> unit != UnitTypes.crawler, unit -> {
+            unit.payloadCapacity = 6f * 6f * tilePayload;
+            unit.defaultController = DefaultAI::new;
         });
 
         Events.on(WorldLoadEvent.class, event -> app.post(CrawlerLogic::play));
