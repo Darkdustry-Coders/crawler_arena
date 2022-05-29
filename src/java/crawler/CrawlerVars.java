@@ -8,28 +8,34 @@ import mindustry.world.Block;
 
 public class CrawlerVars {
 
-    public static final float AIRange = 80000f;
+    public static float AIRange = 80000f;
+
     public static int winWave = 100;
     public static int bossSpacing = 25;
     public static int waveDelay = 10;
+
     /** The maximum number of units a players can spawn */
     public static int unitCap = 96;
     /** The maximum number of units of the same type that can be spawned at the start of a wave */
     public static int maxUnits = 1500;
     /** The higher this number, the slower unit's stats grow */
-    public static float statDiv = 60f;
+    public static float statDiv = 50f;
+
     /** Minimum required wave to spawn reinforcement */
     public static int helpMinWave = 8;
     /** Reinforcements appear every second wave */
     public static int helpSpacing = 2;
     /** Extra time needed to get support */
     public static int helpExtraTime = 50;
+
     // money multipliers (no one knows how it works)
     public static float moneyBase = 5f;
     public static float moneyRamp = 0.45f;
+
     // enemies multipliers (same)
     public static float enemiesBase = 3f;
-    public static float enemiesRamp = 0.5f;
+    public static float enemiesRamp = 0.45f;
+
     public static OrderedMap<Block, Integer> aidBlocks = new OrderedMap<>();
     public static OrderedMap<Block, Integer> aidBlocksRare = new OrderedMap<>();
 

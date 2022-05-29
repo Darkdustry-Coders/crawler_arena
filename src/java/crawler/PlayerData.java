@@ -36,7 +36,7 @@ public class PlayerData {
     public PlayerData(Player player) {
         this.handlePlayerJoin(player);
         this.type = UnitTypes.dagger;
-        this.afterWave();
+        this.respawn();
     }
 
     public static void each(Cons<PlayerData> cons) {
@@ -54,16 +54,7 @@ public class PlayerData {
         money += Mathf.pow(moneyBase, 1f + state.wave * moneyRamp);
 
         if (player.dead()) {
-            Unit unit = Units.closest(player.team(), player.x, player.y, u -> u.type == type && !u.isPlayer());
-            if (unit != null) {
-                player.unit(unit);
-                return;
-            }
-
-            Tile tile = world.tile(world.width() / 2 + Mathf.random(-3, 3), world.height() / 2 + Mathf.random(-3, 3));
-            if (!type.flying && tile.solid()) tile.removeNet();
-
-            applyUnit(type.spawn(tile.worldx(), tile.worldy()));
+            respawn();
         }
 
         if (player.unit().health < player.unit().maxHealth) {
@@ -72,6 +63,19 @@ public class PlayerData {
 
             bundled(player, "events.heal");
         }
+    }
+
+    public void respawn() {
+        Unit unit = Units.closest(player.team(), world.unitWidth() / 2f, world.unitHeight() / 2f, u -> u.type == type && !u.isPlayer());
+        if (unit != null) {
+            player.unit(unit);
+            return;
+        }
+
+        Tile tile = world.tile(world.width() / 2 + Mathf.random(-3, 3), world.height() / 2 + Mathf.random(-3, 3));
+        if (!type.flying && tile.solid()) tile.removeNet();
+
+        applyUnit(type.spawn(tile.worldx(), tile.worldy()));
     }
 
     public void applyUnit(Unit unit) {
