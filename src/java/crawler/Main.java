@@ -44,8 +44,8 @@ public class Main extends Plugin {
         Events.on(WorldLoadEvent.class, event -> app.post(CrawlerLogic::play));
         Events.on(PlayerJoin.class, event -> CrawlerLogic.join(event.player));
 
-        Timer.schedule(() -> sendToChat("events.tip.info"), 90f, 180f);
-        Timer.schedule(() -> sendToChat("events.tip.upgrades"), 180f, 180f);
+        Timer.schedule(() -> sendToChat("events.tip.info"), 120f, 240f);
+        Timer.schedule(() -> sendToChat("events.tip.upgrades"), 240f, 240f);
 
         Timer.schedule(BossBullets::update, 0f, .1f);
 

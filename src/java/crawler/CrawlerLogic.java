@@ -5,7 +5,6 @@ import arc.math.Mathf;
 import arc.struct.ObjectMap.Entry;
 import arc.struct.OrderedMap;
 import arc.util.Timer;
-import crawler.ai.ArenaAI;
 import crawler.ai.ReinforcementAI;
 import crawler.boss.BossBullets;
 import crawler.boss.BulletSpawnAbility;
@@ -99,7 +98,6 @@ public class CrawlerLogic {
         Tile tile = spawnTile(spreadX, spreadY);
         Unit unit = type.spawn(state.rules.waveTeam, tile.worldx(), tile.worldy());
 
-        unit.controller(new ArenaAI());
         unit.maxHealth(unit.maxHealth * statScaling / 5);
         unit.health(unit.maxHealth);
     }
@@ -111,7 +109,7 @@ public class CrawlerLogic {
             BossBullets.impact(x, y); // some cool effects
             Unit boss = UnitTypes.eclipse.spawn(state.rules.waveTeam, x, y);
 
-            boss.controller(new ArenaAI()); // increasing armor to keep the bar boss working
+            // increasing armor to keep the bar boss working
             boss.armor(statScaling * Groups.player.size() * 24000f);
             boss.damageMultiplier = statScaling * 8f;
 
