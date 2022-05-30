@@ -1,5 +1,6 @@
 package crawler;
 
+import arc.Core;
 import arc.func.Cons;
 import arc.math.Mathf;
 import arc.struct.ObjectMap;
@@ -30,13 +31,11 @@ public class PlayerData {
     public Player player;
     public Locale locale;
 
-    public int money;
-    public UnitType type;
+    public int money = 0;
+    public UnitType type = UnitTypes.dagger;
 
     public PlayerData(Player player) {
         this.handlePlayerJoin(player);
-        this.type = UnitTypes.dagger;
-        this.respawn();
     }
 
     public static void each(Cons<PlayerData> cons) {
@@ -46,15 +45,18 @@ public class PlayerData {
     public void handlePlayerJoin(Player player) {
         this.player = player;
         this.locale = findLocale(player);
+
+        Core.app.post(this::respawn);
     }
 
     public void afterWave() {
         if (!player.con.isConnected()) return;
 
-        money += Mathf.pow(moneyBase, 1f + state.wave * moneyRamp);
+        money += Mathf.pow(moneyExpBase, 1f + state.wave * moneyRamp + Mathf.pow(state.wave, 2) * extraMoneyRamp) * moneyMultiplier;
 
         if (player.dead()) {
             respawn();
+            return;
         }
 
         if (player.unit().health < player.unit().maxHealth) {

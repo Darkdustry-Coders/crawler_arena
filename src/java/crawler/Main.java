@@ -25,7 +25,7 @@ public class Main extends Plugin {
 
     public static final Rules rules = new Rules();
 
-    public static boolean isWaveGoing;
+    public static boolean isWaveGoing, firstWaveLaunched;
     public static float statScaling;
 
     @Override
@@ -50,16 +50,24 @@ public class Main extends Plugin {
         Timer.schedule(BossBullets::update, 0f, .1f);
 
         Timer.schedule(() -> {
-            if (state.gameOver || Groups.player.isEmpty() || !isWaveGoing) return;
+            if (state.gameOver || Groups.player.isEmpty()) return;
 
-            if (rules.defaultTeam.data().unitCount == 0) {
+            if (!firstWaveLaunched) { // It is really needed, trust me, I'm not a schizoid
+                firstWaveLaunched = true;
+
+                sendToChat("events.first-wave", firstWaveDelay);
+                Timer.schedule(CrawlerLogic::runWave, firstWaveDelay);
+                return;
+            }
+
+            if (rules.defaultTeam.data().unitCount == 0 && isWaveGoing) {
                 isWaveGoing = false;
 
                 CrawlerLogic.gameOver();
                 return;
             }
 
-            if (rules.waveTeam.data().unitCount == 0) {
+            if (rules.waveTeam.data().unitCount == 0 && isWaveGoing) {
                 isWaveGoing = false;
 
                 // it can kill somebody
@@ -71,7 +79,7 @@ public class Main extends Plugin {
                     delay += helpExtraTime; // megas need time to deliver blocks
                 }
 
-                sendToChat(state.wave == 0 ? "events.first-wave" : "events.next-wave", delay);
+                sendToChat("events.next-wave", delay);
                 Timer.schedule(CrawlerLogic::runWave, delay);
                 PlayerData.each(PlayerData::afterWave);
             }
@@ -102,7 +110,7 @@ public class Main extends Plugin {
 
             PlayerData data = PlayerData.datas.get(player.uuid());
             if (data.money < costs.get(type) * amount) {
-                bundled(player, ".upgrade.not-enough-money", costs.get(type) * amount, data.money);
+                bundled(player, "upgrade.not-enough-money", costs.get(type) * amount, data.money);
                 return;
             }
 

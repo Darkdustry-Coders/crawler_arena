@@ -50,7 +50,7 @@ public class CrawlerLogic {
         datas.clear(); // recreate PlayerData
         Timer.schedule(() -> {
             Groups.player.each(CrawlerLogic::join);
-            isWaveGoing = true;
+            firstWaveLaunched = false;
         }, 1f);
     }
 
@@ -81,15 +81,17 @@ public class CrawlerLogic {
             return; // it is the end
         }
 
-        int totalEnemies = (int) Mathf.pow(enemiesBase, 1f + state.wave * enemiesRamp) * Groups.player.size();
+        int totalEnemies = Mathf.ceil(Mathf.pow(crawlersExpBase, 1f + state.wave * crawlersRamp + Mathf.pow(state.wave, 2f) * extraCrawlersRamp) * Groups.player.size() * crawlersMultiplier);
         int spreadX = world.width() / 2 - 20, spreadY = world.height() / 2 - 20;
 
-        for (Entry<UnitType, Integer> entry : enemy) {
+        for (Entry<UnitType, Integer> entry : enemyCuts) {
             int typeCount = totalEnemies / entry.value;
             totalEnemies -= typeCount;
 
             for (int i = 0; i < Math.min(typeCount, maxUnits); i++) spawnEnemy(entry.key, spreadX, spreadY);
         }
+
+        for (int i = 0; i < Math.min(totalEnemies, maxUnits); i++) spawnEnemy(UnitTypes.crawler, spreadX, spreadY);
 
         isWaveGoing = true;
     }
@@ -134,12 +136,12 @@ public class CrawlerLogic {
         sendToChat("events.aid");
 
         for (int i = 0; i < state.wave; i++) {
-            Unit unit = UnitTypes.mega.spawn(Team.blue, 0, world.unitHeight() / 2f + Mathf.range(120));
+            Unit unit = UnitTypes.mega.spawn(Team.derelict, Mathf.random(40f), world.unitHeight() / 2f + Mathf.range(120));
             unit.controller(new ReinforcementAI());
             unit.maxHealth(Float.MAX_VALUE);
             unit.health(unit.maxHealth);
 
-            OrderedMap<Block, Integer> amount = Mathf.chance(.05d) ? aidBlocksRare : aidBlocks;
+            OrderedMap<Block, Integer> amount = Mathf.chance(.05f) ? aidBlocksRare : aidBlocks;
             Block block = amount.keys().toSeq().random();
 
             Payloadc pay = (Payloadc) unit; // add blocks to unit payload component

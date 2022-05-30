@@ -13,7 +13,7 @@ public class CrawlerVars {
     /** Wave when it's over */
     public static int bossWave = 25;
     /** Interval between waves in seconds */
-    public static int waveDelay = 10;
+    public static int waveDelay = 10, firstWaveDelay = 15;
 
     /** The maximum number of units a players can spawn */
     public static int unitCap = 96;
@@ -29,18 +29,20 @@ public class CrawlerVars {
     /** Extra time needed to get support */
     public static int helpExtraTime = 50;
 
-    // money multipliers (no one knows how it works)
-    public static float moneyBase = 5f;
-    public static float moneyRamp = 0.45f;
+    public static float moneyExpBase = 2.2f;
+    public static float moneyRamp = 1f / 1.5f;
+    public static float extraMoneyRamp = 1f / 4000f;
+    public static float moneyMultiplier = 4.5f;
 
-    // enemies multipliers (same)
-    public static float enemiesBase = 3f;
-    public static float enemiesRamp = 0.45f;
+    public static float crawlersExpBase = 2.2f;
+    public static float crawlersRamp = 1f / 1.5f;
+    public static float extraCrawlersRamp = 1f / 150f;
+    public static float crawlersMultiplier = 1f / 10f;
 
     public static OrderedMap<Block, Integer> aidBlocks = new OrderedMap<>();
     public static OrderedMap<Block, Integer> aidBlocksRare = new OrderedMap<>();
 
-    public static OrderedMap<UnitType, Integer> enemy;
+    public static OrderedMap<UnitType, Integer> enemyCuts;
     public static OrderedMap<UnitType, Integer> costs;
     public static OrderedMap<UnitType, Special> ultra;
 
@@ -80,8 +82,7 @@ public class CrawlerVars {
                 Blocks.scrapWall, 25
         );
 
-        enemy = OrderedMap.of(
-                UnitTypes.crawler, 5,
+        enemyCuts = OrderedMap.of(
                 UnitTypes.atrax, 10,
                 UnitTypes.spiroct, 50,
                 UnitTypes.arkyid, 1000,
