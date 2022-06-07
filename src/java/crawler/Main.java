@@ -5,6 +5,7 @@ import arc.math.Mathf;
 import arc.util.CommandHandler;
 import arc.util.Strings;
 import arc.util.Timer;
+import crawler.ai.CrawlerAI;
 import crawler.ai.DefaultAI;
 import crawler.boss.BossBullets;
 import mindustry.game.EventType.PlayerJoin;
@@ -36,10 +37,12 @@ public class Main extends Plugin {
         netServer.admins.addActionFilter(action -> action.type != ActionType.breakBlock && action.type != ActionType.placeBlock);
 
         content.units().each(unit -> unit.constructor.get() instanceof WaterMovec, unit -> unit.flying = true);
-        content.units().each(unit -> unit != UnitTypes.crawler, unit -> {
+        content.units().each(unit -> {
             unit.payloadCapacity = 6f * 6f * tilePayload;
             unit.defaultController = DefaultAI::new;
         });
+
+        UnitTypes.crawler.defaultController = CrawlerAI::new;
 
         Events.on(WorldLoadEvent.class, event -> app.post(CrawlerLogic::play));
         Events.on(PlayerJoin.class, event -> CrawlerLogic.join(event.player));
