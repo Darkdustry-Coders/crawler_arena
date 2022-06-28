@@ -20,7 +20,7 @@ public class CrawlerVars {
     /** The maximum number of units of the same type that can be spawned at the start of a wave */
     public static int maxUnits = 1500;
     /** The higher this number, the slower unit's stats grow */
-    public static float statDiv = 50f;
+    public static float statDiv = 128f;
 
     /** Minimum required wave to spawn reinforcement */
     public static int helpMinWave = 8;
