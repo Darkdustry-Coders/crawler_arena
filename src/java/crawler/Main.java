@@ -8,9 +8,8 @@ import arc.util.Timer;
 import crawler.ai.CrawlerAI;
 import crawler.ai.DefaultAI;
 import crawler.boss.BossBullets;
-import mindustry.game.EventType.PlayerJoin;
-import mindustry.game.EventType.WorldLoadEvent;
 import mindustry.content.UnitTypes;
+import mindustry.game.EventType.*;
 import mindustry.game.Rules;
 import mindustry.gen.*;
 import mindustry.mod.Plugin;
@@ -52,7 +51,7 @@ public class Main extends Plugin {
 
         Timer.schedule(BossBullets::update, 0f, .1f);
 
-        Timer.schedule(() -> {
+        Events.run(Trigger.update, () -> {
             if (state.gameOver || Groups.player.isEmpty()) return;
 
             if (!firstWaveLaunched) { // It is really needed, trust me, I'm not a schizoid
@@ -88,7 +87,7 @@ public class Main extends Plugin {
             }
 
             PlayerData.each(data -> Call.setHudText(data.player.con, format("ui.money", data.locale, data.money)));
-        }, 0f, 1f);
+        });
     }
 
     @Override
