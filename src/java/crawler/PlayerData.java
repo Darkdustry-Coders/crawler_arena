@@ -4,10 +4,12 @@ import arc.Core;
 import arc.func.Cons;
 import arc.math.Mathf;
 import arc.struct.ObjectMap;
+import arc.struct.Seq;
 import mindustry.content.Fx;
 import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
 import mindustry.entities.Units;
+import mindustry.entities.abilities.Ability;
 import mindustry.entities.abilities.UnitSpawnAbility;
 import mindustry.gen.Call;
 import mindustry.gen.Player;
@@ -18,9 +20,9 @@ import mindustry.world.Tile;
 
 import java.util.Locale;
 
-import static crawler.Bundle.bundled;
-import static crawler.Bundle.findLocale;
 import static crawler.CrawlerVars.*;
+import static crawler.Main.bundled;
+import static crawler.Main.findLocale;
 import static mindustry.Vars.state;
 import static mindustry.Vars.world;
 
@@ -31,7 +33,7 @@ public class PlayerData {
     public Player player;
     public Locale locale;
 
-    public int money = 0;
+    public int money = 100500;
     public UnitType type = UnitTypes.dagger;
 
     public PlayerData(Player player) {
@@ -90,10 +92,14 @@ public class PlayerData {
         unit.health(unit.maxHealth);
         unit.armor = special.armor();
 
-        if (special.unit() != null) unit.abilities.add(new UnitSpawnAbility(special.unit(), special.cooldown(), 0f, -8f));
-        else unit.abilities.each(ability -> {
+        Seq<Ability> abilities = Seq.with(unit.abilities);
+
+        if (special.unit() != null) abilities.add(new UnitSpawnAbility(special.unit(), special.cooldown(), 0f, -8f));
+        else abilities.each(ability -> {
             if (ability instanceof UnitSpawnAbility spawnAbility) spawnAbility.spawnTime = special.cooldown();
         });
+
+        unit.abilities(abilities.toArray());
 
         unit.apply(StatusEffects.boss);
         unit.apply(StatusEffects.overclock, Float.MAX_VALUE);

@@ -4,20 +4,24 @@ import arc.Events;
 import arc.math.Mathf;
 import arc.util.CommandHandler;
 import arc.util.Strings;
+import arc.util.Structs;
 import arc.util.Timer;
 import crawler.ai.CrawlerAI;
 import crawler.ai.DefaultAI;
 import crawler.boss.BossBullets;
 import mindustry.content.UnitTypes;
-import mindustry.game.EventType.*;
+import mindustry.game.EventType.PlayerJoin;
+import mindustry.game.EventType.Trigger;
+import mindustry.game.EventType.WorldLoadEvent;
 import mindustry.game.Rules;
 import mindustry.gen.*;
 import mindustry.mod.Plugin;
 import mindustry.net.Administration.ActionType;
 import mindustry.type.UnitType;
 
+import java.util.Locale;
+
 import static arc.Core.app;
-import static crawler.Bundle.*;
 import static crawler.CrawlerVars.*;
 import static mindustry.Vars.*;
 
@@ -28,20 +32,34 @@ public class Main extends Plugin {
     public static boolean isWaveGoing, firstWaveLaunched;
     public static float statScaling;
 
+    public static void bundled(Player player, String key, Object... values) {
+        player.sendMessage(Bundle.format(key, findLocale(player), values));
+    }
+
+    public static void sendToChat(String key, Object... values) {
+        Groups.player.each(player -> bundled(player, key, values));
+    }
+
+    public static Locale findLocale(Player player) {
+        Locale locale = Structs.find(Bundle.supportedLocales, l -> player.locale.equals(l.toString()) || player.locale.startsWith(l.toString()));
+        return locale != null ? locale : Bundle.defaultLocale;
+    }
+
     @Override
     public void init() {
-        CrawlerVars.load();
+        Bundle.load();
         CrawlerLogic.load();
+        CrawlerVars.load();
 
         netServer.admins.addActionFilter(action -> action.type != ActionType.breakBlock && action.type != ActionType.placeBlock);
 
-        content.units().each(unit -> unit.constructor.get() instanceof WaterMovec, unit -> unit.flying = true);
-        content.units().each(unit -> {
-            unit.payloadCapacity = 6f * 6f * tilePayload;
-            unit.defaultController = DefaultAI::new;
+        content.units().each(type -> type.constructor.get() instanceof WaterMovec, type -> type.flying = true);
+        content.units().each(type -> {
+            type.payloadCapacity = 6f * 6f * tilePayload;
+            type.controller = unit -> new DefaultAI();
         });
 
-        UnitTypes.crawler.defaultController = CrawlerAI::new;
+        UnitTypes.crawler.controller = unit -> new CrawlerAI();
 
         Events.on(WorldLoadEvent.class, event -> app.post(CrawlerLogic::play));
         Events.on(PlayerJoin.class, event -> CrawlerLogic.join(event.player));
@@ -86,7 +104,7 @@ public class Main extends Plugin {
                 PlayerData.each(PlayerData::afterWave);
             }
 
-            PlayerData.each(data -> Call.setHudText(data.player.con, format("ui.money", data.locale, data.money)));
+            PlayerData.each(data -> Call.setHudText(data.player.con, Bundle.format("ui.money", data.locale, data.money)));
         });
     }
 
@@ -127,9 +145,11 @@ public class Main extends Plugin {
 
         handler.<Player>register("upgrades", "Show units you can upgrade to.", (args, player) -> {
             PlayerData data = PlayerData.datas.get(player.uuid());
-            StringBuilder upgrades = new StringBuilder(format("upgrades", data.locale));
+            StringBuilder upgrades = new StringBuilder(Bundle.format("upgrades", data.locale));
             costs.each((type, cost) -> upgrades.append("[gold] - [accent]").append(type.name).append(" [lightgray](").append(data.money < cost ? "[scarlet]" : "[lime]").append(cost).append("[])\n"));
             player.sendMessage(upgrades.toString());
         });
+
+        handler.<Player>register("info", "Show info about the Crawler Arena gamemode", (args, player) -> bundled(player, "info", bossWave));
     }
 }

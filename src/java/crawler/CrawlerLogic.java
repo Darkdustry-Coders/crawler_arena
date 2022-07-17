@@ -4,6 +4,7 @@ import arc.Events;
 import arc.math.Mathf;
 import arc.struct.ObjectMap.Entry;
 import arc.struct.OrderedMap;
+import arc.struct.Seq;
 import arc.util.Timer;
 import crawler.ai.ReinforcementAI;
 import crawler.boss.BossBullets;
@@ -11,6 +12,7 @@ import crawler.boss.BulletSpawnAbility;
 import crawler.boss.GroupSpawnAbility;
 import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
+import mindustry.entities.abilities.Ability;
 import mindustry.game.Team;
 import mindustry.game.EventType.GameOverEvent;
 import mindustry.gen.*;
@@ -19,8 +21,6 @@ import mindustry.world.Block;
 import mindustry.world.Tile;
 import mindustry.world.blocks.payloads.BuildPayload;
 
-import static crawler.Bundle.bundled;
-import static crawler.Bundle.sendToChat;
 import static crawler.CrawlerVars.*;
 import static crawler.Main.*;
 import static crawler.PlayerData.datas;
@@ -117,16 +117,20 @@ public class CrawlerLogic {
 
             boss.apply(StatusEffects.boss);
 
-            boss.abilities.add(new GroupSpawnAbility(UnitTypes.flare, 5, -64f, 64f));
-            boss.abilities.add(new GroupSpawnAbility(UnitTypes.flare, 5, 64f, 64f));
-            boss.abilities.add(new GroupSpawnAbility(UnitTypes.zenith, 3, 0, -96f));
+            Seq<Ability> abilities = Seq.with(boss.abilities);
 
-            boss.abilities.add(new BulletSpawnAbility(BossBullets::toxomount));
-            boss.abilities.add(new BulletSpawnAbility(BossBullets::corvuslaser, 1800f));
-            boss.abilities.add(new BulletSpawnAbility(BossBullets::fusetitanium));
-            boss.abilities.add(new BulletSpawnAbility(BossBullets::fusethorium));
-            boss.abilities.add(new BulletSpawnAbility(BossBullets::arclight, 300f));
-            boss.abilities.add(new BulletSpawnAbility(BossBullets::atomic));
+            abilities.add(new GroupSpawnAbility(UnitTypes.flare, 5, -64f, 64f));
+            abilities.add(new GroupSpawnAbility(UnitTypes.flare, 5, 64f, 64f));
+            abilities.add(new GroupSpawnAbility(UnitTypes.zenith, 3, 0, -96f));
+
+            abilities.add(new BulletSpawnAbility(BossBullets::toxomount));
+            abilities.add(new BulletSpawnAbility(BossBullets::corvuslaser, 1800f));
+            abilities.add(new BulletSpawnAbility(BossBullets::fusetitanium));
+            abilities.add(new BulletSpawnAbility(BossBullets::fusethorium));
+            abilities.add(new BulletSpawnAbility(BossBullets::arclight, 300f));
+            abilities.add(new BulletSpawnAbility(BossBullets::atomic));
+
+            boss.abilities(abilities.toArray());
 
             isWaveGoing = true;
         });
