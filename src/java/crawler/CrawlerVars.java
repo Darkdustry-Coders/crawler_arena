@@ -123,7 +123,7 @@ public class CrawlerVars {
                 UnitTypes.crawler, 7500,
                 UnitTypes.scepter, 10000,
                 UnitTypes.vela, 15000,
-                UnitTypes.conquer, 17500,
+                UnitTypes.conquer, vanquish,
 
                 UnitTypes.antumbra, 18000,
                 UnitTypes.quell, 23500,
