@@ -119,7 +119,7 @@ public class CrawlerVars {
                 UnitTypes.bryde, 5000,
                 UnitTypes.precept, 6400,
                 UnitTypes.anthicus, 7000,
-                UnitTypes.obviate, 7250
+                UnitTypes.obviate, 7250,
                 UnitTypes.crawler, 7500,
                 UnitTypes.scepter, 10000,
                 UnitTypes.vela, 15000,
