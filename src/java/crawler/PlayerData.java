@@ -33,7 +33,7 @@ public class PlayerData {
     public Player player;
     public Locale locale;
 
-    public int money = 100500;
+    public int money = 0;
     public UnitType type = UnitTypes.dagger;
 
     public PlayerData(Player player) {
