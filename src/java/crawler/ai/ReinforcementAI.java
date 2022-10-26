@@ -3,7 +3,6 @@ package crawler.ai;
 import mindustry.entities.units.AIController;
 import mindustry.gen.Call;
 
-import static mindustry.Vars.tilesize;
 import static mindustry.Vars.world;
 
 public class ReinforcementAI extends AIController {
@@ -13,12 +12,10 @@ public class ReinforcementAI extends AIController {
         unit.move(unit.speed(), 0f);
         unit.lookAt(unit.vel().angle());
 
-        if (world.width() * tilesize / 2f - unit.x < 120f) {
+        if (world.unitWidth() / 2f - unit.x < 120f)
             Call.payloadDropped(unit, unit.x, unit.y);
-        }
 
-        if (unit.x > world.unitWidth()) {
+        if (unit.x > world.unitWidth())
             Call.unitDespawn(unit);
-        }
     }
 }

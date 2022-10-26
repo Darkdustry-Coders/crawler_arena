@@ -2,6 +2,8 @@ package crawler.boss;
 
 import arc.math.geom.Vec2;
 
+import static crawler.boss.BossBullets.bullets;
+
 public class BossBullet extends Vec2 {
 
     public int lifetime;
@@ -10,7 +12,7 @@ public class BossBullet extends Vec2 {
         super(x, y);
 
         this.lifetime = lifetime;
-        BossBullets.bullets.add(this);
+        bullets.add(this);
     }
 
     public void update() {

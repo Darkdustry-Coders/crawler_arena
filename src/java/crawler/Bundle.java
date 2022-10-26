@@ -1,80 +1,70 @@
 package crawler;
 
-import arc.files.Fi;
 import arc.struct.ObjectMap;
-import arc.struct.StringMap;
-import arc.util.Strings;
-import arc.util.Structs;
-import mindustry.gen.Iconc;
+import arc.struct.Seq;
+import mindustry.gen.Groups;
+import mindustry.gen.Player;
 
 import java.text.MessageFormat;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static mindustry.Vars.mods;
 
 public class Bundle {
 
-    public static final ObjectMap<Locale, StringMap> bundles = new ObjectMap<>();
-    public static final ObjectMap<Locale, MessageFormat> formats = new ObjectMap<>();
     public static final Locale defaultLocale = new Locale("en");
-    public static Locale[] supportedLocales;
+    public static final Seq<Locale> supportedLocales = new Seq<>();
+
+    private static final ObjectMap<Locale, ResourceBundle> bundles = new ObjectMap<>();
 
     public static void load() {
-        Fi[] files = mods.list().find(mod -> mod.name.equals("crawler-arena")).root.child("bundles").list();
-        supportedLocales = new Locale[files.length + 1];
-        supportedLocales[supportedLocales.length - 1] = new Locale("router");
+        var files = mods.getMod("crawler-arena")
+                .root.child("bundles").seq()
+                .filter(fi -> fi.extEquals("properties"));
 
-        for (int i = 0; i < files.length; i++) {
-            String code = files[i].nameWithoutExtension();
-            String[] codes;
-            if (!code.contains("_")) { // bundle.properties
-                supportedLocales[i] = Locale.ROOT;
-            } else if ((codes = code.split("_")).length == 3) { // bundle_uk_UA.properties
-                supportedLocales[i] = new Locale(codes[1], codes[2]);
-            } else { // bundle_ru.properties
-                supportedLocales[i] = new Locale(codes[1]);
+        files.each(fi -> {
+            var codes = fi.nameWithoutExtension().split("_");
+
+            if (codes.length == 2) { // bundle_ru.properties
+                supportedLocales.add(new Locale(codes[1]));
+            } else if (codes.length == 3) { // bundle_uk_UA.properties
+                supportedLocales.add(new Locale(codes[1], codes[2]));
             }
+        });
+
+        supportedLocales.each(locale -> bundles.put(locale, ResourceBundle.getBundle("bundles.bundle", locale)));
+    }
+
+    public static String get(String key, String defaultValue, Locale locale) {
+        try {
+            var bundle = bundles.get(locale, bundles.get(defaultLocale));
+            return bundle.getString(key);
+        } catch (MissingResourceException e) {
+            return defaultValue;
         }
     }
 
     public static String get(String key, Locale locale) {
-        StringMap bundle = getOrLoad(locale);
-        return bundle != null ? bundle.get(key, key) : key;
+        return get(key, key, locale);
     }
 
     public static String format(String key, Locale locale, Object... values) {
         String pattern = get(key, locale);
         if (values.length == 0) return pattern;
 
-        MessageFormat format = formats.get(locale);
-        if (!Structs.contains(supportedLocales, locale)) {
-            format = formats.get(defaultLocale, () -> new MessageFormat(pattern, defaultLocale));
-            format.applyPattern(pattern);
-        } else if (format == null) {
-            formats.put(locale, format = new MessageFormat(pattern, locale));
-        } else {
-            format.applyPattern(pattern);
-        }
-        return format.format(values);
+        return MessageFormat.format(pattern, values);
     }
 
-    private static StringMap getOrLoad(Locale locale) {
-        StringMap bundle = bundles.get(locale);
-        if (bundle == null && Structs.contains(supportedLocales, locale)) {
-            bundles.put(locale, bundle = load(locale));
-        }
-        return bundle != null ? bundle : bundles.get(defaultLocale);
+    public static Locale findLocale(Player player) {
+        var locale = supportedLocales.find(l -> player.locale.equals(l.toString()) || player.locale.startsWith(l.toString()));
+        return locale != null ? locale : defaultLocale;
     }
 
-    private static StringMap load(Locale locale) {
-        StringMap properties = new StringMap();
-        ResourceBundle bundle = ResourceBundle.getBundle("bundles.bundle", locale);
-        if (locale.getDisplayName().equals("router")) {
-            getOrLoad(defaultLocale).each((key, value) -> properties.put(key, Strings.stripColors(value).replaceAll("\\S", String.valueOf(Iconc.blockRouter))));
-        } else {
-            bundle.keySet().forEach(key -> properties.put(key, bundle.getString(key)));
-        }
-        return properties;
+    public static void bundled(Player player, String key, Object... values) {
+        player.sendMessage(format(key, findLocale(player), values));
+    }
+
+    public static void sendToChat(String key, Object... values) {
+        Groups.player.each(player -> bundled(player, key, values));
     }
 }

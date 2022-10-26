@@ -7,10 +7,10 @@ import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
 import mindustry.entities.Units;
 import mindustry.entities.bullet.BulletType;
-import mindustry.game.Team;
 import mindustry.gen.Call;
-import mindustry.gen.Teamc;
 import mindustry.gen.Unit;
+
+import static mindustry.Vars.state;
 
 public class SnakeBullet extends BossBullet {
 
@@ -36,11 +36,11 @@ public class SnakeBullet extends BossBullet {
         super.update();
 
         if (lifetime % 2 == 0) Call.soundAt(sound, x, y, 1f, 1f);
-        bullet.createNet(Team.crux, x, y, rotation + 195, bullet.damage, 1f, 1f);
-        bullet.createNet(Team.crux, x, y, rotation - 195, bullet.damage, 1f, 1f);
+        bullet.createNet(state.rules.waveTeam, x, y, rotation + 195, bullet.damage, 1f, 1f);
+        bullet.createNet(state.rules.waveTeam, x, y, rotation - 195, bullet.damage, 1f, 1f);
 
-        Teamc target = Units.closestTarget(Team.crux, x, y, 80000f, unit -> unit.type == UnitTypes.mono); // priority target - mono
-        if (target == null) target = Units.closestTarget(Team.crux, x, y, 80000f); // if there is no mono on the map, attack everyone
+        var target = Units.closestTarget(state.rules.waveTeam, x, y, 80000f, unit -> unit.type == UnitTypes.mono); // priority target - mono
+        if (target == null) target = Units.closestTarget(state.rules.waveTeam, x, y, 80000f); // if there is no mono on the map, attack everyone
         if (target == null) return;
 
         Tmp.v1.set(target).sub(this); // find the direction to the nearest enemy...

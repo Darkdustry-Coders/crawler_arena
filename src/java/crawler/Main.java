@@ -2,53 +2,31 @@ package crawler;
 
 import arc.Events;
 import arc.math.Mathf;
-import arc.util.CommandHandler;
-import arc.util.Strings;
-import arc.util.Structs;
-import arc.util.Timer;
+import arc.struct.Seq;
+import arc.util.*;
 import crawler.ai.CrawlerAI;
 import crawler.ai.DefaultAI;
 import crawler.boss.BossBullets;
 import mindustry.content.UnitTypes;
-import mindustry.game.EventType.PlayerJoin;
-import mindustry.game.EventType.Trigger;
-import mindustry.game.EventType.WorldLoadEvent;
-import mindustry.game.Rules;
+import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.Plugin;
 import mindustry.net.Administration.ActionType;
-import mindustry.type.UnitType;
 
-import java.util.Locale;
-
-import static arc.Core.app;
+import static crawler.Bundle.*;
 import static crawler.CrawlerVars.*;
+import static crawler.PlayerData.datas;
+import static crawler.boss.BossBullets.bullets;
 import static mindustry.Vars.*;
 
 public class Main extends Plugin {
 
-    public static final Rules rules = new Rules();
-
     public static boolean isWaveGoing, firstWaveLaunched;
     public static float statScaling;
-
-    public static void bundled(Player player, String key, Object... values) {
-        player.sendMessage(Bundle.format(key, findLocale(player), values));
-    }
-
-    public static void sendToChat(String key, Object... values) {
-        Groups.player.each(player -> bundled(player, key, values));
-    }
-
-    public static Locale findLocale(Player player) {
-        Locale locale = Structs.find(Bundle.supportedLocales, l -> player.locale.equals(l.toString()) || player.locale.startsWith(l.toString()));
-        return locale != null ? locale : Bundle.defaultLocale;
-    }
 
     @Override
     public void init() {
         Bundle.load();
-        CrawlerLogic.load();
         CrawlerVars.load();
 
         netServer.admins.addActionFilter(action -> action.type != ActionType.breakBlock && action.type != ActionType.placeBlock);
@@ -56,12 +34,14 @@ public class Main extends Plugin {
         content.units().each(type -> type.constructor.get() instanceof WaterMovec, type -> type.flying = true);
         content.units().each(type -> {
             type.payloadCapacity = 6f * 6f * tilePayload;
-            type.controller = unit -> new DefaultAI();
+            type.aiController = DefaultAI::new;
         });
 
-        UnitTypes.crawler.controller = unit -> new CrawlerAI();
+        UnitTypes.crawler.aiController = CrawlerAI::new;
 
-        Events.on(WorldLoadEvent.class, event -> app.post(CrawlerLogic::play));
+        Events.on(PlayEvent.class, event -> CrawlerLogic.play());
+        Events.on(SaveLoadEvent.class, event -> CrawlerLogic.startGame());
+
         Events.on(PlayerJoin.class, event -> CrawlerLogic.join(event.player));
 
         Timer.schedule(() -> sendToChat("events.tip.info"), 120f, 240f);
@@ -80,18 +60,18 @@ public class Main extends Plugin {
                 return;
             }
 
-            if (rules.defaultTeam.data().unitCount == 0 && isWaveGoing) {
+            if (state.rules.defaultTeam.data().unitCount == 0 && isWaveGoing) {
                 isWaveGoing = false;
 
                 CrawlerLogic.gameOver();
                 return;
             }
 
-            if (rules.waveTeam.data().unitCount == 0 && isWaveGoing) {
+            if (state.rules.waveTeam.data().unitCount == 0 && isWaveGoing) {
                 isWaveGoing = false;
 
                 // it can kill somebody
-                BossBullets.bullets.clear();
+                bullets.clear();
 
                 int delay = waveDelay;
                 if (state.wave >= helpMinWave && state.wave % helpSpacing == 0) {
@@ -101,10 +81,10 @@ public class Main extends Plugin {
 
                 sendToChat("events.next-wave", delay);
                 Timer.schedule(CrawlerLogic::runWave, delay);
-                PlayerData.each(PlayerData::afterWave);
+                datas.each(PlayerData::afterWave);
             }
 
-            PlayerData.each(data -> Call.setHudText(data.player.con, Bundle.format("ui.money", data.locale, data.money)));
+            datas.each(data -> Call.setHudText(data.player.con, Bundle.format("ui.money", data.locale, data.money)));
         });
     }
 
@@ -116,38 +96,44 @@ public class Main extends Plugin {
                 return;
             }
 
-            UnitType type = costs.keys().toSeq().find(u -> u.name.equalsIgnoreCase(args[0]));
+            var type = Seq.with(costs.keys()).find(unitType -> unitType.name.equalsIgnoreCase(args[0]));
             if (type == null) {
                 bundled(player, "upgrade.unit-not-found");
                 return;
             }
 
             int amount = args.length == 2 ? Strings.parseInt(args[1]) : 1;
-            if (rules.defaultTeam.data().countType(type) + amount > unitCap) {
+            if (state.rules.defaultTeam.data().countType(type) + amount > unitCap) {
                 bundled(player, "upgrade.too-many-units");
                 return;
             }
 
-            PlayerData data = PlayerData.datas.get(player.uuid());
+            var data = PlayerData.getData(player.uuid());
+            if (data == null) return;
+
             if (data.money < costs.get(type) * amount) {
                 bundled(player, "upgrade.not-enough-money", costs.get(type) * amount, data.money);
                 return;
             }
 
-            for (int i = 0; i < amount; i++) {
-                Unit unit = type.spawn(player.x + Mathf.range(8f), player.y + Mathf.range(8f));
-                data.applyUnit(unit);
-            }
+            for (int i = 0; i < amount; i++)
+                data.applyUnit(type.spawn(player.x + Mathf.range(8f), player.y + Mathf.range(8f)));
 
             data.money -= costs.get(type) * amount;
             bundled(player, "upgrade.success", amount, type.name);
         });
 
         handler.<Player>register("upgrades", "Show units you can upgrade to.", (args, player) -> {
-            PlayerData data = PlayerData.datas.get(player.uuid());
-            StringBuilder upgrades = new StringBuilder(Bundle.format("upgrades", data.locale));
-            costs.each((type, cost) -> upgrades.append("[gold] - [accent]").append(type.name).append(" [lightgray](").append(data.money < cost ? "[scarlet]" : "[lime]").append(cost).append("[])\n"));
-            player.sendMessage(upgrades.toString());
+            var data = PlayerData.getData(player.uuid());
+            if (data == null) return;
+
+            var upgrades = new StringBuilder(Bundle.format("upgrades", data.locale));
+
+            int i = 0;
+            for (var entry : costs)
+                upgrades.append(i % 2 == 0 ? "[gold] - [accent]" : "[accent]").append(entry.key.name).append(" [lightgray](").append(data.money < entry.value ? "[scarlet]" : "[lime]").append(entry.value).append("[])").append(++i % 2 == 0 ? "\n" : ";   ");
+
+            Call.infoMessage(player.con, upgrades.toString());
         });
 
         handler.<Player>register("info", "Show info about the Crawler Arena gamemode", (args, player) -> bundled(player, "info", bossWave));

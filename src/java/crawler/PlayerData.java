@@ -1,34 +1,24 @@
 package crawler;
 
-import arc.Core;
-import arc.func.Cons;
 import arc.math.Mathf;
-import arc.struct.ObjectMap;
 import arc.struct.Seq;
-import mindustry.content.Fx;
-import mindustry.content.StatusEffects;
-import mindustry.content.UnitTypes;
+import mindustry.content.*;
 import mindustry.entities.Units;
-import mindustry.entities.abilities.Ability;
 import mindustry.entities.abilities.UnitSpawnAbility;
-import mindustry.gen.Call;
-import mindustry.gen.Player;
-import mindustry.gen.Unit;
+import mindustry.gen.*;
 import mindustry.graphics.Pal;
 import mindustry.type.UnitType;
-import mindustry.world.Tile;
 
 import java.util.Locale;
 
+import static arc.Core.app;
+import static crawler.Bundle.*;
 import static crawler.CrawlerVars.*;
-import static crawler.Main.bundled;
-import static crawler.Main.findLocale;
-import static mindustry.Vars.state;
-import static mindustry.Vars.world;
+import static mindustry.Vars.*;
 
 public class PlayerData {
 
-    public static ObjectMap<String, PlayerData> datas = new ObjectMap<>();
+    public static Seq<PlayerData> datas = new Seq<>();
 
     public Player player;
     public Locale locale;
@@ -36,19 +26,26 @@ public class PlayerData {
     public int money = 0;
     public UnitType type = UnitTypes.dagger;
 
-    public PlayerData(Player player) {
-        this.handlePlayerJoin(player);
+    public static PlayerData getData(String uuid) {
+        return datas.find(data -> data.player.uuid().equals(uuid));
     }
 
-    public static void each(Cons<PlayerData> cons) {
-        datas.each((uuid, data) -> cons.get(data));
+    public PlayerData(Player player) {
+        handlePlayerJoin(player);
     }
 
     public void handlePlayerJoin(Player player) {
         this.player = player;
         this.locale = findLocale(player);
 
-        Core.app.post(this::respawn);
+        app.post(this::respawn);
+    }
+
+    public void reset() {
+        money = 0;
+        type = UnitTypes.dagger;
+
+        app.post(this::respawn);
     }
 
     public void afterWave() {
@@ -63,36 +60,34 @@ public class PlayerData {
 
         if (player.unit().health < player.unit().maxHealth) {
             player.unit().heal();
-            Call.effect(Fx.greenCloud, player.unit().x, player.unit().y, 0f, Pal.heal);
+            Call.effect(player.con, Fx.greenCloud, player.unit().x, player.unit().y, 0f, Pal.heal);
 
             bundled(player, "events.heal");
         }
     }
 
     public void respawn() {
-        Unit unit = Units.closest(player.team(), world.unitWidth() / 2f, world.unitHeight() / 2f, u -> u.type == type && !u.isPlayer());
+        var unit = Units.closest(player.team(), world.unitWidth() / 2f, world.unitHeight() / 2f, u -> u.type == type && !u.isPlayer());
         if (unit != null) {
             player.unit(unit);
             return;
         }
 
-        Tile tile = world.tile(world.width() / 2 + Mathf.random(-3, 3), world.height() / 2 + Mathf.random(-3, 3));
+        var tile = world.tile(world.width() / 2 + Mathf.random(-3, 3), world.height() / 2 + Mathf.random(-3, 3));
         if (!type.flying && tile.solid()) tile.removeNet();
 
-        applyUnit(type.spawn(tile.worldx(), tile.worldy()));
+        player.unit(applyUnit(type.spawn(tile.worldx(), tile.worldy())));
     }
 
-    public void applyUnit(Unit unit) {
-        player.unit(unit);
-        Special special = ultra.get(type = unit.type);
+    public Unit applyUnit(Unit unit) {
+        var special = ultra.get(type = unit.type);
 
-        if (special == null) return;
+        if (special == null) return unit;
 
-        unit.maxHealth = special.health();
-        unit.health(unit.maxHealth);
+        unit.health = unit.maxHealth = special.health();
         unit.armor = special.armor();
 
-        Seq<Ability> abilities = Seq.with(unit.abilities);
+        var abilities = Seq.with(unit.abilities);
 
         if (special.unit() != null) abilities.add(new UnitSpawnAbility(special.unit(), special.cooldown(), 0f, -8f));
         else abilities.each(ability -> {
@@ -104,5 +99,7 @@ public class PlayerData {
         unit.apply(StatusEffects.boss);
         unit.apply(StatusEffects.overclock, Float.MAX_VALUE);
         unit.apply(StatusEffects.overdrive, Float.MAX_VALUE);
+
+        return unit;
     }
 }

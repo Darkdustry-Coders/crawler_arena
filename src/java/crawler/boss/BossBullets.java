@@ -4,17 +4,14 @@ import arc.func.Cons2;
 import arc.graphics.Color;
 import arc.struct.Seq;
 import arc.util.Timer;
-import mindustry.content.Blocks;
-import mindustry.content.Fx;
-import mindustry.content.Items;
-import mindustry.content.UnitTypes;
+import mindustry.content.*;
 import mindustry.entities.Damage;
-import mindustry.game.Team;
 import mindustry.gen.Call;
 import mindustry.gen.Sounds;
-import mindustry.type.Weapon;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.blocks.defense.turrets.PowerTurret;
+
+import static mindustry.Vars.state;
 
 public class BossBullets {
 
@@ -28,27 +25,27 @@ public class BossBullets {
     // #region bullets
 
     public static void toxomount(float x, float y) {
-        Weapon weapon = UnitTypes.toxopid.weapons.get(0);
+        var weapon = UnitTypes.toxopid.weapons.get(0);
         new StarBullet(x, y, 180, 3, 10f, weapon.bullet, weapon.shootSound);
     }
 
     public static void corvuslaser(float x, float y) {
-        Weapon weapon = UnitTypes.corvus.weapons.get(0);
+        var weapon = UnitTypes.corvus.weapons.get(0);
         new SnakeBullet(x, y, 120, 20f, 12f, weapon.bullet, weapon.shootSound);
     }
 
     public static void fusetitanium(float x, float y) {
-        ItemTurret turret = (ItemTurret) Blocks.fuse;
+        var turret = (ItemTurret) Blocks.fuse;
         new StarBullet(x, y, 90, 5, 8f, turret.ammoTypes.get(Items.titanium), turret.shootSound);
     }
 
     public static void fusethorium(float x, float y) {
-        ItemTurret turret = (ItemTurret) Blocks.fuse;
+        var turret = (ItemTurret) Blocks.fuse;
         new StarBullet(x, y, 90, 5, 8f, turret.ammoTypes.get(Items.thorium), turret.shootSound);
     }
 
     public static void arclight(float x, float y) {
-        PowerTurret turret = (PowerTurret) Blocks.arc;
+        var turret = (PowerTurret) Blocks.arc;
         new StarBullet(x, y, 90, 8, 12f, turret.shootType, turret.shootSound);
     }
 
@@ -81,7 +78,7 @@ public class BossBullets {
     public static void thorium(float x, float y) {
         Call.effect(Fx.reactorExplosion, x, y, 0, Color.white);
         Call.soundAt(Sounds.explosionbig, x, y, 1, 1);
-        Damage.damage(Team.crux, x, y, 300f, 6400f);
+        Damage.damage(state.rules.waveTeam, x, y, 300f, 6400f);
     }
 
     // #endregion

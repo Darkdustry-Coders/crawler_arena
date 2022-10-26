@@ -16,14 +16,13 @@ public class CrawlerAI extends GroundAI {
             target = null;
         }
 
-        if (retarget()) {
+        if (retarget())
             target = target(unit.x, unit.y, AIRange, true, true);
-        }
 
         boolean rotate = !Units.invalidateTarget(target, unit, AIRange), shoot = false;
 
         if (rotate) {
-            shoot = unit.within(target, unit.type.weapons.first().bullet.range + (target instanceof Building b ? b.block.size * tilesize : ((Hitboxc) target).hitSize()) / 2f);
+            shoot = unit.within(target, unit.type.weapons.first().bullet.range + (target instanceof Building building ? building.block.size * tilesize : ((Hitboxc) target).hitSize()) / 2f);
             unit.movePref(vec.set(target).sub(unit).limit(unit.speed()));
         }
 

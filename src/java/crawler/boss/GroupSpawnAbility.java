@@ -5,9 +5,10 @@ import arc.math.Angles;
 import arc.math.Mathf;
 import arc.util.Time;
 import mindustry.entities.abilities.Ability;
-import mindustry.game.Team;
 import mindustry.gen.Unit;
 import mindustry.type.UnitType;
+
+import static mindustry.Vars.state;
 
 public class GroupSpawnAbility extends Ability {
 
@@ -26,7 +27,7 @@ public class GroupSpawnAbility extends Ability {
             for (float deg = 0; deg < 360f; deg += 360f / amount) {
                 float dx = sx + Mathf.cosDeg(deg) * type.hitSize;
                 float dy = sy + Mathf.sinDeg(deg) * type.hitSize;
-                type.spawn(Team.crux, dx, dy);
+                type.spawn(state.rules.waveTeam, dx, dy);
             }
         };
         this.time = Time.time + Mathf.range(delay, 2 * delay);

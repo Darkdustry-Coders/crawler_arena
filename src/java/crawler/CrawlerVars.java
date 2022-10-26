@@ -15,10 +15,10 @@ public class CrawlerVars {
     /** Interval between waves in seconds */
     public static int waveDelay = 10, firstWaveDelay = 15;
 
-    /** The maximum number of units a players can spawn */
-    public static int unitCap = 96;
+    /** The maximum number of units that players can spawn */
+    public static int unitCap = 72;
     /** The maximum number of units of the same type that can be spawned at the start of a wave */
-    public static int maxUnits = 1500;
+    public static int maxUnits = 1000;
     /** The higher this number, the slower unit's stats grow */
     public static float statDiv = 128f;
 
@@ -40,7 +40,6 @@ public class CrawlerVars {
     public static float crawlersMultiplier = 1f / 10f;
 
     public static OrderedMap<Block, Integer> aidBlocks = new OrderedMap<>();
-    public static OrderedMap<Block, Integer> aidBlocksRare = new OrderedMap<>();
 
     public static OrderedMap<UnitType, Integer> enemyCuts;
     public static OrderedMap<UnitType, Integer> costs;
@@ -51,13 +50,21 @@ public class CrawlerVars {
                 Blocks.liquidSource, 4,
                 Blocks.powerSource, 4,
                 Blocks.itemSource, 6,
-                Blocks.constructor, 1,
+                Blocks.heatSource, 2,
 
                 Blocks.thoriumWallLarge, 8,
                 Blocks.surgeWallLarge, 4,
+                Blocks.berylliumWallLarge, 8,
+                Blocks.tungstenWallLarge, 6,
 
                 Blocks.mendProjector, 3,
                 Blocks.forceProjector, 2,
+                Blocks.regenProjector, 1,
+
+                Blocks.shieldedWall, 3,
+                Blocks.shieldProjector, 2,
+                Blocks.largeShieldProjector, 1,
+
                 Blocks.repairPoint, 4,
                 Blocks.repairTurret, 2,
 
@@ -70,16 +77,15 @@ public class CrawlerVars {
                 Blocks.swarmer, 2,
                 Blocks.tsunami, 1,
                 Blocks.spectre, 1,
-                Blocks.foreshadow, 1
-        );
+                Blocks.foreshadow, 1,
 
-        aidBlocksRare.putAll(
-                Blocks.largeConstructor, 1,
-                Blocks.groundFactory, 1,
-                Blocks.airFactory, 1,
-                Blocks.navalFactory, 1,
-                Blocks.overdriveDome, 4,
-                Blocks.scrapWall, 25
+                Blocks.breach, 4,
+                Blocks.diffuse, 3,
+                Blocks.sublimate, 2,
+                Blocks.titan, 1,
+                Blocks.afflict, 1,
+                Blocks.lustre, 1,
+                Blocks.scathe, 1
         );
 
         enemyCuts = OrderedMap.of(
@@ -156,5 +162,5 @@ public class CrawlerVars {
         );
     }
 
-    public static record Special(float health, float armor, float cooldown, UnitType unit) {}
+    public record Special(float health, float armor, float cooldown, UnitType unit) {}
 }
