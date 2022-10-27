@@ -15,7 +15,7 @@ public class ReinforcementAI extends AIController {
         if (world.unitWidth() / 2f - unit.x < 120f)
             Call.payloadDropped(unit, unit.x, unit.y);
 
-        if (unit.x > world.unitWidth())
+        if (unit.x >= world.unitWidth())
             Call.unitDespawn(unit);
     }
 }

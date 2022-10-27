@@ -8,42 +8,42 @@ import mindustry.world.Block;
 
 public class CrawlerVars {
 
-    public static float AIRange = 80000f;
+    public static final float AIRange = 80000f;
 
     /** Wave when it's over */
-    public static int bossWave = 25;
+    public static final int bossWave = 25;
     /** Interval between waves in seconds */
-    public static int waveDelay = 10, firstWaveDelay = 15;
+    public static final int waveDelay = 10, firstWaveDelay = 15;
 
     /** The maximum number of units that players can spawn */
-    public static int unitCap = 72;
+    public static final int unitCap = 72;
     /** The maximum number of units of the same type that can be spawned at the start of a wave */
-    public static int maxUnits = 1000;
+    public static final int maxUnits = 1000;
     /** The higher this number, the slower unit's stats grow */
-    public static float statDiv = 128f;
+    public static final float statDiv = 128f;
 
     /** Minimum required wave to spawn reinforcement */
-    public static int helpMinWave = 2;
+    public static final int helpMinWave = 8;
     /** Reinforcements appear every second wave */
-    public static int helpSpacing = 2;
+    public static final int helpSpacing = 2;
     /** Extra time needed to get support */
-    public static int helpExtraTime = 50;
+    public static final int helpExtraTime = 50;
 
-    public static float moneyExpBase = 2.2f;
-    public static float moneyRamp = 1f / 1.5f;
-    public static float extraMoneyRamp = 1f / 4000f;
-    public static float moneyMultiplier = 4.5f;
+    public static final float moneyExpBase = 2.2f;
+    public static final float moneyRamp = 1f / 1.5f;
+    public static final float extraMoneyRamp = 1f / 4000f;
+    public static final float moneyMultiplier = 4.5f;
 
-    public static float crawlersExpBase = 2.2f;
-    public static float crawlersRamp = 1f / 1.5f;
-    public static float extraCrawlersRamp = 1f / 150f;
-    public static float crawlersMultiplier = 1f / 10f;
+    public static final float crawlersExpBase = 2.2f;
+    public static final float crawlersRamp = 1f / 1.5f;
+    public static final float extraCrawlersRamp = 1f / 150f;
+    public static final float crawlersMultiplier = 1f / 10f;
 
-    public static OrderedMap<Block, Integer> aidBlocks = new OrderedMap<>();
+    public static final OrderedMap<Block, Integer> aidBlocks = new OrderedMap<>();
 
-    public static OrderedMap<UnitType, Integer> enemyCuts;
-    public static OrderedMap<UnitType, Integer> costs;
-    public static OrderedMap<UnitType, Special> ultra;
+    public static final OrderedMap<UnitType, Integer> enemyCuts = new OrderedMap<>();
+    public static final OrderedMap<UnitType, Integer> costs = new OrderedMap<>();
+    public static final OrderedMap<UnitType, Special> ultra = new OrderedMap<>();
 
     public static void load() {
         aidBlocks.putAll(
@@ -87,14 +87,14 @@ public class CrawlerVars {
                 Blocks.scathe, 1
         );
 
-        enemyCuts = OrderedMap.of(
+        enemyCuts.putAll(
                 UnitTypes.atrax, 10,
                 UnitTypes.spiroct, 50,
                 UnitTypes.arkyid, 1000,
                 UnitTypes.toxopid, 20000
         );
 
-        costs = OrderedMap.of(
+        costs.putAll(
                 UnitTypes.dagger, 25,
                 UnitTypes.flare, 75,
                 UnitTypes.nova, 100,
@@ -153,7 +153,7 @@ public class CrawlerVars {
                 UnitTypes.mono, 3750000
         );
 
-        ultra = OrderedMap.of(
+        ultra.putAll(
                 UnitTypes.crawler, new Special(400f, 10f, 60f, UnitTypes.crawler),
                 UnitTypes.mono, new Special(100000f, 20f, 900f, UnitTypes.navanax),
                 UnitTypes.poly, new Special(500f, 0f, 60f, UnitTypes.poly),

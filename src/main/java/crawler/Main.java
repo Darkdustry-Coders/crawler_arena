@@ -3,10 +3,7 @@ package crawler;
 import arc.Events;
 import arc.math.Mathf;
 import arc.util.CommandHandler;
-import crawler.ai.CrawlerAI;
-import crawler.ai.DefaultAI;
 import crawler.boss.BossBullets;
-import mindustry.content.UnitTypes;
 import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.Plugin;
@@ -20,6 +17,7 @@ import static crawler.CrawlerVars.*;
 import static crawler.PlayerData.datas;
 import static crawler.boss.BossBullets.bullets;
 import static mindustry.Vars.*;
+import static mindustry.ai.Pathfinder.*;
 
 public class Main extends Plugin {
 
@@ -31,15 +29,15 @@ public class Main extends Plugin {
         Bundle.load();
         CrawlerVars.load();
 
+        fieldTypes.set(0, () -> new PositionTarget(world.tile(world.width() / 2, world.height() / 2)));
+
         netServer.admins.addActionFilter(action -> action.type != ActionType.breakBlock && action.type != ActionType.placeBlock);
 
         content.units().each(type -> type.constructor.get() instanceof WaterMovec, type -> type.flying = true);
         content.units().each(type -> {
             type.payloadCapacity = 36f * tilePayload;
-            type.aiController = DefaultAI::new;
+            //type.aiController = CrawlerAI::new;
         });
-
-        UnitTypes.crawler.aiController = CrawlerAI::new;
 
         Events.on(PlayEvent.class, event -> CrawlerLogic.play());
         Events.on(SaveLoadEvent.class, event -> CrawlerLogic.startGame());
@@ -87,7 +85,7 @@ public class Main extends Plugin {
                 datas.each(PlayerData::afterWave);
             }
 
-            datas.each(data -> Call.setHudText(data.player.con, Bundle.format("ui.money", data.locale, data.money)));
+            datas.each(data -> Call.setHudText(data.player.con, format("ui.money", data.locale, data.money)));
         });
     }
 
@@ -128,7 +126,7 @@ public class Main extends Plugin {
 
         handler.<Player>register("upgrades", "Show units you can upgrade to.", (args, player) -> {
             var data = PlayerData.getData(player.uuid());
-            var upgrades = new StringBuilder(Bundle.format("upgrades", data.locale));
+            var upgrades = new StringBuilder(format("upgrades", data.locale));
 
             int i = 0;
             for (var entry : costs)

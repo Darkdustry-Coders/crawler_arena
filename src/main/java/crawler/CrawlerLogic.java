@@ -56,7 +56,7 @@ public class CrawlerLogic {
     }
 
     public static void gameOver() {
-        datas.each(data -> Call.infoMessage(data.player.con, Bundle.get(state.wave > bossWave ? "events.victory" : "events.lose", data.locale)));
+        datas.each(data -> Call.infoMessage(data.player.con, get(state.wave > bossWave ? "events.victory" : "events.lose", data.locale)));
 
         BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(state.wave > bossWave ? state.rules.defaultTeam : state.rules.waveTeam)));
 
@@ -74,23 +74,22 @@ public class CrawlerLogic {
         else if (state.wave > bossWave) gameOver(); // it is the end
         else {
             int totalEnemies = Mathf.ceil(Mathf.pow(crawlersExpBase, 1f + state.wave * crawlersRamp + Mathf.pow(state.wave, 2f) * extraCrawlersRamp) * Groups.player.size() * crawlersMultiplier);
-            int spreadX = world.width() / 2 - 20, spreadY = world.height() / 2 - 20;
 
             for (var entry : enemyCuts) {
                 int typeCount = totalEnemies / entry.value;
                 totalEnemies -= typeCount;
 
-                for (int i = 0; i < Math.min(typeCount, maxUnits); i++) spawnEnemy(entry.key, spreadX, spreadY);
+                for (int i = 0; i < Math.min(typeCount, maxUnits); i++) spawnEnemy(entry.key);
             }
 
-            for (int i = 0; i < Math.min(totalEnemies, maxUnits); i++) spawnEnemy(UnitTypes.crawler, spreadX, spreadY);
+            for (int i = 0; i < Math.min(totalEnemies, maxUnits); i++) spawnEnemy(UnitTypes.crawler);
 
             isWaveGoing = true;
         }
     }
 
-    public static void spawnEnemy(UnitType type, int spreadX, int spreadY) {
-        var tile = spawnTile(spreadX, spreadY);
+    public static void spawnEnemy(UnitType type) {
+        var tile = spawnTile();
         var unit = type.spawn(state.rules.waveTeam, tile.worldx(), tile.worldy());
 
         unit.health = unit.maxHealth = unit.maxHealth * statScaling / 5;
@@ -138,22 +137,14 @@ public class CrawlerLogic {
 
             var block = with(aidBlocks.keys()).random();
 
-            var pay = (Payloadc) unit; // add blocks to unit payload component
-            for (int j = 0; j < aidBlocks.get(block); j++)
-                pay.addPayload(new BuildPayload(block, state.rules.defaultTeam));
+            if (unit instanceof Payloadc payloadc)
+                for (int j = 0; j < aidBlocks.get(block); j++)
+                    payloadc.addPayload(new BuildPayload(block, state.rules.defaultTeam));
         }
     }
 
-    public static Tile spawnTile(int spreadX, int spreadY) {
-        spreadX = Math.max(spreadX, 20);
-        spreadY = Math.max(spreadY, 20);
-        return switch (Mathf.random(3)) {
-            case 0 -> world.tile(world.width() - tilesize, world.height() / 2 + Mathf.range(spreadY));
-            case 1 -> world.tile(world.width() / 2 + Mathf.range(spreadX), world.height() - tilesize);
-            case 2 -> world.tile(tilesize, world.height() / 2 + Mathf.range(spreadY));
-            case 3 -> world.tile(world.width() / 2 + Mathf.range(spreadX), tilesize);
-            default -> null;
-        };
+    public static Tile spawnTile() {
+        return with(world.tiles).select(tile -> tile.x == tilesize || tile.x == world.width() - tilesize || tile.y == tilesize || tile.y == world.height() - tilesize).random();
     }
 
     public static void join(Player player) {
