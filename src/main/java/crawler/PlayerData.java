@@ -12,6 +12,7 @@ import mindustry.type.UnitType;
 import java.util.Locale;
 
 import static arc.Core.app;
+import static arc.struct.Seq.with;
 import static crawler.Bundle.*;
 import static crawler.CrawlerVars.*;
 import static mindustry.Vars.*;
@@ -87,7 +88,7 @@ public class PlayerData {
         unit.health = unit.maxHealth = special.health();
         unit.armor = special.armor();
 
-        var abilities = Seq.with(unit.abilities);
+        var abilities = with(unit.abilities);
 
         if (special.unit() != null) abilities.add(new UnitSpawnAbility(special.unit(), special.cooldown(), 0f, -8f));
         else abilities.each(ability -> {

@@ -12,9 +12,8 @@ public class CrawlerAI extends GroundAI {
 
     @Override
     public void updateUnit() {
-        if (Units.invalidateTarget(target, unit.team, unit.x, unit.y, Float.MAX_VALUE)) {
+        if (Units.invalidateTarget(target, unit.team, unit.x, unit.y, Float.MAX_VALUE))
             target = null;
-        }
 
         if (retarget())
             target = target(unit.x, unit.y, AIRange, true, true);

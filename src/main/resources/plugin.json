@@ -1,0 +1,10 @@
+{
+  "name": "crawler-arena",
+  "minGameVersion": "139",
+  "displayName": "Crawler Arena",
+  "author": "Ilya246",
+  "description": "A special gamemode for Darkdustry.",
+  "version": "4.0",
+  "main": "crawler.Main",
+  "repo": "Darkdustry-Coders/crawler_arena"
+}

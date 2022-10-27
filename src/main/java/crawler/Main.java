@@ -2,8 +2,7 @@ package crawler;
 
 import arc.Events;
 import arc.math.Mathf;
-import arc.struct.Seq;
-import arc.util.*;
+import arc.util.CommandHandler;
 import crawler.ai.CrawlerAI;
 import crawler.ai.DefaultAI;
 import crawler.boss.BossBullets;
@@ -13,6 +12,9 @@ import mindustry.gen.*;
 import mindustry.mod.Plugin;
 import mindustry.net.Administration.ActionType;
 
+import static arc.struct.Seq.with;
+import static arc.util.Strings.parseInt;
+import static arc.util.Timer.schedule;
 import static crawler.Bundle.*;
 import static crawler.CrawlerVars.*;
 import static crawler.PlayerData.datas;
@@ -33,7 +35,7 @@ public class Main extends Plugin {
 
         content.units().each(type -> type.constructor.get() instanceof WaterMovec, type -> type.flying = true);
         content.units().each(type -> {
-            type.payloadCapacity = 6f * 6f * tilePayload;
+            type.payloadCapacity = 36f * tilePayload;
             type.aiController = DefaultAI::new;
         });
 
@@ -44,10 +46,10 @@ public class Main extends Plugin {
 
         Events.on(PlayerJoin.class, event -> CrawlerLogic.join(event.player));
 
-        Timer.schedule(() -> sendToChat("events.tip.info"), 120f, 240f);
-        Timer.schedule(() -> sendToChat("events.tip.upgrades"), 240f, 240f);
+        schedule(() -> sendToChat("events.tip.info"), 120f, 240f);
+        schedule(() -> sendToChat("events.tip.upgrades"), 240f, 240f);
 
-        Timer.schedule(BossBullets::update, 0f, .1f);
+        schedule(BossBullets::update, 0f, .1f);
 
         Events.run(Trigger.update, () -> {
             if (state.gameOver || Groups.player.isEmpty()) return;
@@ -55,8 +57,8 @@ public class Main extends Plugin {
             if (!firstWaveLaunched) { // It is really needed, trust me, I'm not a schizoid
                 firstWaveLaunched = true;
 
-                sendToChat("events.first-wave", firstWaveDelay);
-                Timer.schedule(CrawlerLogic::runWave, firstWaveDelay);
+                announce("events.first-wave", firstWaveDelay);
+                schedule(CrawlerLogic::runWave, firstWaveDelay);
                 return;
             }
 
@@ -79,8 +81,9 @@ public class Main extends Plugin {
                     delay += helpExtraTime; // megas need time to deliver blocks
                 }
 
-                sendToChat("events.next-wave", delay);
-                Timer.schedule(CrawlerLogic::runWave, delay);
+                announce("events.next-wave", delay);
+                schedule(CrawlerLogic::runWave, delay);
+
                 datas.each(PlayerData::afterWave);
             }
 
@@ -91,33 +94,33 @@ public class Main extends Plugin {
     @Override
     public void registerClientCommands(CommandHandler handler) {
         handler.<Player>register("upgrade", "<type> [amount]", "Upgrade your unit.", (args, player) -> {
-            if (args.length == 2 && Strings.parseInt(args[1]) <= 0) {
+            if (args.length > 1 && parseInt(args[1]) <= 0) {
                 bundled(player, "upgrade.invalid-amount");
                 return;
             }
 
-            var type = Seq.with(costs.keys()).find(unitType -> unitType.name.equalsIgnoreCase(args[0]));
+            var type = with(costs.keys()).find(unitType -> unitType.name.equalsIgnoreCase(args[0]));
             if (type == null) {
                 bundled(player, "upgrade.unit-not-found");
                 return;
             }
 
-            int amount = args.length == 2 ? Strings.parseInt(args[1]) : 1;
+            int amount = args.length > 1 ? parseInt(args[1]) : 1;
             if (state.rules.defaultTeam.data().countType(type) + amount > unitCap) {
                 bundled(player, "upgrade.too-many-units");
                 return;
             }
 
             var data = PlayerData.getData(player.uuid());
-            if (data == null) return;
-
             if (data.money < costs.get(type) * amount) {
                 bundled(player, "upgrade.not-enough-money", costs.get(type) * amount, data.money);
                 return;
             }
 
-            for (int i = 0; i < amount; i++)
-                data.applyUnit(type.spawn(player.x + Mathf.range(8f), player.y + Mathf.range(8f)));
+            player.unit(data.applyUnit(type.spawn(player.x + Mathf.range(tilesize), player.y + Mathf.range(tilesize))));
+
+            for (int i = 1; i < amount; i++)
+                data.applyUnit(type.spawn(player.x + Mathf.range(tilesize), player.y + Mathf.range(tilesize)));
 
             data.money -= costs.get(type) * amount;
             bundled(player, "upgrade.success", amount, type.name);
@@ -125,8 +128,6 @@ public class Main extends Plugin {
 
         handler.<Player>register("upgrades", "Show units you can upgrade to.", (args, player) -> {
             var data = PlayerData.getData(player.uuid());
-            if (data == null) return;
-
             var upgrades = new StringBuilder(Bundle.format("upgrades", data.locale));
 
             int i = 0;

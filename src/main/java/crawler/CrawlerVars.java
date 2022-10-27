@@ -23,7 +23,7 @@ public class CrawlerVars {
     public static float statDiv = 128f;
 
     /** Minimum required wave to spawn reinforcement */
-    public static int helpMinWave = 8;
+    public static int helpMinWave = 2;
     /** Reinforcements appear every second wave */
     public static int helpSpacing = 2;
     /** Extra time needed to get support */
@@ -61,7 +61,7 @@ public class CrawlerVars {
                 Blocks.forceProjector, 2,
                 Blocks.regenProjector, 1,
 
-                Blocks.shieldedWall, 3,
+                Blocks.shieldedWall, 6,
                 Blocks.shieldProjector, 2,
                 Blocks.largeShieldProjector, 1,
 
@@ -75,7 +75,6 @@ public class CrawlerVars {
                 Blocks.ripple, 2,
                 Blocks.cyclone, 1,
                 Blocks.swarmer, 2,
-                Blocks.tsunami, 1,
                 Blocks.spectre, 1,
                 Blocks.foreshadow, 1,
 

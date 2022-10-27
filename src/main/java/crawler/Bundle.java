@@ -2,12 +2,12 @@ package crawler;
 
 import arc.struct.ObjectMap;
 import arc.struct.Seq;
-import mindustry.gen.Groups;
-import mindustry.gen.Player;
+import mindustry.gen.*;
 
 import java.text.MessageFormat;
 import java.util.*;
 
+import static crawler.PlayerData.datas;
 import static mindustry.Vars.mods;
 
 public class Bundle {
@@ -65,6 +65,10 @@ public class Bundle {
     }
 
     public static void sendToChat(String key, Object... values) {
-        Groups.player.each(player -> bundled(player, key, values));
+        datas.each(data -> bundled(data.player, key, values));
+    }
+
+    public static void announce(String key, Object... values) {
+        datas.each(data -> Call.announce(data.player.con, format(key, data.locale, values)));
     }
 }

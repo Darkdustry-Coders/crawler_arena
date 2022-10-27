@@ -2,7 +2,7 @@ package crawler;
 
 import arc.Events;
 import arc.math.Mathf;
-import arc.struct.Seq;
+import arc.util.Timer;
 import crawler.ai.ReinforcementAI;
 import crawler.boss.*;
 import mindustry.content.StatusEffects;
@@ -15,6 +15,7 @@ import mindustry.type.UnitType;
 import mindustry.world.Tile;
 import mindustry.world.blocks.payloads.BuildPayload;
 
+import static arc.struct.Seq.with;
 import static crawler.Bundle.*;
 import static crawler.CrawlerVars.*;
 import static crawler.Main.*;
@@ -96,7 +97,7 @@ public class CrawlerLogic {
     }
 
     public static void spawnBoss() {
-        datas.each(data -> Call.announce(data.player.con, Bundle.get("events.boss", data.locale)));
+        announce("events.boss");
 
         BossBullets.timer(world.width() * 4f, world.height() * 4f, (x, y) -> {
             BossBullets.impact(x, y); // some cool effects
@@ -108,17 +109,17 @@ public class CrawlerLogic {
 
             boss.apply(StatusEffects.boss);
 
-            var abilities = Seq.with(boss.abilities);
+            var abilities = with(boss.abilities);
 
             abilities.add(new GroupSpawnAbility(UnitTypes.flare, 5, -64f, 64f));
             abilities.add(new GroupSpawnAbility(UnitTypes.flare, 5, 64f, 64f));
             abilities.add(new GroupSpawnAbility(UnitTypes.zenith, 3, 0, -96f));
 
-            abilities.add(new BulletSpawnAbility(BossBullets::toxomount));
-            abilities.add(new BulletSpawnAbility(BossBullets::corvuslaser, 1800f));
-            abilities.add(new BulletSpawnAbility(BossBullets::fusetitanium));
-            abilities.add(new BulletSpawnAbility(BossBullets::fusethorium));
-            abilities.add(new BulletSpawnAbility(BossBullets::arclight, 300f));
+            abilities.add(new BulletSpawnAbility(BossBullets::toxopidMount));
+            abilities.add(new BulletSpawnAbility(BossBullets::corvusLaser, 1800f));
+            abilities.add(new BulletSpawnAbility(BossBullets::fuseTitanium));
+            abilities.add(new BulletSpawnAbility(BossBullets::fuseThorium));
+            abilities.add(new BulletSpawnAbility(BossBullets::arcLight, 300f));
             abilities.add(new BulletSpawnAbility(BossBullets::atomic));
 
             boss.abilities(abilities.toArray());
@@ -128,14 +129,14 @@ public class CrawlerLogic {
     }
 
     public static void spawnReinforcement() {
-        sendToChat("events.aid");
+        Timer.schedule(() -> announce("events.aid"), 3f);
 
         for (int i = 0; i < state.wave; i++) {
             var unit = UnitTypes.mega.spawn(Team.derelict, Mathf.random(40f), world.unitHeight() / 2f + Mathf.range(120));
             unit.controller(new ReinforcementAI());
             unit.health = unit.maxHealth = Float.MAX_VALUE;
 
-            var block = Seq.with(aidBlocks.keys()).random();
+            var block = with(aidBlocks.keys()).random();
 
             var pay = (Payloadc) unit; // add blocks to unit payload component
             for (int j = 0; j < aidBlocks.get(block); j++)

@@ -24,27 +24,27 @@ public class BossBullets {
 
     // #region bullets
 
-    public static void toxomount(float x, float y) {
+    public static void toxopidMount(float x, float y) {
         var weapon = UnitTypes.toxopid.weapons.get(0);
         new StarBullet(x, y, 180, 3, 10f, weapon.bullet, weapon.shootSound);
     }
 
-    public static void corvuslaser(float x, float y) {
+    public static void corvusLaser(float x, float y) {
         var weapon = UnitTypes.corvus.weapons.get(0);
         new SnakeBullet(x, y, 120, 20f, 12f, weapon.bullet, weapon.shootSound);
     }
 
-    public static void fusetitanium(float x, float y) {
+    public static void fuseTitanium(float x, float y) {
         var turret = (ItemTurret) Blocks.fuse;
         new StarBullet(x, y, 90, 5, 8f, turret.ammoTypes.get(Items.titanium), turret.shootSound);
     }
 
-    public static void fusethorium(float x, float y) {
+    public static void fuseThorium(float x, float y) {
         var turret = (ItemTurret) Blocks.fuse;
         new StarBullet(x, y, 90, 5, 8f, turret.ammoTypes.get(Items.thorium), turret.shootSound);
     }
 
-    public static void arclight(float x, float y) {
+    public static void arcLight(float x, float y) {
         var turret = (PowerTurret) Blocks.arc;
         new StarBullet(x, y, 90, 8, 12f, turret.shootType, turret.shootSound);
     }
