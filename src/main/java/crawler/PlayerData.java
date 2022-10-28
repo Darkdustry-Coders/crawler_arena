@@ -8,16 +8,17 @@ import mindustry.entities.abilities.UnitSpawnAbility;
 import mindustry.gen.*;
 import mindustry.graphics.Pal;
 import mindustry.type.UnitType;
+import useful.Bundle;
+import useful.Bundle.LocaleProvider;
 
 import java.util.Locale;
 
 import static arc.Core.app;
 import static arc.struct.Seq.with;
-import static crawler.Bundle.*;
 import static crawler.CrawlerVars.*;
 import static mindustry.Vars.*;
 
-public class PlayerData {
+public class PlayerData implements LocaleProvider {
 
     public static Seq<PlayerData> datas = new Seq<>();
 
@@ -37,7 +38,7 @@ public class PlayerData {
 
     public void handlePlayerJoin(Player player) {
         this.player = player;
-        this.locale = findLocale(player);
+        this.locale = Bundle.locale(player);
 
         app.post(this::respawn);
     }
@@ -63,7 +64,7 @@ public class PlayerData {
             player.unit().heal();
             Call.effect(player.con, Fx.greenCloud, player.unit().x, player.unit().y, 0f, Pal.heal);
 
-            bundled(player, "events.heal");
+            Bundle.bundled(player, "events.heal");
         }
     }
 
@@ -102,5 +103,10 @@ public class PlayerData {
         unit.apply(StatusEffects.overdrive, Float.MAX_VALUE);
 
         return unit;
+    }
+
+    @Override
+    public Locale locale() {
+        return locale;
     }
 }

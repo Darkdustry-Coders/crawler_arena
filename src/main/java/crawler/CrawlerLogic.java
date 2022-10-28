@@ -16,12 +16,12 @@ import mindustry.world.Tile;
 import mindustry.world.blocks.payloads.BuildPayload;
 
 import static arc.struct.Seq.with;
-import static crawler.Bundle.*;
 import static crawler.CrawlerVars.*;
 import static crawler.Main.*;
 import static crawler.PlayerData.datas;
 import static crawler.boss.BossBullets.bullets;
 import static mindustry.Vars.*;
+import static useful.Bundle.*;
 
 public class CrawlerLogic {
 
@@ -56,7 +56,7 @@ public class CrawlerLogic {
     }
 
     public static void gameOver() {
-        datas.each(data -> Call.infoMessage(data.player.con, get(state.wave > bossWave ? "events.victory" : "events.lose", data.locale)));
+        datas.each(data -> Call.infoMessage(data.player.con, get(state.wave > bossWave ? "events.victory" : "events.lose", data)));
 
         BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(state.wave > bossWave ? state.rules.defaultTeam : state.rules.waveTeam)));
 

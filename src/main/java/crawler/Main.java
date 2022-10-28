@@ -11,16 +11,17 @@ import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.Plugin;
 import mindustry.net.Administration.ActionType;
+import useful.Bundle;
 
 import static arc.struct.Seq.with;
 import static arc.util.Strings.parseInt;
 import static arc.util.Timer.schedule;
-import static crawler.Bundle.*;
 import static crawler.CrawlerVars.*;
 import static crawler.PlayerData.datas;
 import static crawler.boss.BossBullets.bullets;
 import static mindustry.Vars.*;
 import static mindustry.ai.Pathfinder.*;
+import static useful.Bundle.*;
 
 public class Main extends Plugin {
 
@@ -29,7 +30,7 @@ public class Main extends Plugin {
 
     @Override
     public void init() {
-        Bundle.load();
+        Bundle.load(Main.class);
         CrawlerVars.load();
 
         fieldTypes.set(0, () -> new PositionTarget(world.tile(world.width() / 2, world.height() / 2)));
@@ -90,7 +91,7 @@ public class Main extends Plugin {
                 datas.each(PlayerData::afterWave);
             }
 
-            datas.each(data -> Call.setHudText(data.player.con, format("ui.money", data.locale, data.money)));
+            datas.each(data -> Call.setHudText(data.player.con, format("ui.money", data, data.money)));
         });
     }
 
@@ -131,7 +132,7 @@ public class Main extends Plugin {
 
         handler.<Player>register("upgrades", "Show units you can upgrade to.", (args, player) -> {
             var data = PlayerData.getData(player.uuid());
-            var upgrades = new StringBuilder(format("upgrades", data.locale));
+            var upgrades = new StringBuilder(format("upgrades", data));
 
             int i = 0;
             for (var entry : costs)
