@@ -11,9 +11,9 @@ public class CrawlerAI extends AIController {
         if (retarget() || invalid(target))
             target = findMainTarget(unit.x, unit.y, unit.range() * 2f, unit.type.targetAir, unit.type.targetGround);
 
-        if (target != null && unit.within(target, unit.range() * 1.25f))
-            for (var mount : unit.mounts)
-                mount.target = target;
+        boolean shouldShoot = target != null && unit.within(target, unit.range() * 1.25f);
+        if (shouldShoot) unit.aim(target);
+        unit.controlWeapons(shouldShoot);
 
         pathfind(fieldCore);
         faceTarget();
