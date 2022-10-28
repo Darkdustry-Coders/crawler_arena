@@ -55,14 +55,13 @@ public class CrawlerLogic {
         firstWaveLaunched = false;
     }
 
-    public static void gameOver() {
-        datas.each(data -> Call.infoMessage(data.player.con, get(state.wave > bossWave ? "events.victory" : "events.lose", data)));
-
-        BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(state.wave > bossWave ? state.rules.defaultTeam : state.rules.waveTeam)));
-
+    public static void gameOver(boolean win) {
+        datas.each(data -> Call.infoMessage(data.player.con, get(win ? "events.victory" : "events.lose", data)));
         Call.hideHudText();
 
-        for (int i = 0; i < world.width() * world.height() / 1000; i++) // boom!
+        BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(win ? state.rules.defaultTeam : state.rules.waveTeam)));
+
+        for (int i = 0; i < world.width() * world.height() / 2400; i++) // boom!
             BossBullets.atomic(Mathf.random(world.unitWidth()), Mathf.random(world.unitHeight()));
     }
 
@@ -70,8 +69,7 @@ public class CrawlerLogic {
         state.wave++;
         statScaling += state.wave / statDiv;
 
-        if (state.wave == bossWave) spawnBoss(); // during the boss battle do not spawn small enemies
-        else if (state.wave > bossWave) gameOver(); // it is the end
+        if (state.wave >= bossWave) spawnBoss(); // during the boss battle do not spawn small enemies
         else {
             int totalEnemies = Mathf.ceil(Mathf.pow(crawlersExpBase, 1f + state.wave * crawlersRamp + Mathf.pow(state.wave, 2f) * extraCrawlersRamp) * Groups.player.size() * crawlersMultiplier);
 
@@ -84,7 +82,7 @@ public class CrawlerLogic {
 
             for (int i = 0; i < Math.min(totalEnemies, maxUnits); i++) spawnEnemy(UnitTypes.crawler);
 
-            isWaveGoing = true;
+            waveLaunched = true;
         }
     }
 
@@ -103,8 +101,8 @@ public class CrawlerLogic {
             var boss = UnitTypes.eclipse.spawn(state.rules.waveTeam, x, y);
 
             // increasing armor to keep the bar boss working
-            boss.armor(statScaling * Groups.player.size() * 24000f);
-            boss.damageMultiplier = statScaling * 8f;
+            boss.armor(statScaling * Groups.player.size() * 10000f);
+            boss.damageMultiplier(statScaling * 6f);
 
             boss.apply(StatusEffects.boss);
 
@@ -123,7 +121,7 @@ public class CrawlerLogic {
 
             boss.abilities(abilities.toArray());
 
-            isWaveGoing = true;
+            waveLaunched = true;
         });
     }
 

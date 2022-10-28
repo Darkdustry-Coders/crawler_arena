@@ -13,6 +13,8 @@ import mindustry.mod.Plugin;
 import mindustry.net.Administration.ActionType;
 import useful.Bundle;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static arc.struct.Seq.with;
 import static arc.util.Strings.parseInt;
 import static arc.util.Timer.schedule;
@@ -25,7 +27,7 @@ import static useful.Bundle.*;
 
 public class Main extends Plugin {
 
-    public static boolean isWaveGoing, firstWaveLaunched;
+    public static boolean waveLaunched, firstWaveLaunched;
     public static float statScaling;
 
     @Override
@@ -38,12 +40,13 @@ public class Main extends Plugin {
         netServer.admins.addActionFilter(action -> action.type != ActionType.breakBlock && action.type != ActionType.placeBlock);
 
         content.units().each(type -> type.constructor.get() instanceof WaterMovec, type -> type.flying = true);
-        content.units().each(type -> {
-            type.payloadCapacity = 36f * tilePayload;
-            type.aiController = CrawlerAI::new;
-        });
+        content.units().each(type -> type.payloadCapacity = 36f * tilePayload);
 
         UnitTypes.crawler.aiController = SuicideAI::new;
+        UnitTypes.atrax.aiController = CrawlerAI::new;
+        UnitTypes.spiroct.aiController = CrawlerAI::new;
+        UnitTypes.arkyid.aiController = CrawlerAI::new;
+        UnitTypes.toxopid.aiController = CrawlerAI::new;
 
         Events.on(PlayEvent.class, event -> CrawlerLogic.play());
         Events.on(SaveLoadEvent.class, event -> CrawlerLogic.startGame());
@@ -66,18 +69,23 @@ public class Main extends Plugin {
                 return;
             }
 
-            if (state.rules.defaultTeam.data().unitCount == 0 && isWaveGoing) {
-                isWaveGoing = false;
+            if (state.rules.defaultTeam.data().unitCount == 0 && waveLaunched) {
+                waveLaunched = false;
 
-                CrawlerLogic.gameOver();
+                CrawlerLogic.gameOver(false);
                 return;
             }
 
-            if (state.rules.waveTeam.data().unitCount == 0 && isWaveGoing) {
-                isWaveGoing = false;
+            if (state.rules.waveTeam.data().unitCount == 0 && waveLaunched) {
+                waveLaunched = false;
 
                 // it can kill somebody
                 bullets.clear();
+
+                if (state.wave >= bossWave) {
+                    CrawlerLogic.gameOver(true); // it is the end
+                    return;
+                }
 
                 int delay = waveDelay;
                 if (state.wave >= helpMinWave && state.wave % helpSpacing == 0) {
@@ -134,16 +142,14 @@ public class Main extends Plugin {
             var data = PlayerData.getData(player.uuid());
             var upgrades = new StringBuilder();
 
-            int i = 0;
-            for (var entry : costs) {
-                upgrades.append("[gold] - [accent]").append(entry.key.name).append(" [lightgray](").append(data.money < entry.value ? "[scarlet]" : "[lime]").append(entry.value).append("[])\n");
-                if (++i == 25) {
-                    Call.infoMessage(player.con, format("upgrades", data, upgrades.toString()));
-                    upgrades.setLength(i = 0);
+            var integer = new AtomicInteger();
+            costs.each((type, cost) -> {
+                upgrades.append("[gold] - [accent]").append(type.name).append(" [lightgray](").append(data.money >= cost ? "[lime]" : "[scarlet]").append(cost).append("[])\n");
+                if (integer.incrementAndGet() % 25 == 0) {
+                    Call.infoMessage(player.con, format("upgrades", data, upgrades));
+                    upgrades.setLength(0);
                 }
-            }
-
-            Call.infoMessage(player.con, format("upgrades", data, upgrades.toString()));
+            });
         });
 
         handler.<Player>register("info", "Show info about the Crawler Arena gamemode", (args, player) -> bundled(player, "info", bossWave));

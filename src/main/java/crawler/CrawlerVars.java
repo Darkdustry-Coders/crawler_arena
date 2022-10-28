@@ -8,8 +8,6 @@ import mindustry.world.Block;
 
 public class CrawlerVars {
 
-    public static final float AIRange = 80000f;
-
     /** Wave when it's over */
     public static final int bossWave = 25;
     /** Interval between waves in seconds */
