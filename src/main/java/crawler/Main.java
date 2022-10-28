@@ -33,7 +33,7 @@ public class Main extends Plugin {
         Bundle.load(Main.class);
         CrawlerVars.load();
 
-        fieldTypes.set(0, () -> new PositionTarget(world.tile(world.width() / 2, world.height() / 2)));
+        fieldTypes.set(0, () -> new PositionTarget(CrawlerLogic.worldCenter()));
 
         netServer.admins.addActionFilter(action -> action.type != ActionType.breakBlock && action.type != ActionType.placeBlock);
 
@@ -132,13 +132,18 @@ public class Main extends Plugin {
 
         handler.<Player>register("upgrades", "Show units you can upgrade to.", (args, player) -> {
             var data = PlayerData.getData(player.uuid());
-            var upgrades = new StringBuilder(format("upgrades", data));
+            var upgrades = new StringBuilder();
 
             int i = 0;
-            for (var entry : costs)
-                upgrades.append(i % 2 == 0 ? "[gold] - [accent]" : "[accent]").append(entry.key.name).append(" [lightgray](").append(data.money < entry.value ? "[scarlet]" : "[lime]").append(entry.value).append("[])").append(++i % 2 == 0 ? "\n" : ";   ");
+            for (var entry : costs) {
+                upgrades.append("[gold] - [accent]").append(entry.key.name).append(" [lightgray](").append(data.money < entry.value ? "[scarlet]" : "[lime]").append(entry.value).append("[])\n");
+                if (++i == 25) {
+                    Call.infoMessage(player.con, format("upgrades", data, upgrades.toString()));
+                    upgrades.setLength(i = 0);
+                }
+            }
 
-            Call.infoMessage(player.con, upgrades.toString());
+            Call.infoMessage(player.con, format("upgrades", data, upgrades.toString()));
         });
 
         handler.<Player>register("info", "Show info about the Crawler Arena gamemode", (args, player) -> bundled(player, "info", bossWave));

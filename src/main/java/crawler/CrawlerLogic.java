@@ -147,6 +147,10 @@ public class CrawlerLogic {
         return with(world.tiles).select(tile -> tile.x == tilesize || tile.x == world.width() - tilesize || tile.y == tilesize || tile.y == world.height() - tilesize).random();
     }
 
+    public static Tile worldCenter() {
+        return world.tile(world.width() / 2, world.height() / 2);
+    }
+
     public static void join(Player player) {
         var data = PlayerData.getData(player.uuid());
         if (data != null) {
