@@ -3,7 +3,10 @@ package crawler;
 import arc.Events;
 import arc.math.Mathf;
 import arc.util.CommandHandler;
+import crawler.ai.CrawlerAI;
 import crawler.boss.BossBullets;
+import mindustry.ai.types.SuicideAI;
+import mindustry.content.UnitTypes;
 import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.Plugin;
@@ -36,8 +39,10 @@ public class Main extends Plugin {
         content.units().each(type -> type.constructor.get() instanceof WaterMovec, type -> type.flying = true);
         content.units().each(type -> {
             type.payloadCapacity = 36f * tilePayload;
-            //type.aiController = CrawlerAI::new;
+            type.aiController = CrawlerAI::new;
         });
+
+        UnitTypes.crawler.aiController = SuicideAI::new;
 
         Events.on(PlayEvent.class, event -> CrawlerLogic.play());
         Events.on(SaveLoadEvent.class, event -> CrawlerLogic.startGame());

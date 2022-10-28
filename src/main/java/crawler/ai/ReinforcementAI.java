@@ -2,6 +2,7 @@ package crawler.ai;
 
 import mindustry.entities.units.AIController;
 import mindustry.gen.Call;
+import mindustry.gen.Payloadc;
 
 import static mindustry.Vars.world;
 
@@ -15,7 +16,7 @@ public class ReinforcementAI extends AIController {
         if (world.unitWidth() / 2f - unit.x < 120f)
             Call.payloadDropped(unit, unit.x, unit.y);
 
-        if (unit.x >= world.unitWidth())
+        if (unit instanceof Payloadc payloadc && payloadc.payloads().isEmpty())
             Call.unitDespawn(unit);
     }
 }
