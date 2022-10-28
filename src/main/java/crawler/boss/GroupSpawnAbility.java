@@ -4,6 +4,7 @@ import arc.func.Cons;
 import arc.math.Angles;
 import arc.math.Mathf;
 import arc.util.Time;
+import crawler.ai.BossAI;
 import mindustry.entities.abilities.Ability;
 import mindustry.gen.Unit;
 import mindustry.type.UnitType;
@@ -22,12 +23,13 @@ public class GroupSpawnAbility extends Ability {
     }
 
     public GroupSpawnAbility(UnitType type, int amount, float x, float y, float delay) {
-        this.spawn = u -> {
-            float sx = u.x + Angles.trnsx(u.rotation, y, x), sy = u.y + Angles.trnsy(u.rotation, y, x);
+        this.spawn = unit -> {
+            float sx = unit.x + Angles.trnsx(unit.rotation, y, x), sy = unit.y + Angles.trnsy(unit.rotation, y, x);
             for (float deg = 0; deg < 360f; deg += 360f / amount) {
                 float dx = sx + Mathf.cosDeg(deg) * type.hitSize;
                 float dy = sy + Mathf.sinDeg(deg) * type.hitSize;
-                type.spawn(state.rules.waveTeam, dx, dy);
+                var spawned = type.spawn(state.rules.waveTeam, dx, dy);
+                spawned.controller(new BossAI());
             }
         };
         this.time = Time.time + Mathf.range(delay, 2 * delay);

@@ -14,7 +14,8 @@ public class AtomicBullet extends BossBullet {
     public AtomicBullet(float x, float y) {
         super(x, y, 1);
 
-        for (int i = 0; i < 3; i++) BossBullets.timer(x + Mathf.range(150f), y + Mathf.range(150f), BossBullets::thorium);
+        for (int i = 0; i < 3; i++)
+            BossBullets.timer(x + Mathf.range(150f), y + Mathf.range(150f), BossBullets::thorium);
         for (float i = 0; i < 3; i += .05f) Timer.schedule(this::inst, i);
     }
 

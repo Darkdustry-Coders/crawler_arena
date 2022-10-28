@@ -3,6 +3,7 @@ package crawler;
 import arc.Events;
 import arc.math.Mathf;
 import arc.util.Timer;
+import crawler.ai.BossAI;
 import crawler.ai.ReinforcementAI;
 import crawler.boss.*;
 import mindustry.content.StatusEffects;
@@ -99,6 +100,7 @@ public class CrawlerLogic {
         BossBullets.timer(world.width() * 4f, world.height() * 4f, (x, y) -> {
             BossBullets.impact(x, y); // some cool effects
             var boss = UnitTypes.eclipse.spawn(state.rules.waveTeam, x, y);
+            boss.controller(new BossAI());
 
             // increasing armor to keep the bar boss working
             boss.armor(statScaling * Groups.player.size() * 10000f);

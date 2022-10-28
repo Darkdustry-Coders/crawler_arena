@@ -67,17 +67,17 @@ public class BossBullets {
 
     public static void inst(float x, float y) {
         Call.effect(Fx.instBomb, x, y, 0, Color.white);
-        Call.soundAt(Sounds.railgun, x, y, 1, 1);
+        Call.soundAt(Sounds.railgun, x, y, 0.8f, 1f);
     }
 
     public static void impact(float x, float y) {
         Call.effect(Fx.impactReactorExplosion, x, y, 0, Color.white);
-        Call.soundAt(Sounds.explosionbig, x, y, 1, 1);
+        Call.soundAt(Sounds.explosionbig, x, y, 0.8f, 1f);
     }
 
     public static void thorium(float x, float y) {
         Call.effect(Fx.reactorExplosion, x, y, 0, Color.white);
-        Call.soundAt(Sounds.explosionbig, x, y, 1, 1);
+        Call.soundAt(Sounds.explosionbig, x, y, 0.8f, 1f);
         Damage.damage(state.rules.waveTeam, x, y, 240f, 1600f);
     }
 

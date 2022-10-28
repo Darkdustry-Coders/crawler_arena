@@ -36,8 +36,9 @@ public class StarBullet extends BossBullet {
         super.update();
 
         deg -= rotateSpeed;
-        if (lifetime % amount == 0) Call.soundAt(sound, x, y, 1f, 1f);
-        for (int i = 0; i < amount; i++) bullet.createNet(state.rules.waveTeam, x, y, deg + i * step, bullet.damage, 1f, 1f);
+        if (lifetime % amount == 0) Call.soundAt(sound, x, y, 0.8f, 1f);
+        for (int i = 0; i < amount; i++)
+            bullet.createNet(state.rules.waveTeam, x, y, deg + i * step, bullet.damage, 1f, 1f);
 
         var target = Units.closestTarget(state.rules.waveTeam, x, y, 80000f);
         if (target == null) return;

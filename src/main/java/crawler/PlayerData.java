@@ -28,12 +28,12 @@ public class PlayerData implements LocaleProvider {
     public int money = 0;
     public UnitType type = UnitTypes.dagger;
 
-    public static PlayerData getData(String uuid) {
-        return datas.find(data -> data.player.uuid().equals(uuid));
-    }
-
     public PlayerData(Player player) {
         handlePlayerJoin(player);
+    }
+
+    public static PlayerData getData(String uuid) {
+        return datas.find(data -> data.player.uuid().equals(uuid));
     }
 
     public void handlePlayerJoin(Player player) {
