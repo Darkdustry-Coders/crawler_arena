@@ -1,7 +1,6 @@
 package crawler;
 
 import arc.Events;
-import arc.math.Mathf;
 import arc.util.Timer;
 import crawler.ai.BossAI;
 import crawler.ai.ReinforcementAI;
@@ -16,7 +15,7 @@ import mindustry.type.UnitType;
 import mindustry.world.Tile;
 import mindustry.world.blocks.payloads.BuildPayload;
 
-import static arc.math.Mathf.random;
+import static arc.math.Mathf.*;
 import static arc.struct.Seq.with;
 import static crawler.CrawlerVars.*;
 import static crawler.Main.*;
@@ -73,7 +72,7 @@ public class CrawlerLogic {
 
         if (state.wave >= bossWave) spawnBoss(); // during the boss battle do not spawn small enemies
         else {
-            int totalEnemies = Mathf.ceil(Mathf.pow(crawlersExpBase, 1f + state.wave * crawlersRamp + Mathf.pow(state.wave, 2f) * extraCrawlersRamp) * crawlersMultiplier);
+            int totalEnemies = Math.max(1, ceil(pow(crawlersExpBase, 1f + state.wave * crawlersRamp + pow(state.wave, 2f) * extraCrawlersRamp) * crawlersMultiplier));
 
             for (var entry : enemyCuts) {
                 int typeCount = totalEnemies / entry.value;
@@ -81,8 +80,6 @@ public class CrawlerLogic {
 
                 for (int i = 0; i < Math.min(typeCount, maxUnits); i++) spawnEnemy(entry.key);
             }
-
-            logic.runWave();
 
             for (int i = 0; i < Math.min(totalEnemies, maxUnits); i++) spawnEnemy(UnitTypes.crawler);
 
@@ -134,7 +131,7 @@ public class CrawlerLogic {
         Timer.schedule(() -> announce("events.aid"), 3f);
 
         for (int i = 0; i < state.wave; i++) {
-            var unit = UnitTypes.mega.spawn(Team.derelict, random(40f), world.unitHeight() / 2f + Mathf.range(120));
+            var unit = UnitTypes.mega.spawn(Team.derelict, random(40), world.unitHeight() / 2f + range(120f));
             unit.controller(new ReinforcementAI());
             unit.health = unit.maxHealth = Float.MAX_VALUE;
 
@@ -148,10 +145,10 @@ public class CrawlerLogic {
 
     public static Tile spawnTile() {
         return switch (random(3)) {
-            case 0 -> world.tile(tilesize, random(world.height()));
-            case 1 -> world.tile(random(world.width()), tilesize);
-            case 2 -> world.tile(world.width() - tilesize, random(world.height()));
-            case 3 -> world.tile(random(world.width()), world.height() - tilesize);
+            case 0 -> world.tiles.getc(tilesize, random(world.height()));
+            case 1 -> world.tiles.getc(random(world.width()), tilesize);
+            case 2 -> world.tiles.getc(world.width() - tilesize, random(world.height()));
+            case 3 -> world.tiles.getc(random(world.width()), world.height() - tilesize);
             default -> null;
         };
     }

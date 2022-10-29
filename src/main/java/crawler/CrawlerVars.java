@@ -35,7 +35,7 @@ public class CrawlerVars {
     public static final float crawlersExpBase = 2.2f;
     public static final float crawlersRamp = 1f / 1.5f;
     public static final float extraCrawlersRamp = 1f / 150f;
-    public static final float crawlersMultiplier = 1f / 10f;
+    public static final float crawlersMultiplier = 1f / 11f;
 
     public static final OrderedMap<Block, Integer> aidBlocks = new OrderedMap<>();
 
@@ -48,7 +48,7 @@ public class CrawlerVars {
                 Blocks.liquidSource, 4,
                 Blocks.powerSource, 4,
                 Blocks.itemSource, 6,
-                Blocks.heatSource, 2,
+                Blocks.heatSource, 4,
 
                 Blocks.thoriumWallLarge, 8,
                 Blocks.surgeWallLarge, 4,
