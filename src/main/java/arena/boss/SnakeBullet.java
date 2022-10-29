@@ -1,7 +1,6 @@
-package crawler.boss;
+package arena.boss;
 
 import arc.audio.Sound;
-import arc.math.Mathf;
 import arc.util.Tmp;
 import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
@@ -10,6 +9,7 @@ import mindustry.entities.bullet.BulletType;
 import mindustry.gen.Call;
 import mindustry.gen.Unit;
 
+import static arc.math.Mathf.*;
 import static mindustry.Vars.state;
 
 public class SnakeBullet extends BossBullet {
@@ -47,8 +47,8 @@ public class SnakeBullet extends BossBullet {
         Tmp.v1.set(target).sub(this); // find the direction to the nearest enemy...
         if (Tmp.v1.len() > speed) Tmp.v1.setLength(speed);
 
-        float rad = rotation * Mathf.degRad;
-        Tmp.v2.set(Mathf.cos(rad), Mathf.sin(rad));
+        float rad = rotation * degRad;
+        Tmp.v2.set(cos(rad), sin(rad));
         Tmp.v2.rotateTo(Tmp.v1.angle(), rotateSpeed); // ...and turn to it by rotateSpeed degrees
 
         rotation = Tmp.v2.angle(); // move to the nearest enemy

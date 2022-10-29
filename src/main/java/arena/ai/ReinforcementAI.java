@@ -1,4 +1,4 @@
-package crawler.ai;
+package arena.ai;
 
 import mindustry.entities.units.AIController;
 import mindustry.gen.Call;

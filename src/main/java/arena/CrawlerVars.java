@@ -1,4 +1,4 @@
-package crawler;
+package arena;
 
 import arc.struct.OrderedMap;
 import mindustry.content.Blocks;
@@ -11,14 +11,14 @@ public class CrawlerVars {
     /** Wave when it's over */
     public static final int bossWave = 25;
     /** Interval between waves in seconds */
-    public static final int waveDelay = 10, firstWaveDelay = 15;
+    public static final int firstWaveDelay = 15, waveDelay = 10, additionalDelay = 10;
 
     /** The maximum number of units that players can spawn */
     public static final int unitCap = 72;
     /** The maximum number of units of the same type that can be spawned at the start of a wave */
     public static final int maxUnits = 1000;
     /** The higher this number, the slower unit's stats grow */
-    public static final float statDiv = 128f;
+    public static final float statDiv = 100f;
 
     /** Minimum required wave to spawn reinforcement */
     public static final int helpMinWave = 8;
@@ -28,19 +28,16 @@ public class CrawlerVars {
     public static final int helpExtraTime = 50;
 
     public static final float moneyExpBase = 2.2f;
-    public static final float moneyRamp = 1f / 1.5f;
-    public static final float extraMoneyRamp = 1f / 4000f;
-    public static final float moneyMultiplier = 4.5f;
+    public static final float moneyRamp = 0.67f;
 
     public static final float crawlersExpBase = 2.2f;
-    public static final float crawlersRamp = 1f / 1.5f;
-    public static final float extraCrawlersRamp = 1f / 150f;
-    public static final float crawlersMultiplier = 1f / 11f;
+    public static final float crawlersRamp = 0.65f;
 
     public static final OrderedMap<Block, Integer> aidBlocks = new OrderedMap<>();
 
     public static final OrderedMap<UnitType, Integer> enemyCuts = new OrderedMap<>();
-    public static final OrderedMap<UnitType, Integer> costs = new OrderedMap<>();
+    public static final OrderedMap<UnitType, Integer> unitCosts = new OrderedMap<>();
+
     public static final OrderedMap<UnitType, Special> ultra = new OrderedMap<>();
 
     public static void load() {
@@ -85,13 +82,14 @@ public class CrawlerVars {
         );
 
         enemyCuts.putAll(
-                UnitTypes.atrax, 10,
-                UnitTypes.spiroct, 50,
+                UnitTypes.toxopid, 10000,
                 UnitTypes.arkyid, 1000,
-                UnitTypes.toxopid, 10000
+                UnitTypes.spiroct, 50,
+                UnitTypes.atrax, 10,
+                UnitTypes.crawler, 1
         );
 
-        costs.putAll(
+        unitCosts.putAll(
                 UnitTypes.dagger, 25,
                 UnitTypes.flare, 75,
                 UnitTypes.nova, 100,

@@ -1,6 +1,5 @@
-package crawler;
+package arena;
 
-import arc.math.Mathf;
 import arc.struct.Seq;
 import mindustry.content.*;
 import mindustry.entities.Units;
@@ -14,8 +13,9 @@ import useful.Bundle.LocaleProvider;
 import java.util.Locale;
 
 import static arc.Core.app;
+import static arc.math.Mathf.*;
 import static arc.struct.Seq.with;
-import static crawler.CrawlerVars.*;
+import static arena.CrawlerVars.*;
 import static mindustry.Vars.*;
 
 public class PlayerData implements LocaleProvider {
@@ -53,7 +53,7 @@ public class PlayerData implements LocaleProvider {
     public void afterWave() {
         if (!player.con.isConnected()) return;
 
-        money += Mathf.pow(moneyExpBase, 1f + state.wave * moneyRamp + Mathf.pow(state.wave, 2) * extraMoneyRamp) * moneyMultiplier;
+        money += pow(moneyExpBase, 3 + state.wave * moneyRamp);
 
         if (player.dead()) {
             respawn();
@@ -75,7 +75,7 @@ public class PlayerData implements LocaleProvider {
             return;
         }
 
-        var tile = world.tile(world.width() / 2 + Mathf.random(-3, 3), world.height() / 2 + Mathf.random(-3, 3));
+        var tile = world.tile(world.width() / 2 + range(tilesize), world.height() / 2 + range(tilesize));
         if (!type.flying && tile.solid()) tile.removeNet();
 
         player.unit(applyUnit(type.spawn(tile.worldx(), tile.worldy())));

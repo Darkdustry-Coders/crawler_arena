@@ -1,14 +1,14 @@
-package crawler.boss;
+package arena.boss;
 
 import arc.func.Cons;
 import arc.math.Angles;
-import arc.math.Mathf;
 import arc.util.Time;
-import crawler.ai.BossAI;
+import arena.ai.BossAI;
 import mindustry.entities.abilities.Ability;
 import mindustry.gen.Unit;
 import mindustry.type.UnitType;
 
+import static arc.math.Mathf.*;
 import static mindustry.Vars.state;
 
 public class GroupSpawnAbility extends Ability {
@@ -26,13 +26,13 @@ public class GroupSpawnAbility extends Ability {
         this.spawn = unit -> {
             float sx = unit.x + Angles.trnsx(unit.rotation, y, x), sy = unit.y + Angles.trnsy(unit.rotation, y, x);
             for (float deg = 0; deg < 360f; deg += 360f / amount) {
-                float dx = sx + Mathf.cosDeg(deg) * type.hitSize;
-                float dy = sy + Mathf.sinDeg(deg) * type.hitSize;
+                float dx = sx + cosDeg(deg) * type.hitSize;
+                float dy = sy + sinDeg(deg) * type.hitSize;
                 var spawned = type.spawn(state.rules.waveTeam, dx, dy);
                 spawned.controller(new BossAI());
             }
         };
-        this.time = Time.time + Mathf.range(delay, 2 * delay);
+        this.time = Time.time + range(delay, 2 * delay);
         this.delay = delay;
     }
 

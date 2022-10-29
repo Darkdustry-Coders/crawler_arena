@@ -1,4 +1,4 @@
-package crawler.ai;
+package arena.ai;
 
 import mindustry.ai.types.FlyingAI;
 import mindustry.gen.Teamc;

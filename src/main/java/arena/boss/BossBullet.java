@@ -1,8 +1,8 @@
-package crawler.boss;
+package arena.boss;
 
 import arc.math.geom.Vec2;
 
-import static crawler.boss.BossBullets.bullets;
+import static arena.boss.BossBullets.bullets;
 
 public class BossBullet extends Vec2 {
 

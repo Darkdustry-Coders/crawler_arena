@@ -5,6 +5,6 @@
   "author": "Ilya246",
   "description": "A special gamemode for Darkdustry.",
   "version": "4.0",
-  "main": "crawler.Main",
+  "main": "arena.Main",
   "repo": "Darkdustry-Coders/crawler_arena"
 }

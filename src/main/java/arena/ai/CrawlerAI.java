@@ -1,9 +1,8 @@
-package crawler.ai;
+package arena.ai;
 
-import crawler.CrawlerLogic;
 import mindustry.entities.units.AIController;
 
-import static mindustry.Vars.tilesize;
+import static mindustry.Vars.*;
 import static mindustry.ai.Pathfinder.fieldCore;
 
 public class CrawlerAI extends AIController {
@@ -17,7 +16,7 @@ public class CrawlerAI extends AIController {
         if (shouldShoot) unit.aimLook(target);
         unit.controlWeapons(shouldShoot);
 
-        if (unit.dst(CrawlerLogic.worldCenter()) < 36 * tilesize)
+        if (unit.dst(world.tile(world.width() / 2, world.height() / 2)) < 32 * tilesize && target != null)
             moveTo(target, unit.range() / 1.25f);
         else pathfind(fieldCore);
 

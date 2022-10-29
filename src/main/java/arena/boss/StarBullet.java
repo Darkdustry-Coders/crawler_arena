@@ -1,4 +1,4 @@
-package crawler.boss;
+package arena.boss;
 
 import arc.audio.Sound;
 import arc.util.Tmp;
