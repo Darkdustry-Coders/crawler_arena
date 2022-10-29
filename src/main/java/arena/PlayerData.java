@@ -69,20 +69,20 @@ public class PlayerData implements LocaleProvider {
     }
 
     public void respawn() {
-        var unit = Units.closest(player.team(), world.unitWidth() / 2f, world.unitHeight() / 2f, u -> u.type == type && !u.isPlayer());
-        if (unit != null && !unit.isPlayer()) {
-            player.unit(unit);
+        var unit = Units.closest(player.team(), world.unitWidth() / 2f, world.unitHeight() / 2f, u -> u.isAI() && u.type == type && !u.dead);
+        if (unit != null) {
+            Call.unitControl(player, unit);
             return;
         }
 
         var tile = world.tile(world.width() / 2 + range(tilesize), world.height() / 2 + range(tilesize));
         if (!type.flying && tile.solid()) tile.removeNet();
 
-        player.unit(applyUnit(type.spawn(tile.worldx(), tile.worldy())));
+        Call.unitControl(player, applyUnit(type.spawn(tile.worldx(), tile.worldy())));
     }
 
     public Unit applyUnit(Unit unit) {
-        var special = ultra.get(type = unit.type);
+        var special = specialUnits.get(type = unit.type);
 
         if (special == null) return unit;
 

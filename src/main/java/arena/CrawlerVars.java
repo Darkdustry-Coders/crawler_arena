@@ -15,6 +15,8 @@ public class CrawlerVars {
 
     /** The maximum number of units that players can spawn */
     public static final int unitCap = 72;
+    /** The maximum number of units displayed on the /upgrades page. */
+    public static final int unitsPerPage = 25;
     /** The maximum number of units of the same type that can be spawned at the start of a wave */
     public static final int maxUnits = 1000;
     /** The higher this number, the slower unit's stats grow */
@@ -38,7 +40,7 @@ public class CrawlerVars {
     public static final OrderedMap<UnitType, Integer> enemyCuts = new OrderedMap<>();
     public static final OrderedMap<UnitType, Integer> unitCosts = new OrderedMap<>();
 
-    public static final OrderedMap<UnitType, Special> ultra = new OrderedMap<>();
+    public static final OrderedMap<UnitType, Special> specialUnits = new OrderedMap<>();
 
     public static void load() {
         aidBlocks.putAll(
@@ -148,7 +150,7 @@ public class CrawlerVars {
                 UnitTypes.mono, 3750000
         );
 
-        ultra.putAll(
+        specialUnits.putAll(
                 UnitTypes.crawler, new Special(400f, 10f, 60f, UnitTypes.crawler),
                 UnitTypes.mono, new Special(100000f, 20f, 900f, UnitTypes.navanax),
                 UnitTypes.poly, new Special(500f, 0f, 60f, UnitTypes.poly),

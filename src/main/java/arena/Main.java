@@ -11,9 +11,7 @@ import mindustry.mod.Plugin;
 import mindustry.net.Administration.ActionType;
 import useful.Bundle;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static arc.math.Mathf.range;
+import static arc.math.Mathf.*;
 import static arc.struct.Seq.with;
 import static arc.util.Strings.parseInt;
 import static arc.util.Timer.schedule;
@@ -129,7 +127,7 @@ public class Main extends Plugin {
                 return;
             }
 
-            player.unit(data.applyUnit(type.spawn(player.x + range(tilesize), player.y + range(tilesize))));
+            Call.unitControl(player, data.applyUnit(type.spawn(player.x + range(tilesize), player.y + range(tilesize))));
 
             for (int i = 1; i < amount; i++)
                 data.applyUnit(type.spawn(player.x + range(tilesize), player.y + range(tilesize)));
@@ -138,18 +136,22 @@ public class Main extends Plugin {
             bundled(player, "upgrade.success", amount, type.name);
         });
 
-        handler.<Player>register("upgrades", "Show units you can upgrade to.", (args, player) -> {
-            var data = PlayerData.getData(player.uuid());
-            var upgrades = new StringBuilder();
+        handler.<Player>register("upgrades", "[page]", "Show units you can upgrade to.", (args, player) -> {
+            int page = args.length > 0 ? parseInt(args[0]) : 1, pages = ceil(unitCosts.size / (float) unitsPerPage);
+            if (page > pages || page <= 0) {
+                bundled(player, "upgrades.invalid-page", pages);
+                return;
+            }
 
-            var integer = new AtomicInteger();
-            unitCosts.each((type, cost) -> {
-                upgrades.append("[gold] - [accent]").append(type.name).append(" [lightgray](").append(data.money >= cost ? "[lime]" : "[scarlet]").append(cost).append("[])\n");
-                if (integer.incrementAndGet() % 25 == 0) {
-                    Call.infoMessage(player.con, format("upgrades", data, upgrades));
-                    upgrades.setLength(0);
-                }
-            });
+            var data = PlayerData.getData(player.uuid());
+            var builder = new StringBuilder();
+
+            for (int i = unitsPerPage * (page - 1); i < Math.min(unitsPerPage * page, unitCosts.size); i++) {
+                var type = unitCosts.orderedKeys().get(i);
+                builder.append("[gold] - [accent]").append(type.name).append(" [lightgray](").append(data.money >= unitCosts.get(type) ? "[lime]" : "[scarlet]").append(unitCosts.get(type)).append("[])\n");
+            }
+
+            Call.infoMessage(player.con, format("upgrades", data, page, builder.toString()));
         });
 
         handler.<Player>register("info", "Show info about the Crawler Arena gamemode", (args, player) -> bundled(player, "info", bossWave));

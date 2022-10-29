@@ -27,6 +27,7 @@ public class CrawlerLogic {
 
     public static void applyRules(Rules rules) {
         rules.canGameOver = false;
+        rules.possessionAllowed = true;
         rules.waveTimer = false;
         rules.waves = true;
         rules.waitEnemies = true;
