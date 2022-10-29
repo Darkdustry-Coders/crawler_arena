@@ -103,8 +103,8 @@ public class CrawlerLogic {
             boss.controller(new BossAI());
 
             // increasing armor to keep the bar boss working
-            boss.armor(statScaling * Groups.player.size() * 10000f);
-            boss.damageMultiplier(statScaling * 6f);
+            boss.armor(statScaling * Groups.player.size() * 16000f);
+            boss.damageMultiplier(statScaling * 10f);
 
             boss.apply(StatusEffects.boss);
 
