@@ -127,7 +127,7 @@ public class Main extends Plugin {
                 return;
             }
 
-            Call.unitControl(player, data.applyUnit(type.spawn(player.x + range(tilesize), player.y + range(tilesize))));
+            data.controlUnit(data.applyUnit(type.spawn(player.x + range(tilesize), player.y + range(tilesize))));
 
             for (int i = 1; i < amount; i++)
                 data.applyUnit(type.spawn(player.x + range(tilesize), player.y + range(tilesize)));

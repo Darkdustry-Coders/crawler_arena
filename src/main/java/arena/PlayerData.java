@@ -71,14 +71,19 @@ public class PlayerData implements LocaleProvider {
     public void respawn() {
         var unit = Units.closest(player.team(), world.unitWidth() / 2f, world.unitHeight() / 2f, u -> u.isAI() && u.type == type && !u.dead);
         if (unit != null) {
-            Call.unitControl(player, unit);
+            controlUnit(unit);
             return;
         }
 
         var tile = world.tile(world.width() / 2 + range(tilesize), world.height() / 2 + range(tilesize));
         if (!type.flying && tile.solid()) tile.removeNet();
 
-        Call.unitControl(player, applyUnit(type.spawn(tile.worldx(), tile.worldy())));
+        controlUnit(applyUnit(type.spawn(tile.worldx(), tile.worldy())));
+    }
+
+    public void controlUnit(Unit unit) {
+        Call.unitControl(player, unit);
+        Call.setCameraPosition(player.con, unit.x, unit.y);
     }
 
     public Unit applyUnit(Unit unit) {
@@ -98,9 +103,9 @@ public class PlayerData implements LocaleProvider {
 
         unit.abilities(abilities.toArray());
 
-        unit.apply(StatusEffects.boss);
         unit.apply(StatusEffects.overclock, Float.MAX_VALUE);
         unit.apply(StatusEffects.overdrive, Float.MAX_VALUE);
+        unit.apply(StatusEffects.boss);
 
         return unit;
     }
