@@ -11,6 +11,7 @@ import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.Plugin;
 import mindustry.net.Administration.ActionType;
+import mindustry.world.blocks.defense.BaseShield.BaseShieldBuild;
 import useful.Bundle;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -97,6 +98,13 @@ public class Main extends Plugin {
                 schedule(CrawlerLogic::runWave, delay);
 
                 datas.each(PlayerData::afterWave);
+
+                // Remove all BaseShields since they are too OP
+                world.tiles.eachTile(tile -> {
+                    if (tile.build instanceof BaseShieldBuild build && build.radius() >= 1f) {
+                        build.kill();
+                    }
+                });
             }
 
             datas.each(data -> Call.setHudText(data.player.con, format("ui.money", data, data.money)));

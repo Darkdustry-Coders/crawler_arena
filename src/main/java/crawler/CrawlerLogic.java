@@ -72,7 +72,7 @@ public class CrawlerLogic {
 
         if (state.wave >= bossWave) spawnBoss(); // during the boss battle do not spawn small enemies
         else {
-            int totalEnemies = Math.max(1, ceil(pow(crawlersExpBase, 1f + state.wave * crawlersRamp + pow(state.wave, 2f) * extraCrawlersRamp) * crawlersMultiplier));
+            int totalEnemies = Math.max(state.wave, ceil(pow(crawlersExpBase, 0.48f + state.wave * crawlersRamp + pow(state.wave, 1.96f) * extraCrawlersRamp) * crawlersMultiplier));
 
             for (var entry : enemyCuts) {
                 int typeCount = totalEnemies / entry.value;

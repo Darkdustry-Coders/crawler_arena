@@ -88,7 +88,7 @@ public class CrawlerVars {
                 UnitTypes.atrax, 10,
                 UnitTypes.spiroct, 50,
                 UnitTypes.arkyid, 1000,
-                UnitTypes.toxopid, 20000
+                UnitTypes.toxopid, 10000
         );
 
         costs.putAll(
@@ -106,11 +106,11 @@ public class CrawlerVars {
 
                 UnitTypes.oxynoe, 850,
                 UnitTypes.risso, 1000,
+                UnitTypes.mega, 1500,
                 UnitTypes.spiroct, 1500,
                 UnitTypes.quasar, 2000,
                 UnitTypes.stell, 2000,
                 UnitTypes.merui, 2200,
-                UnitTypes.mega, 2500,
                 UnitTypes.elude, 2500,
 
                 UnitTypes.zenith, 2500,
