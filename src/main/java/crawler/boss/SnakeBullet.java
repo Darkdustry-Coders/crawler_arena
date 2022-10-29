@@ -49,7 +49,7 @@ public class SnakeBullet extends BossBullet {
 
         float rad = rotation * Mathf.degRad;
         Tmp.v2.set(Mathf.cos(rad), Mathf.sin(rad));
-        Tmp.v2.rotateTo(Tmp.v1.angle(), rotateSpeed); // ...and turn into it by rotateSpeed degrees
+        Tmp.v2.rotateTo(Tmp.v1.angle(), rotateSpeed); // ...and turn to it by rotateSpeed degrees
 
         rotation = Tmp.v2.angle(); // move to the nearest enemy
         add(Tmp.v2.setLength(Tmp.v1.len()));

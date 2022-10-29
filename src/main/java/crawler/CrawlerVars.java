@@ -60,8 +60,7 @@ public class CrawlerVars {
                 Blocks.regenProjector, 1,
 
                 Blocks.shieldedWall, 6,
-                Blocks.shieldProjector, 2,
-                Blocks.largeShieldProjector, 1,
+                Blocks.shieldProjector, 1,
 
                 Blocks.repairPoint, 4,
                 Blocks.repairTurret, 2,

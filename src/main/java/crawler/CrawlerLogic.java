@@ -16,6 +16,7 @@ import mindustry.type.UnitType;
 import mindustry.world.Tile;
 import mindustry.world.blocks.payloads.BuildPayload;
 
+import static arc.math.Mathf.random;
 import static arc.struct.Seq.with;
 import static crawler.CrawlerVars.*;
 import static crawler.Main.*;
@@ -63,7 +64,7 @@ public class CrawlerLogic {
         BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(win ? state.rules.defaultTeam : state.rules.waveTeam)));
 
         for (int i = 0; i < world.width() * world.height() / 2400; i++) // boom!
-            BossBullets.atomic(Mathf.random(world.unitWidth()), Mathf.random(world.unitHeight()));
+            BossBullets.atomic(random(world.unitWidth()), random(world.unitHeight()));
     }
 
     public static void runWave() {
@@ -72,7 +73,7 @@ public class CrawlerLogic {
 
         if (state.wave >= bossWave) spawnBoss(); // during the boss battle do not spawn small enemies
         else {
-            int totalEnemies = Mathf.ceil(Mathf.pow(crawlersExpBase, 1f + state.wave * crawlersRamp + Mathf.pow(state.wave, 2f) * extraCrawlersRamp) * Groups.player.size() * crawlersMultiplier);
+            int totalEnemies = Mathf.ceil(Mathf.pow(crawlersExpBase, 1f + state.wave * crawlersRamp + Mathf.pow(state.wave, 2f) * extraCrawlersRamp) * crawlersMultiplier);
 
             for (var entry : enemyCuts) {
                 int typeCount = totalEnemies / entry.value;
@@ -80,6 +81,8 @@ public class CrawlerLogic {
 
                 for (int i = 0; i < Math.min(typeCount, maxUnits); i++) spawnEnemy(entry.key);
             }
+
+            logic.runWave();
 
             for (int i = 0; i < Math.min(totalEnemies, maxUnits); i++) spawnEnemy(UnitTypes.crawler);
 
@@ -131,7 +134,7 @@ public class CrawlerLogic {
         Timer.schedule(() -> announce("events.aid"), 3f);
 
         for (int i = 0; i < state.wave; i++) {
-            var unit = UnitTypes.mega.spawn(Team.derelict, Mathf.random(40f), world.unitHeight() / 2f + Mathf.range(120));
+            var unit = UnitTypes.mega.spawn(Team.derelict, random(40f), world.unitHeight() / 2f + Mathf.range(120));
             unit.controller(new ReinforcementAI());
             unit.health = unit.maxHealth = Float.MAX_VALUE;
 
@@ -144,7 +147,13 @@ public class CrawlerLogic {
     }
 
     public static Tile spawnTile() {
-        return with(world.tiles).select(tile -> tile.x == tilesize || tile.x == world.width() - tilesize || tile.y == tilesize || tile.y == world.height() - tilesize).random();
+        return switch (random(3)) {
+            case 0 -> world.tile(tilesize, random(world.height()));
+            case 1 -> world.tile(random(world.width()), tilesize);
+            case 2 -> world.tile(world.width() - tilesize, random(world.height()));
+            case 3 -> world.tile(random(world.width()), world.height() - tilesize);
+            default -> null;
+        };
     }
 
     public static Tile worldCenter() {

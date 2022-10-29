@@ -70,7 +70,7 @@ public class PlayerData implements LocaleProvider {
 
     public void respawn() {
         var unit = Units.closest(player.team(), world.unitWidth() / 2f, world.unitHeight() / 2f, u -> u.type == type && !u.isPlayer());
-        if (unit != null) {
+        if (unit != null && !unit.isPlayer()) {
             player.unit(unit);
             return;
         }
