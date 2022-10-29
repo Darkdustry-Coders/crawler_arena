@@ -1,11 +1,15 @@
 package arena.ai;
 
+import arc.math.geom.Vec2;
 import mindustry.entities.units.AIController;
 
 import static mindustry.Vars.*;
 import static mindustry.ai.Pathfinder.fieldCore;
 
 public class CrawlerAI extends AIController {
+
+    public int pathID = controlPath.nextTargetId();
+    public Vec2 out = new Vec2();
 
     @Override
     public void updateUnit() {
@@ -16,9 +20,10 @@ public class CrawlerAI extends AIController {
         if (shouldShoot) unit.aimLook(target);
         unit.controlWeapons(shouldShoot);
 
-        if (unit.dst(world.tile(world.width() / 2, world.height() / 2)) < 32 * tilesize && target != null)
-            moveTo(target, unit.range() / 1.25f);
-        else pathfind(fieldCore);
+        if (unit.dst(world.tile(world.width() / 2, world.height() / 2)) < 32 * tilesize && target != null) {
+            controlPath.getPathPosition(unit, pathID, new Vec2(target.x(), target.y()), out);
+            moveTo(out, 0f, 0f);
+        } else pathfind(fieldCore);
 
         faceTarget();
     }
