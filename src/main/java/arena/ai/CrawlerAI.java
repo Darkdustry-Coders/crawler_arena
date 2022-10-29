@@ -13,8 +13,10 @@ public class CrawlerAI extends AIController {
 
     @Override
     public void updateUnit() {
-        if (retarget() || invalid(target))
+        if (retarget() || invalid(target)) {
+            pathID = controlPath.nextTargetId();
             target = findMainTarget(unit.x, unit.y, 999999f, unit.type.targetAir, unit.type.targetGround);
+        }
 
         boolean shouldShoot = target != null && unit.within(target, unit.range() * 1.25f);
         if (shouldShoot) unit.aimLook(target);
