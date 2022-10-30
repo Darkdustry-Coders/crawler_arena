@@ -137,7 +137,7 @@ public class CrawlerLogic {
     public static void spawnReinforcement() {
         schedule(() -> announce("events.aid"), 3f);
 
-        for (int i = 0; i < state.wave; i++) {
+        for (int i = 0; i <= state.wave; i++) {
             var unit = mega.spawn(Team.derelict, random(40), world.unitHeight() / 2f + range(120f));
             unit.controller(new ReinforcementAI());
             unit.health = unit.maxHealth = Float.MAX_VALUE;

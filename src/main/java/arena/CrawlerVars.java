@@ -53,18 +53,17 @@ public class CrawlerVars {
                 Blocks.surgeWallLarge, 4,
                 Blocks.berylliumWallLarge, 8,
                 Blocks.tungstenWallLarge, 6,
+                Blocks.shieldedWall, 6,
 
                 Blocks.mendProjector, 3,
+                Blocks.overdriveProjector, 1,
                 Blocks.forceProjector, 2,
-                Blocks.regenProjector, 1,
 
-                Blocks.shieldedWall, 6,
-                Blocks.shieldProjector, 1,
+                Blocks.regenProjector, 1,
+                //Blocks.shieldProjector, 1, // Too OP block.
 
                 Blocks.repairPoint, 4,
                 Blocks.repairTurret, 2,
-
-                Blocks.overdriveProjector, 1,
 
                 Blocks.arc, 6,
                 Blocks.lancer, 4,
