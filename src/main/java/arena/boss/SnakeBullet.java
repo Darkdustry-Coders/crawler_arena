@@ -11,6 +11,7 @@ import mindustry.gen.Unit;
 
 import static arc.math.Mathf.*;
 import static mindustry.Vars.state;
+import static mindustry.content.UnitTypes.mono;
 
 public class SnakeBullet extends BossBullet {
 
@@ -39,9 +40,9 @@ public class SnakeBullet extends BossBullet {
         bullet.createNet(state.rules.waveTeam, x, y, rotation + 195, bullet.damage, 1f, 1f);
         bullet.createNet(state.rules.waveTeam, x, y, rotation - 195, bullet.damage, 1f, 1f);
 
-        var target = Units.closestTarget(state.rules.waveTeam, x, y, 80000f, unit -> unit.type == UnitTypes.mono); // priority target - mono
+        var target = Units.closestTarget(state.rules.waveTeam, x, y, 999999f, unit -> unit.type == mono); // priority target - mono
         if (target == null)
-            target = Units.closestTarget(state.rules.waveTeam, x, y, 80000f); // if there is no mono on the map, attack everyone
+            target = Units.closestTarget(state.rules.waveTeam, x, y, 999999f); // if there is no mono on the map, attack everyone
         if (target == null) return;
 
         Tmp.v1.set(target).sub(this); // find the direction to the nearest enemy...

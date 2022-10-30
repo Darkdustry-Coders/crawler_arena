@@ -2,9 +2,8 @@ package arena;
 
 import arc.Events;
 import arc.util.CommandHandler;
-import arena.ai.CrawlerAI;
+import arena.ai.EnemyAI;
 import arena.boss.BossBullets;
-import mindustry.ai.types.SuicideAI;
 import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.Plugin;
@@ -19,7 +18,6 @@ import static arena.CrawlerVars.*;
 import static arena.PlayerData.datas;
 import static arena.boss.BossBullets.bullets;
 import static mindustry.Vars.*;
-import static mindustry.ai.Pathfinder.*;
 import static mindustry.content.UnitTypes.*;
 import static useful.Bundle.*;
 
@@ -33,18 +31,16 @@ public class Main extends Plugin {
         Bundle.load(Main.class);
         CrawlerVars.load();
 
-        fieldTypes.set(0, () -> new PositionTarget(world.tile(world.width() / 2, world.height() / 2)));
-
         netServer.admins.addActionFilter(action -> action.type != ActionType.breakBlock && action.type != ActionType.placeBlock);
 
         content.units().each(type -> type.constructor.get() instanceof WaterMovec, type -> type.flying = true);
         content.units().each(type -> type.payloadCapacity = 36f * tilePayload);
 
-        crawler.aiController = SuicideAI::new;
-        atrax.aiController = CrawlerAI::new;
-        spiroct.aiController = CrawlerAI::new;
-        arkyid.aiController = CrawlerAI::new;
-        toxopid.aiController = CrawlerAI::new;
+        crawler.aiController = EnemyAI::new;
+        atrax.aiController = EnemyAI::new;
+        spiroct.aiController = EnemyAI::new;
+        arkyid.aiController = EnemyAI::new;
+        toxopid.aiController = EnemyAI::new;
 
         Events.on(PlayEvent.class, event -> CrawlerLogic.play());
         Events.on(SaveLoadEvent.class, event -> CrawlerLogic.startGame());
@@ -116,7 +112,7 @@ public class Main extends Plugin {
             }
 
             int amount = args.length > 1 ? parseInt(args[1]) : 1;
-            if (state.rules.defaultTeam.data().countType(type) + amount > unitCap) {
+            if (state.rules.defaultTeam.data().countType(type) > unitCap - amount) {
                 bundled(player, "upgrade.too-many-units");
                 return;
             }

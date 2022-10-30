@@ -40,7 +40,7 @@ public class StarBullet extends BossBullet {
         for (int i = 0; i < amount; i++)
             bullet.createNet(state.rules.waveTeam, x, y, deg + i * step, bullet.damage, 1f, 1f);
 
-        var target = Units.closestTarget(state.rules.waveTeam, x, y, 80000f);
+        var target = Units.closestTarget(state.rules.waveTeam, x, y, 999999f);
         if (target == null) return;
 
         Tmp.v1.set(target).sub(this);
