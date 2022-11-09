@@ -108,8 +108,8 @@ public class CrawlerLogic {
             boss.controller(new BossAI());
 
             // increasing armor to keep the bar boss working
-            boss.armor(statScaling * Groups.player.size() * 32000f);
-            boss.damageMultiplier(statScaling * 32f);
+            boss.armor(statScaling * Groups.player.size() * 48000f);
+            boss.damageMultiplier(statScaling * 48f);
 
             boss.apply(StatusEffects.overclock, Float.POSITIVE_INFINITY);
             boss.apply(StatusEffects.overdrive, Float.POSITIVE_INFINITY);
@@ -120,6 +120,10 @@ public class CrawlerLogic {
             abilities.add(new GroupSpawnAbility(flare, 5, -64f, 64f));
             abilities.add(new GroupSpawnAbility(flare, 5, 64f, 64f));
             abilities.add(new GroupSpawnAbility(zenith, 3, 0, -96f));
+
+            abilities.add(new GroupSpawnAbility(quell, 3, -96f, 96f));
+            abilities.add(new GroupSpawnAbility(quell, 3, 96f, 96f));
+            abilities.add(new GroupSpawnAbility(disrupt, 1, 0, -128f));
 
             abilities.add(new BulletSpawnAbility(BossBullets::toxopidMount));
             abilities.add(new BulletSpawnAbility(BossBullets::corvusLaser, 1800f));

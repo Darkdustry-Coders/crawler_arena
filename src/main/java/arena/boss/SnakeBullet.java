@@ -3,7 +3,6 @@ package arena.boss;
 import arc.audio.Sound;
 import arc.util.Tmp;
 import mindustry.content.StatusEffects;
-import mindustry.content.UnitTypes;
 import mindustry.entities.Units;
 import mindustry.entities.bullet.BulletType;
 import mindustry.gen.Call;

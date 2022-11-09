@@ -16,7 +16,7 @@ public class BulletSpawnAbility extends Ability {
     public float delay;
 
     public BulletSpawnAbility(Cons2<Float, Float> bullet) {
-        this(bullet, 1200f);
+        this(bullet, 800f);
     }
 
     public BulletSpawnAbility(Cons2<Float, Float> bullet, float delay) {

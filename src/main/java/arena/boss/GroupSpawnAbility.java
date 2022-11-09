@@ -19,7 +19,7 @@ public class GroupSpawnAbility extends Ability {
     public float delay;
 
     public GroupSpawnAbility(UnitType unit, int amount, float x, float y) {
-        this(unit, amount, x, y, 2400f);
+        this(unit, amount, x, y, 1800f);
     }
 
     public GroupSpawnAbility(UnitType type, int amount, float x, float y, float delay) {
