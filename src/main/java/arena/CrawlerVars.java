@@ -8,25 +8,25 @@ import mindustry.world.Block;
 
 public class CrawlerVars {
 
-    /** Wave when it's over */
+    /** Wave when it's over. */
     public static final int bossWave = 25;
-    /** Interval between waves in seconds */
+    /** Interval between waves in seconds. */
     public static final int firstWaveDelay = 15, waveDelay = 10, additionalDelay = 10;
 
-    /** The maximum number of units that players can spawn */
-    public static final int unitCap = 72;
+    /** The maximum number of units that players can spawn. */
+    public static final int unitCap = 48;
     /** The maximum number of units displayed on the /upgrades page. */
     public static final int unitsPerPage = 25;
-    /** The maximum number of units of the same type that can be spawned at the start of a wave */
+    /** The maximum number of units of the same type that can be spawned at the start of a wave. */
     public static final int maxUnits = 1000;
-    /** The higher this number, the slower unit's stats grow */
+    /** The higher this number, the slower unit's stats grow. */
     public static final float statDiv = 100f;
 
-    /** Minimum required wave to spawn reinforcement */
+    /** Minimum required wave to spawn reinforcement. */
     public static final int helpMinWave = 8;
-    /** Reinforcements appear every second wave */
+    /** Reinforcements appear every second wave. */
     public static final int helpSpacing = 2;
-    /** Extra time needed to get support */
+    /** Extra time needed to get support. */
     public static final int helpExtraTime = 50;
 
     public static final float moneyExpBase = 2.2f;
@@ -60,12 +60,10 @@ public class CrawlerVars {
                 Blocks.forceProjector, 2,
 
                 Blocks.regenProjector, 1,
-                //Blocks.shieldProjector, 1, // Too OP block.
 
                 Blocks.repairPoint, 4,
                 Blocks.repairTurret, 2,
 
-                Blocks.arc, 6,
                 Blocks.lancer, 4,
                 Blocks.ripple, 2,
                 Blocks.cyclone, 1,

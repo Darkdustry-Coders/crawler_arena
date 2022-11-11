@@ -26,11 +26,13 @@ import static useful.Bundle.*;
 public class CrawlerLogic {
 
     public static void applyRules(Rules rules) {
-        rules.canGameOver = false;
-        rules.possessionAllowed = true;
         rules.waveTimer = false;
         rules.waves = true;
         rules.waitEnemies = true;
+        rules.canGameOver = false;
+        rules.possessionAllowed = true;
+        rules.ghostBlocks = false;
+
         rules.unitCap = unitCap;
         rules.modeName = "Crawler Arena";
         rules.env = defaultEnv;
