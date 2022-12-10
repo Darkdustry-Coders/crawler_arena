@@ -29,23 +29,25 @@ public class PlayerData implements LocaleProvider {
     public UnitType type = UnitTypes.dagger;
 
     public PlayerData(Player player) {
-        handlePlayerJoin(player);
+        this.handlePlayerJoin(player);
     }
 
-    public static PlayerData getData(String uuid) {
-        return datas.find(data -> data.player.uuid().equals(uuid));
+    public static PlayerData getData(Player player) {
+        return datas.find(data -> data.player.uuid().equals(player.uuid()));
     }
 
     public void handlePlayerJoin(Player player) {
         this.player = player;
         this.locale = Bundle.locale(player);
 
+        this.type = UnitTypes.dagger;
+
         app.post(this::respawn);
     }
 
     public void reset() {
-        money = 0;
-        type = UnitTypes.dagger;
+        this.money = 0;
+        this.type = UnitTypes.dagger;
 
         app.post(this::respawn);
     }
@@ -69,26 +71,25 @@ public class PlayerData implements LocaleProvider {
     }
 
     public void respawn() {
-        var unit = Units.closest(player.team(), world.unitWidth() / 2f, world.unitHeight() / 2f, u -> u.isAI() && u.type == type && !u.dead);
+        var unit = Units.closest(player.team(), world.unitWidth() / 2f, world.unitHeight() / 2f, u -> !u.isPlayer() && u.type == type && !u.dead);
         if (unit != null) {
             controlUnit(unit);
             return;
         }
 
-        var tile = world.tile(world.width() / 2 + range(tilesize), world.height() / 2 + range(tilesize));
+        var tile = world.tile(world.width() / 2 + range(8), world.height() / 2 + range(8));
         if (!type.flying && tile.solid()) tile.removeNet();
 
         controlUnit(applyUnit(type.spawn(tile.worldx(), tile.worldy())));
     }
 
     public void controlUnit(Unit unit) {
-        Call.unitControl(player, unit);
+        unit.controller(player);
         Call.setCameraPosition(player.con, unit.x, unit.y);
     }
 
     public Unit applyUnit(Unit unit) {
         var special = specialUnits.get(type = unit.type);
-
         if (special == null) return unit;
 
         unit.health = unit.maxHealth = special.health();

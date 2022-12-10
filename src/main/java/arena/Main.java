@@ -1,6 +1,7 @@
 package arena;
 
 import arc.Events;
+import arc.struct.Seq;
 import arc.util.CommandHandler;
 import arena.ai.EnemyAI;
 import arena.boss.BossBullets;
@@ -11,7 +12,6 @@ import mindustry.net.Administration.ActionType;
 import useful.Bundle;
 
 import static arc.math.Mathf.*;
-import static arc.struct.Seq.with;
 import static arc.util.Strings.parseInt;
 import static arc.util.Timer.schedule;
 import static arena.CrawlerVars.*;
@@ -33,7 +33,7 @@ public class Main extends Plugin {
 
         netServer.admins.addActionFilter(action -> action.type != ActionType.breakBlock && action.type != ActionType.placeBlock);
 
-        content.units().each(type -> type.constructor.get() instanceof WaterMovec, type -> type.flying = true);
+        content.units().each(type -> type.naval, type -> type.flying = true);
         content.units().each(type -> type.payloadCapacity = 36f * tilePayload);
 
         crawler.aiController = EnemyAI::new;
@@ -81,7 +81,7 @@ public class Main extends Plugin {
                     return;
                 }
 
-                int delay = waveDelay + additionalDelay * (state.wave / 5);
+                int delay = waveDelay + additionalDelay * state.wave;
                 if (state.wave >= helpMinWave && state.wave % helpSpacing == 0) {
                     CrawlerLogic.spawnReinforcement();
                     delay += helpExtraTime; // Aid package needs time to deliver blocks
@@ -105,7 +105,7 @@ public class Main extends Plugin {
                 return;
             }
 
-            var type = with(unitCosts.keys()).find(unitType -> unitType.name.equalsIgnoreCase(args[0]));
+            var type = Seq.with(unitCosts.keys()).find(unit -> unit.name.equalsIgnoreCase(args[0]));
             if (type == null) {
                 bundled(player, "upgrade.unit-not-found");
                 return;
@@ -117,16 +117,15 @@ public class Main extends Plugin {
                 return;
             }
 
-            var data = PlayerData.getData(player.uuid());
+            var data = PlayerData.getData(player);
             if (data.money < unitCosts.get(type) * amount) {
                 bundled(player, "upgrade.not-enough-money", unitCosts.get(type) * amount, data.money);
                 return;
             }
 
-            data.controlUnit(data.applyUnit(type.spawn(player.x + range(tilesize), player.y + range(tilesize))));
-
+            data.controlUnit(data.applyUnit(type.spawn(player.x, player.y)));
             for (int i = 1; i < amount; i++)
-                data.applyUnit(type.spawn(player.x + range(tilesize), player.y + range(tilesize)));
+                data.applyUnit(type.spawn(player.x, player.y));
 
             data.money -= unitCosts.get(type) * amount;
             bundled(player, "upgrade.success", amount, type.name);
@@ -139,7 +138,7 @@ public class Main extends Plugin {
                 return;
             }
 
-            var data = PlayerData.getData(player.uuid());
+            var data = PlayerData.getData(player);
             var builder = new StringBuilder();
 
             for (int i = unitsPerPage * (page - 1); i < Math.min(unitsPerPage * page, unitCosts.size); i++) {

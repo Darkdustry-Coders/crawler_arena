@@ -97,7 +97,6 @@ public class CrawlerLogic {
         ).random();
 
         var unit = type.spawn(state.rules.waveTeam, tile.worldx(), tile.worldy());
-
         unit.health = unit.maxHealth *= statScaling / 5;
     }
 
@@ -157,7 +156,7 @@ public class CrawlerLogic {
     }
 
     public static void join(Player player) {
-        var data = PlayerData.getData(player.uuid());
+        var data = PlayerData.getData(player);
         if (data != null) {
             data.handlePlayerJoin(player);
             bundled(player, "events.join.already-played");

@@ -11,7 +11,7 @@ public class CrawlerVars {
     /** Wave when it's over. */
     public static final int bossWave = 25;
     /** Interval between waves in seconds. */
-    public static final int firstWaveDelay = 15, waveDelay = 10, additionalDelay = 10;
+    public static final int firstWaveDelay = 15, waveDelay = 10, additionalDelay = 2;
 
     /** The maximum number of units that players can spawn. */
     public static final int unitCap = 48;
@@ -35,15 +35,15 @@ public class CrawlerVars {
     public static final float crawlersExpBase = 2.2f;
     public static final float crawlersRamp = 0.65f;
 
-    public static final OrderedMap<Block, Integer> aidBlocks = new OrderedMap<>();
+    public static OrderedMap<Block, Integer> aidBlocks = new OrderedMap<>();
 
-    public static final OrderedMap<UnitType, Integer> enemyCuts = new OrderedMap<>();
-    public static final OrderedMap<UnitType, Integer> unitCosts = new OrderedMap<>();
+    public static OrderedMap<UnitType, Integer> enemyCuts = new OrderedMap<>();
+    public static OrderedMap<UnitType, Integer> unitCosts = new OrderedMap<>();
 
-    public static final OrderedMap<UnitType, Special> specialUnits = new OrderedMap<>();
+    public static OrderedMap<UnitType, Special> specialUnits;
 
     public static void load() {
-        aidBlocks.putAll(
+        aidBlocks = OrderedMap.of(
                 Blocks.liquidSource, 4,
                 Blocks.powerSource, 4,
                 Blocks.itemSource, 6,
@@ -80,7 +80,7 @@ public class CrawlerVars {
                 Blocks.scathe, 1
         );
 
-        enemyCuts.putAll(
+        enemyCuts = OrderedMap.of(
                 UnitTypes.toxopid, 10000,
                 UnitTypes.arkyid, 1000,
                 UnitTypes.spiroct, 50,
@@ -88,7 +88,7 @@ public class CrawlerVars {
                 UnitTypes.crawler, 1
         );
 
-        unitCosts.putAll(
+        unitCosts = OrderedMap.of(
                 UnitTypes.dagger, 25,
                 UnitTypes.flare, 75,
                 UnitTypes.nova, 100,
@@ -147,7 +147,7 @@ public class CrawlerVars {
                 UnitTypes.mono, 3750000
         );
 
-        specialUnits.putAll(
+        specialUnits = OrderedMap.of(
                 UnitTypes.crawler, new Special(400f, 10f, 60f, UnitTypes.crawler),
                 UnitTypes.mono, new Special(100000f, 20f, 900f, UnitTypes.navanax),
                 UnitTypes.poly, new Special(500f, 0f, 60f, UnitTypes.poly),
