@@ -22,7 +22,6 @@ import static arena.Main.*;
 import static arena.PlayerData.datas;
 import static arena.boss.BossBullets.bullets;
 import static mindustry.Vars.*;
-import static useful.Bundle.*;
 
 public class CrawlerLogic {
 
@@ -48,15 +47,17 @@ public class CrawlerLogic {
 
         applyRules(state.rules);
 
-        state.wave = 0;
-        statScaling = 1f;
-
         state.rules.defaultTeam.cores().each(Building::kill);
         bullets.clear(); // it can kill everyone after new game
+
+        firstWaveLaunched = false;
+
+        state.wave = 0;
+        statScaling = 1f;
     }
 
     public static void gameOver(boolean win) {
-        datas.each(data -> Call.infoMessage(data.player.con, get(win ? "events.victory" : "events.lose", data)));
+        datas.each(data -> Call.infoMessage(data.player.con, Bundle.get(win ? "events.victory" : "events.lose", data)));
         Call.hideHudText();
 
         BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(win ? state.rules.defaultTeam : state.rules.waveTeam)));
@@ -160,10 +161,10 @@ public class CrawlerLogic {
         var data = PlayerData.getData(player);
         if (data != null) {
             data.handlePlayerJoin(player);
-            bundled(player, "events.join.already-played");
+            Bundle.bundled(player, "events.join.already-played");
         } else {
             datas.add(new PlayerData(player));
-            bundled(player, "events.join.welcome");
+            Bundle.bundled(player, "events.join.welcome");
         }
     }
 }

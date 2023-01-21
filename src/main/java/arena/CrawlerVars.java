@@ -11,7 +11,7 @@ public class CrawlerVars {
     /** Wave when it's over. */
     public static final int bossWave = 25;
     /** Interval between waves in ticks. */
-    public static final float firstWaveDelay = 15f, waveDelay = 10f, additionalDelay = 2f;
+    public static final float firstWaveDelay = 15f, waveDelay = 10f, additionalDelay = 1f;
 
     /** The maximum number of units that players can spawn. */
     public static final int unitCap = 48;
@@ -35,10 +35,10 @@ public class CrawlerVars {
     public static final float crawlersExpBase = 2.2f;
     public static final float crawlersRamp = 0.65f;
 
-    public static OrderedMap<Block, Integer> aidBlocks = new OrderedMap<>();
+    public static OrderedMap<Block, Integer> aidBlocks;
 
-    public static OrderedMap<UnitType, Integer> enemyCuts = new OrderedMap<>();
-    public static OrderedMap<UnitType, Integer> unitCosts = new OrderedMap<>();
+    public static OrderedMap<UnitType, Integer> enemyCuts;
+    public static OrderedMap<UnitType, Integer> unitCosts;
 
     public static OrderedMap<UnitType, Special> specialUnits;
 

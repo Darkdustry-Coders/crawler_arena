@@ -14,7 +14,7 @@ public class EnemyAI extends AIController {
         if (shouldShoot) unit.aimLook(target);
         unit.controlWeapons(shouldShoot);
 
-        var realTarget = findMainTarget(unit.x, unit.y, 999999f, unit.type.targetAir, unit.type.targetGround);
+        var realTarget = findMainTarget(unit.x, unit.y, 999999f, true, true);
         moveTo(realTarget != null ? realTarget : target, unit.range() * 0.5f);
 
         faceTarget();
