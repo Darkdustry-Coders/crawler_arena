@@ -1,26 +1,27 @@
 package arena;
 
 import arc.Events;
+import arc.math.Mathf;
+import arc.struct.Seq;
+import arc.util.Timer;
 import arena.ai.BossAI;
 import arena.ai.ReinforcementAI;
 import arena.boss.*;
 import mindustry.content.StatusEffects;
+import mindustry.content.UnitTypes;
 import mindustry.game.EventType.GameOverEvent;
 import mindustry.game.Rules;
 import mindustry.game.Team;
 import mindustry.gen.*;
 import mindustry.type.UnitType;
 import mindustry.world.blocks.payloads.BuildPayload;
+import useful.Bundle;
 
-import static arc.math.Mathf.*;
-import static arc.struct.Seq.with;
-import static arc.util.Timer.schedule;
 import static arena.CrawlerVars.*;
 import static arena.Main.*;
 import static arena.PlayerData.datas;
 import static arena.boss.BossBullets.bullets;
 import static mindustry.Vars.*;
-import static mindustry.content.UnitTypes.*;
 import static useful.Bundle.*;
 
 public class CrawlerLogic {
@@ -42,20 +43,16 @@ public class CrawlerLogic {
     }
 
     public static void play() {
-        applyRules(state.rules);
-
-        state.wave = 0;
-        state.rules.defaultTeam.cores().each(Building::kill);
-        statScaling = 1f;
-
-        bullets.clear(); // it can kill everyone after new game
-    }
-
-    public static void startGame() {
         datas.filter(data -> data.player.con.isConnected());
         datas.each(PlayerData::reset);
 
-        firstWaveLaunched = false;
+        applyRules(state.rules);
+
+        state.wave = 0;
+        statScaling = 1f;
+
+        state.rules.defaultTeam.cores().each(Building::kill);
+        bullets.clear(); // it can kill everyone after new game
     }
 
     public static void gameOver(boolean win) {
@@ -65,47 +62,51 @@ public class CrawlerLogic {
         BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(win ? state.rules.defaultTeam : state.rules.waveTeam)));
 
         for (int i = 0; i < world.width() * world.height() / 2400; i++) // boom!
-            BossBullets.atomic(random(world.unitWidth()), random(world.unitHeight()));
+            BossBullets.atomic(Mathf.random(world.unitWidth()), Mathf.random(world.unitHeight()));
     }
 
     public static void runWave() {
         state.wave++;
         statScaling += state.wave / statDiv;
 
-        if (state.wave >= bossWave) spawnBoss(); // during the boss battle do not spawn small enemies
-        else {
-            int totalEnemies = ceil(pow(crawlersExpBase, state.wave * crawlersRamp));
-
-            for (var entry : enemyCuts) {
-                int typeCount = totalEnemies / entry.value;
-                totalEnemies -= typeCount;
-
-                for (int i = 0; i < Math.min(typeCount, maxUnits); i++)
-                    spawnEnemy(entry.key);
-            }
-
-            waveLaunched = true;
+        if (state.wave >= bossWave) {
+            spawnBoss(); // during the boss battle do not spawn small enemies
+            return;
         }
+
+        int totalEnemies = Mathf.ceil(Mathf.pow(crawlersExpBase, state.wave * crawlersRamp));
+
+        for (var entry : enemyCuts) {
+            int typeCount = totalEnemies / entry.value;
+            totalEnemies -= typeCount;
+
+            for (int i = 0; i < Math.min(typeCount, maxUnits); i++)
+                spawnEnemy(entry.key);
+        }
+
+        waveLaunched = true;
     }
 
     public static void spawnEnemy(UnitType type) {
-        var tile = with(
-                world.tiles.getc(tilesize, random(world.height())),
-                world.tiles.getc(random(world.width()), tilesize),
-                world.tiles.getc(world.width() - tilesize, random(world.height())),
-                world.tiles.getc(random(world.width()), world.height() - tilesize)
-        ).random();
+        boolean half = Mathf.chance(.5f);
+        boolean side = Mathf.chance(.5f);
+
+        var tile = world.tile(
+                half ? (side ? tilesize : world.width() - tilesize) : Mathf.random(tilesize, world.width() - tilesize),
+                half ? Mathf.random(tilesize, world.height() - tilesize) : (side ? world.height() - tilesize : tilesize)
+        );
 
         var unit = type.spawn(state.rules.waveTeam, tile.worldx(), tile.worldy());
         unit.health = unit.maxHealth *= statScaling / 5;
     }
 
     public static void spawnBoss() {
-        announce("events.boss");
+        Bundle.announce("events.boss");
 
         BossBullets.timer(world.width() * 4f, world.height() * 4f, (x, y) -> {
             BossBullets.impact(x, y); // some cool effects
-            var boss = eclipse.spawn(state.rules.waveTeam, x, y);
+
+            var boss = UnitTypes.eclipse.spawn(state.rules.waveTeam, x, y);
             boss.controller(new BossAI());
 
             // increasing armor to keep the bar boss working
@@ -116,15 +117,15 @@ public class CrawlerLogic {
             boss.apply(StatusEffects.overdrive, Float.POSITIVE_INFINITY);
             boss.apply(StatusEffects.boss);
 
-            var abilities = with(boss.abilities);
+            var abilities = Seq.with(boss.abilities);
 
-            abilities.add(new GroupSpawnAbility(flare, 5, -64f, 64f));
-            abilities.add(new GroupSpawnAbility(flare, 5, 64f, 64f));
-            abilities.add(new GroupSpawnAbility(zenith, 3, 0, -96f));
+            abilities.add(new GroupSpawnAbility(UnitTypes.flare, 5, -64f, 64f));
+            abilities.add(new GroupSpawnAbility(UnitTypes.flare, 5, 64f, 64f));
+            abilities.add(new GroupSpawnAbility(UnitTypes.zenith, 3, 0, -96f));
 
-            abilities.add(new GroupSpawnAbility(quell, 3, -96f, 96f));
-            abilities.add(new GroupSpawnAbility(quell, 3, 96f, 96f));
-            abilities.add(new GroupSpawnAbility(disrupt, 1, 0, -128f));
+            abilities.add(new GroupSpawnAbility(UnitTypes.quell, 3, -96f, 96f));
+            abilities.add(new GroupSpawnAbility(UnitTypes.quell, 3, 96f, 96f));
+            abilities.add(new GroupSpawnAbility(UnitTypes.disrupt, 1, 0, -128f));
 
             abilities.add(new BulletSpawnAbility(BossBullets::toxopidMount));
             abilities.add(new BulletSpawnAbility(BossBullets::corvusLaser, 1800f));
@@ -140,14 +141,14 @@ public class CrawlerLogic {
     }
 
     public static void spawnReinforcement() {
-        schedule(() -> announce("events.aid"), 3f);
+        Timer.schedule(() -> Bundle.announce("events.aid"), 3f);
 
         for (int i = 0; i <= state.wave; i++) {
-            var unit = mega.spawn(Team.derelict, random(40), world.unitHeight() / 2f + range(120f));
+            var unit = UnitTypes.mega.spawn(Team.derelict, Mathf.random(40f), world.unitHeight() / 2f + Mathf.range(120f));
             unit.controller(new ReinforcementAI());
             unit.health = unit.maxHealth = Float.MAX_VALUE;
 
-            var block = with(aidBlocks.keys()).random();
+            var block = Seq.with(aidBlocks.keys()).random();
 
             if (unit instanceof Payloadc payloadc)
                 for (int j = 0; j < aidBlocks.get(block); j++)

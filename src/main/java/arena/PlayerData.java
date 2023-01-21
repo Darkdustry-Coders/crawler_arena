@@ -1,6 +1,8 @@
 package arena;
 
+import arc.math.Mathf;
 import arc.struct.Seq;
+import mindustry.ai.types.CommandAI;
 import mindustry.content.*;
 import mindustry.entities.Units;
 import mindustry.entities.abilities.UnitSpawnAbility;
@@ -13,8 +15,6 @@ import useful.Bundle.LocaleProvider;
 import java.util.Locale;
 
 import static arc.Core.app;
-import static arc.math.Mathf.*;
-import static arc.struct.Seq.with;
 import static arena.CrawlerVars.*;
 import static mindustry.Vars.*;
 
@@ -55,7 +55,7 @@ public class PlayerData implements LocaleProvider {
     public void afterWave() {
         if (!player.con.isConnected()) return;
 
-        money += pow(moneyExpBase, 3 + state.wave * moneyRamp);
+        money += Mathf.pow(moneyExpBase, 3 + state.wave * moneyRamp);
 
         if (player.dead()) {
             respawn();
@@ -71,20 +71,20 @@ public class PlayerData implements LocaleProvider {
     }
 
     public void respawn() {
-        var unit = Units.closest(player.team(), world.unitWidth() / 2f, world.unitHeight() / 2f, u -> !u.isPlayer() && u.type == type && !u.dead);
+        var unit = Units.closest(player.team(), player.x, player.y, u -> u.controller() instanceof CommandAI && u.type == type && !u.dead);
         if (unit != null) {
             controlUnit(unit);
             return;
         }
 
-        var tile = world.tile(world.width() / 2 + range(8), world.height() / 2 + range(8));
+        var tile = world.tile(world.width() / 2 + Mathf.range(8), world.height() / 2 + Mathf.range(8));
         if (!type.flying && tile.solid()) tile.removeNet();
 
         controlUnit(applyUnit(type.spawn(tile.worldx(), tile.worldy())));
     }
 
     public void controlUnit(Unit unit) {
-        unit.controller(player);
+        player.unit(unit);
         Call.setCameraPosition(player.con, unit.x, unit.y);
     }
 
@@ -95,11 +95,11 @@ public class PlayerData implements LocaleProvider {
         unit.health = unit.maxHealth = special.health();
         unit.armor = special.armor();
 
-        var abilities = with(unit.abilities);
+        var abilities = Seq.with(unit.abilities);
 
         if (special.unit() != null) abilities.add(new UnitSpawnAbility(special.unit(), special.cooldown(), 0f, -8f));
         else abilities.each(ability -> {
-            if (ability instanceof UnitSpawnAbility spawnAbility) spawnAbility.spawnTime = special.cooldown();
+            if (ability instanceof UnitSpawnAbility spawn) spawn.spawnTime = special.cooldown();
         });
 
         unit.abilities(abilities.toArray());

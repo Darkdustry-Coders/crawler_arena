@@ -16,7 +16,7 @@ dependencies {
 
     compileOnly("com.github.Anuken.Arc:arc-core:v$mindustryVersion")
     compileOnly("com.github.Anuken.Mindustry:core:v$mindustryVersion")
-    implementation("com.github.xzxADIxzx.Useful-Stuffs:server-bundle:main-SNAPSHOT")
+    implementation("com.github.xzxADIxzx.Useful-Stuffs:server-bundle:2a68f24553")
 }
 
 tasks.jar {
