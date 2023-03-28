@@ -11,12 +11,16 @@ repositories {
 
 dependencies {
     val json = JsonSlurper().parseText(file("src/main/resources/plugin.json").readText()) as Map<*, *>
-    val mindustryVersion = json["minGameVersion"]!!
     project.version = json["version"]!!
+
+    val mindustryVersion = json["minGameVersion"]
+    val usefulHash = "9c895c9e10"
 
     compileOnly("com.github.Anuken.Arc:arc-core:v$mindustryVersion")
     compileOnly("com.github.Anuken.Mindustry:core:v$mindustryVersion")
-    implementation("com.github.xzxADIxzx.Useful-Stuffs:server-bundle:2a68f24553")
+
+    implementation("com.github.xzxADIxzx.useful-stuffs:bundle:$usefulHash")
+    implementation("com.github.xzxADIxzx.useful-stuffs:menu:$usefulHash")
 }
 
 tasks.jar {

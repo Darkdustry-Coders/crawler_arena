@@ -16,7 +16,7 @@ public class CrawlerVars {
     /** The maximum number of units that players can spawn. */
     public static final int unitCap = 48;
     /** The maximum number of units displayed on the /upgrades page. */
-    public static final int unitsPerPage = 25;
+    public static final int upgradesPerPage = 20;
     /** The maximum number of units of the same type that can be spawned at the start of a wave. */
     public static final int maxUnits = 1000;
     /** The higher this number, the slower unit's stats grow. */
