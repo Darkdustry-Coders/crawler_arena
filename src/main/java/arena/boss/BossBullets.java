@@ -34,12 +34,12 @@ public class BossBullets {
         new SnakeBullet(x, y, 120, 20f, 12f, weapon.bullet, weapon.shootSound);
     }
 
-    public static void fuseTitanium(float x, float y) {
+    public static void titaniumFuse(float x, float y) {
         var turret = (ItemTurret) Blocks.fuse;
         new StarBullet(x, y, 90, 5, 8f, turret.ammoTypes.get(Items.titanium), turret.shootSound);
     }
 
-    public static void fuseThorium(float x, float y) {
+    public static void thoriumFuse(float x, float y) {
         var turret = (ItemTurret) Blocks.fuse;
         new StarBullet(x, y, 90, 5, 8f, turret.ammoTypes.get(Items.thorium), turret.shootSound);
     }

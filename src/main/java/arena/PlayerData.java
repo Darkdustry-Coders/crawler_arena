@@ -9,7 +9,7 @@ import mindustry.entities.abilities.UnitSpawnAbility;
 import mindustry.gen.*;
 import mindustry.graphics.Pal;
 import mindustry.type.UnitType;
-import useful.Bundle;
+import useful.*;
 import useful.Bundle.LocaleProvider;
 
 import java.util.Locale;
@@ -20,7 +20,7 @@ import static mindustry.Vars.*;
 
 public class PlayerData implements LocaleProvider {
 
-    public static Seq<PlayerData> datas = new Seq<>();
+    public static ExtendedMap<String, PlayerData> datas = new ExtendedMap<>();
 
     public Player player;
     public Locale locale;
@@ -32,15 +32,9 @@ public class PlayerData implements LocaleProvider {
         this.handlePlayerJoin(player);
     }
 
-    public static PlayerData getData(Player player) {
-        return datas.find(data -> data.player.uuid().equals(player.uuid()));
-    }
-
     public void handlePlayerJoin(Player player) {
         this.player = player;
         this.locale = Bundle.locale(player);
-
-        this.type = UnitTypes.dagger;
 
         app.post(this::respawn);
     }
@@ -54,13 +48,10 @@ public class PlayerData implements LocaleProvider {
 
     public void afterWave() {
         if (!player.con.isConnected()) return;
-
         money += Mathf.pow(moneyExpBase, 3 + state.wave * moneyRamp);
 
-        if (player.dead()) {
+        if (player.dead())
             respawn();
-            return;
-        }
 
         if (player.unit().health < player.unit().maxHealth) {
             player.unit().heal();
@@ -89,19 +80,16 @@ public class PlayerData implements LocaleProvider {
     }
 
     public Unit applyUnit(Unit unit) {
-        var special = specialUnits.get(type = unit.type);
-        if (special == null) return unit;
+        var ability = abilities.get(type = unit.type);
+        if (ability == null) return unit;
 
-        unit.health = unit.maxHealth = special.health();
-        unit.armor = special.armor();
+        unit.health = unit.maxHealth = ability.health();
+        unit.armor = ability.armor();
 
         var abilities = Seq.with(unit.abilities);
+        abilities.removeAll(UnitSpawnAbility.class::isInstance);
 
-        if (special.unit() != null) abilities.add(new UnitSpawnAbility(special.unit(), special.cooldown(), 0f, -8f));
-        else abilities.each(ability -> {
-            if (ability instanceof UnitSpawnAbility spawn) spawn.spawnTime = special.cooldown();
-        });
-
+        abilities.add(new UnitSpawnAbility(ability.type(), ability.cooldown(), 0f, -8f));
         unit.abilities(abilities.toArray());
 
         unit.apply(StatusEffects.overclock, Float.MAX_VALUE);

@@ -19,16 +19,14 @@ public class GroupSpawnAbility extends Ability {
     public float delay;
 
     public GroupSpawnAbility(UnitType unit, int amount, float x, float y) {
-        this(unit, amount, x, y, 1800f);
+        this(unit, amount, x, y, 900f);
     }
 
     public GroupSpawnAbility(UnitType type, int amount, float x, float y, float delay) {
         this.spawn = unit -> {
-            float sx = unit.x + Angles.trnsx(unit.rotation, y, x), sy = unit.y + Angles.trnsy(unit.rotation, y, x);
+            float sx = unit.x + Angles.trnsx(unit.rotation, x, y), sy = unit.y + Angles.trnsy(unit.rotation, x, y);
             for (float deg = 0; deg < 360f; deg += 360f / amount) {
-                float dx = sx + cosDeg(deg) * type.hitSize;
-                float dy = sy + sinDeg(deg) * type.hitSize;
-                var spawned = type.spawn(state.rules.waveTeam, dx, dy);
+                var spawned = type.spawn(state.rules.waveTeam, sx + cosDeg(deg) * type.hitSize, sy + sinDeg(deg) * type.hitSize);
                 spawned.controller(new BossAI());
             }
         };
