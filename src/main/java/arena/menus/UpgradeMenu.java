@@ -36,7 +36,7 @@ public class UpgradeMenu {
             menu.title("upgrade.amount.title");
             menu.content("ui.money", menu.state.get(DATA).money);
 
-            menu.options(4, UnitAmount.values()).row();
+            menu.options(3, UnitAmount.values()).row();
 
             menu.option("ui.back", Action.back());
             menu.option("ui.close");
@@ -100,7 +100,7 @@ public class UpgradeMenu {
         mono(UnitTypes.mono, 3500000);
 
         public final UnitType type;
-        public final int cost;
+        public final long cost;
 
         public final char icon;
 
@@ -120,8 +120,6 @@ public class UpgradeMenu {
     public enum UnitAmount implements OptionData {
         one(1),
         two(2),
-        three(3),
-        four(4),
         five(5),
         ten(10),
         fifteen(15),
@@ -153,7 +151,7 @@ public class UpgradeMenu {
                 }
 
                 if (notEnoughMoney(view)) {
-                    Bundle.announce(view.player, "upgrade.not-enough-money", data.money, unit.cost * amount);
+                    Bundle.announce(view.player, "upgrade.not-enough-money", data.money, UI.formatAmount(unit.cost * amount));
                     return;
                 }
 
@@ -162,7 +160,7 @@ public class UpgradeMenu {
 
                 data.money -= unit.cost * amount;
                 Bundle.announce(view.player, "upgrade.success", amount, unit.icon, unit.type.name);
-            }, tooManyUnits(menu) || notEnoughMoney(menu) ? "scarlet" : "lime", amount, menu.state.get(UNIT).icon, menu.state.get(UNIT).cost * amount);
+            }, tooManyUnits(menu) || notEnoughMoney(menu) ? "scarlet" : "lime", amount, menu.state.get(UNIT).icon, UI.formatAmount(menu.state.get(UNIT).cost * amount));
         }
     }
 }

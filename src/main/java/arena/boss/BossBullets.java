@@ -1,14 +1,12 @@
 package arena.boss;
 
-import arc.func.Cons2;
+import arc.func.Floatc2;
 import arc.graphics.Color;
 import arc.struct.Seq;
 import mindustry.content.*;
 import mindustry.entities.Damage;
-import mindustry.gen.Call;
-import mindustry.gen.Sounds;
-import mindustry.world.blocks.defense.turrets.ItemTurret;
-import mindustry.world.blocks.defense.turrets.PowerTurret;
+import mindustry.gen.*;
+import mindustry.world.blocks.defense.turrets.*;
 
 import static arc.util.Timer.schedule;
 import static mindustry.Vars.state;
@@ -56,12 +54,12 @@ public class BossBullets {
     // #endregion
     // #region visual effects
 
-    public static void timer(float x, float y, Cons2<Float, Float> cons, float delay) {
+    public static void timer(float x, float y, Floatc2 cons, float delay) {
         for (int i = 0; i < delay; i++) schedule(() -> inst(x, y), i);
         schedule(() -> cons.get(x, y), delay);
     }
 
-    public static void timer(float x, float y, Cons2<Float, Float> cons) {
+    public static void timer(float x, float y, Floatc2 cons) {
         timer(x, y, cons, 3f);
     }
 
