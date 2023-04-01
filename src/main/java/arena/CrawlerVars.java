@@ -97,7 +97,8 @@ public class CrawlerVars {
         abilities = OrderedMap.of(
                 UnitTypes.crawler, new UnitAbility(400f, 40f, 60f, UnitTypes.crawler),
                 UnitTypes.mono, new UnitAbility(100000f, 1000f, 900f, UnitTypes.navanax),
-                UnitTypes.poly, new UnitAbility(500f, 50f, 60f, UnitTypes.poly)
+                UnitTypes.poly, new UnitAbility(500f, 50f, 60f, UnitTypes.poly),
+                UnitTypes.omura, new UnitAbility(100000f, 20f, 30f, UnitTypes.flare)
         );
     }
 

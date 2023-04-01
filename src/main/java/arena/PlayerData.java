@@ -35,6 +35,7 @@ public class PlayerData implements LocaleProvider {
     public void handlePlayerJoin(Player player) {
         this.player = player;
         this.locale = Bundle.locale(player);
+        this.type = UnitTypes.dagger;
 
         app.post(this::respawn);
     }
