@@ -2,6 +2,7 @@ package arena;
 
 import arc.math.Mathf;
 import arc.struct.Seq;
+import arc.util.Structs;
 import mindustry.ai.types.CommandAI;
 import mindustry.content.*;
 import mindustry.entities.Units;
@@ -90,7 +91,7 @@ public class PlayerData implements LocaleProvider {
         var abilities = Seq.with(unit.abilities);
         abilities.removeAll(UnitSpawnAbility.class::isInstance);
 
-        abilities.add(new UnitSpawnAbility(ability.type(), ability.cooldown(), 0f, -8f));
+        abilities.add(new UnitSpawnAbility(Structs.random(ability.types()), ability.cooldown(), 0f, -8f));
         unit.abilities(abilities.toArray());
 
         unit.apply(StatusEffects.overclock, Float.MAX_VALUE);

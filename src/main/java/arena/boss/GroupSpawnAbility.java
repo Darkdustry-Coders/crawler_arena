@@ -30,6 +30,7 @@ public class GroupSpawnAbility extends Ability {
                 spawned.controller(new BossAI());
             }
         };
+
         this.time = Time.time + range(delay, 2 * delay);
         this.delay = delay;
     }
