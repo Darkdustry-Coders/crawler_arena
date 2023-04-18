@@ -5,8 +5,7 @@ import arc.util.Tmp;
 import mindustry.content.StatusEffects;
 import mindustry.entities.Units;
 import mindustry.entities.bullet.BulletType;
-import mindustry.gen.Call;
-import mindustry.gen.Unit;
+import mindustry.gen.*;
 
 import static arc.math.Mathf.*;
 import static mindustry.Vars.state;
@@ -54,6 +53,7 @@ public class SnakeBullet extends BossBullet {
         rotation = Tmp.v2.angle(); // move to the nearest enemy
         add(Tmp.v2.setLength(Tmp.v1.len()));
 
-        if (target instanceof Unit unit) unit.apply(StatusEffects.electrified, 1f);
+        if (target instanceof Statusc statusc)
+            statusc.apply(StatusEffects.electrified, 60f);
     }
 }
