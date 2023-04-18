@@ -4,22 +4,21 @@ import mindustry.entities.units.AIController;
 import mindustry.gen.Call;
 import mindustry.gen.Payloadc;
 
-import static mindustry.Vars.*;
+import static mindustry.Vars.world;
 
 public class ReinforcementAI extends AIController {
 
-    public final int timerPayload = 2;
-    public final float timePayload = 60f;
-
     @Override
     public void updateUnit() {
+        if (!(unit instanceof Payloadc payloadc)) return;
+
         unit.move(unit.speed(), 0f);
         unit.lookAt(unit.vel().angle());
 
-        if (timer.get(timerPayload, timePayload) && world.width() * tilesize / 2f < unit.x + 144f)
+        if (unit.x > world.unitWidth() / 2f - 144f && payloadc.dropLastPayload())
             Call.payloadDropped(unit, unit.x, unit.y);
 
-        if (unit instanceof Payloadc payloadc && payloadc.payloads().isEmpty())
+        if (payloadc.payloads().isEmpty())
             Call.unitDespawn(unit);
     }
 }
