@@ -24,17 +24,17 @@ public class UpgradeMenu {
     public static final StateKey<UnitCost> UNIT = new StateKey<>("unit", UnitCost.class);
 
     public static void load() {
-        unitMenu.transform(menu -> {
+        unitMenu.transform(DATA, (menu, data) -> {
             menu.title("upgrade.unit.title");
-            menu.content("ui.money", menu.state.get(DATA).money);
+            menu.content("ui.money", data.money);
 
             menu.options(3, UnitCost.values()).row();
             menu.option("ui.close");
         });
 
-        amountMenu.transform(menu -> {
+        amountMenu.transform(DATA, (menu, data) -> {
             menu.title("upgrade.amount.title");
-            menu.content("ui.money", menu.state.get(DATA).money);
+            menu.content("ui.money", data.money);
 
             menu.options(3, UnitAmount.values()).row();
 

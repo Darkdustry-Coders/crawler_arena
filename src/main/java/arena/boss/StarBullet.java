@@ -10,8 +10,8 @@ import static mindustry.Vars.state;
 
 public class StarBullet extends BossBullet {
 
-    public BulletType bullet;
-    public Sound sound;
+    public final BulletType bullet;
+    public final Sound sound;
 
     public float deg;
     public float step;

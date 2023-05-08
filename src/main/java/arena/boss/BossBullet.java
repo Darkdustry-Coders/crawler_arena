@@ -10,8 +10,8 @@ public class BossBullet extends Vec2 {
 
     public BossBullet(float x, float y, int lifetime) {
         super(x, y);
-
         this.lifetime = lifetime;
+
         bullets.add(this);
     }
 
@@ -20,6 +20,6 @@ public class BossBullet extends Vec2 {
     }
 
     public boolean alive() {
-        return lifetime != 0;
+        return lifetime > 0;
     }
 }

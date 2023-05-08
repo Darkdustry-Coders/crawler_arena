@@ -9,11 +9,10 @@ import mindustry.gen.Unit;
 import mindustry.type.UnitType;
 
 import static arc.math.Mathf.*;
-import static mindustry.Vars.state;
 
 public class GroupSpawnAbility extends Ability {
 
-    public Cons<Unit> spawn;
+    public final Cons<Unit> spawn;
 
     public float time;
     public float delay;
@@ -24,11 +23,9 @@ public class GroupSpawnAbility extends Ability {
 
     public GroupSpawnAbility(UnitType type, int amount, float x, float y, float delay) {
         this.spawn = unit -> {
-            float sx = unit.x + Angles.trnsx(unit.rotation, x, y), sy = unit.y + Angles.trnsy(unit.rotation, x, y);
-            for (float deg = 0; deg < 360f; deg += 360f / amount) {
-                var spawned = type.spawn(state.rules.waveTeam, sx + cosDeg(deg) * type.hitSize, sy + sinDeg(deg) * type.hitSize);
-                spawned.controller(new BossAI());
-            }
+            float cx = unit.x + Angles.trnsx(unit.rotation, x, y), cy = unit.y + Angles.trnsy(unit.rotation, x, y);
+            for (float deg = 0; deg < 360f; deg += 360f / amount)
+                type.spawn(unit.team, cx + cosDeg(deg) * type.hitSize, cy + sinDeg(deg) * type.hitSize).controller(new BossAI());
         };
 
         this.time = Time.time + range(delay, 2 * delay);
@@ -38,7 +35,13 @@ public class GroupSpawnAbility extends Ability {
     @Override
     public void update(Unit unit) {
         if (time > Time.time) return;
+
         time = Time.time + delay;
         spawn.get(unit);
+    }
+
+    @Override
+    public void death(Unit unit) {
+        unit.team.data().units.each(Unit::kill);
     }
 }

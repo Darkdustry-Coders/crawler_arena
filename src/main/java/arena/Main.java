@@ -32,7 +32,10 @@ public class Main extends Plugin {
         UpgradeMenu.load();
 
         content.units().each(type -> type.naval, type -> type.flying = true);
-        content.units().each(type -> type.payloadCapacity = 36f * tilePayload);
+        content.units().each(type -> {
+            type.payloadCapacity = 36f * tilePayload;
+            type.targetGround = type.targetAir = true;
+        });
 
         netServer.admins.addActionFilter(action -> action.type != ActionType.breakBlock && action.type != ActionType.placeBlock);
 

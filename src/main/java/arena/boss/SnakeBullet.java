@@ -13,8 +13,8 @@ import static mindustry.content.UnitTypes.mono;
 
 public class SnakeBullet extends BossBullet {
 
-    public BulletType bullet;
-    public Sound sound;
+    public final BulletType bullet;
+    public final Sound sound;
 
     public float speed;
     public float rotateSpeed;

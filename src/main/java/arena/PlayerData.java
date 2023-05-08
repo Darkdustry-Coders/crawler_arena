@@ -59,7 +59,7 @@ public class PlayerData implements LocaleProvider {
             player.unit().heal();
             Call.effect(player.con, Fx.greenCloud, player.unit().x, player.unit().y, 0f, Pal.heal);
 
-            Bundle.bundled(player, "events.heal");
+            Bundle.send(player, "events.heal");
         }
     }
 

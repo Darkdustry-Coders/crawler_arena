@@ -3,12 +3,12 @@ package arena.boss;
 import arc.func.Floatc2;
 import arc.graphics.Color;
 import arc.struct.Seq;
+import arc.util.Timer;
 import mindustry.content.*;
 import mindustry.entities.Damage;
 import mindustry.gen.*;
 import mindustry.world.blocks.defense.turrets.*;
 
-import static arc.util.Timer.schedule;
 import static mindustry.Vars.state;
 
 public class BossBullets {
@@ -55,8 +55,8 @@ public class BossBullets {
     // #region visual effects
 
     public static void timer(float x, float y, Floatc2 cons, float delay) {
-        for (int i = 0; i < delay; i++) schedule(() -> inst(x, y), i);
-        schedule(() -> cons.get(x, y), delay);
+        for (int i = 0; i < delay; i++) Timer.schedule(() -> inst(x, y), i);
+        Timer.schedule(() -> cons.get(x, y), delay);
     }
 
     public static void timer(float x, float y, Floatc2 cons) {

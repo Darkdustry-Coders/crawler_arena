@@ -109,8 +109,7 @@ public class CrawlerLogic {
             var boss = UnitTypes.eclipse.spawn(state.rules.waveTeam, x, y);
             boss.controller(new BossAI());
 
-            // increasing armor to keep the bar boss working
-            boss.armor(statScaling * Groups.player.size() * 72000f);
+            boss.armor(statScaling * 8000f);
             boss.damageMultiplier(statScaling * 48f);
 
             boss.apply(StatusEffects.overclock, Float.POSITIVE_INFINITY);
@@ -162,10 +161,10 @@ public class CrawlerLogic {
         var data = datas.get(player.uuid());
         if (data != null) {
             data.handlePlayerJoin(player);
-            Bundle.bundled(player, "events.join.already-played");
+            Bundle.send(player, "events.join.already-played");
         } else {
             datas.put(player.uuid(), new PlayerData(player));
-            Bundle.bundled(player, "events.join.welcome");
+            Bundle.send(player, "events.join.welcome");
         }
     }
 

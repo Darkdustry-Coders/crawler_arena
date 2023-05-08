@@ -1,11 +1,11 @@
 package arena.boss;
 
 import arc.graphics.Color;
+import arc.util.Timer;
 import mindustry.content.Fx;
 import mindustry.gen.Call;
 
 import static arc.math.Mathf.*;
-import static arc.util.Timer.schedule;
 
 public class AtomicBullet extends BossBullet {
 
@@ -19,7 +19,7 @@ public class AtomicBullet extends BossBullet {
             BossBullets.timer(x + range(150f), y + range(150f), BossBullets::thorium);
 
         for (float i = 0; i < 3; i += .05f)
-            schedule(this::inst, i);
+            Timer.schedule(this::inst, i);
     }
 
     public void inst() {
