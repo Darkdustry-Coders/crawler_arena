@@ -20,8 +20,8 @@ public class UpgradeMenu {
             unitMenu = new Menu(),
             amountMenu = new Menu();
 
-    public static final StateKey<PlayerData> DATA = new StateKey<>("data", PlayerData.class);
-    public static final StateKey<UnitCost> UNIT = new StateKey<>("unit", UnitCost.class);
+    public static final StateKey<PlayerData> DATA = new StateKey<>("data");
+    public static final StateKey<UnitCost> UNIT = new StateKey<>("unit");
 
     public static void load() {
         unitMenu.transform(DATA, (menu, data) -> {
@@ -102,18 +102,14 @@ public class UpgradeMenu {
         public final UnitType type;
         public final long cost;
 
-        public final char icon;
-
         UnitCost(UnitType type, int cost) {
             this.type = type;
             this.cost = cost;
-
-            this.icon = CrawlerLogic.icon(type);
         }
 
         @Override
         public void option(MenuView menu) {
-            menu.option("upgrade.unit.button", Action.openWith(amountMenu, UNIT, this), type.name, icon, UI.formatAmount(cost));
+            menu.option("upgrade.unit.button", Action.openWith(amountMenu, UNIT, this), type.name, type.emoji(), UI.formatAmount(cost));
         }
     }
 
@@ -159,8 +155,8 @@ public class UpgradeMenu {
                     data.applyUnit(unit.type.spawn(view.player.x, view.player.y));
 
                 data.money -= unit.cost * amount;
-                Bundle.announce(view.player, "upgrade.success", amount, unit.icon, unit.type.name);
-            }, tooManyUnits(menu) || notEnoughMoney(menu) ? "scarlet" : "lime", amount, menu.state.get(UNIT).icon, UI.formatAmount(menu.state.get(UNIT).cost * amount));
+                Bundle.announce(view.player, "upgrade.success", amount, unit.type.emoji(), unit.type.name);
+            }, tooManyUnits(menu) || notEnoughMoney(menu) ? "scarlet" : "lime", amount, menu.state.get(UNIT).type.emoji(), UI.formatAmount(menu.state.get(UNIT).cost * amount));
         }
     }
 }

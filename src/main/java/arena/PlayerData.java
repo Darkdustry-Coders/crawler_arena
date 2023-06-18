@@ -3,7 +3,6 @@ package arena;
 import arc.math.Mathf;
 import arc.struct.Seq;
 import arc.util.Structs;
-import mindustry.ai.types.CommandAI;
 import mindustry.content.*;
 import mindustry.entities.Units;
 import mindustry.entities.abilities.UnitSpawnAbility;
@@ -11,41 +10,35 @@ import mindustry.gen.*;
 import mindustry.graphics.Pal;
 import mindustry.type.UnitType;
 import useful.*;
-import useful.Bundle.LocaleProvider;
 
-import java.util.Locale;
-
-import static arc.Core.app;
 import static arena.CrawlerVars.*;
 import static mindustry.Vars.*;
 
-public class PlayerData implements LocaleProvider {
-
-    public static ExtendedMap<String, PlayerData> datas = new ExtendedMap<>();
+public class PlayerData {
+    public static final ExtendedMap<String, PlayerData> datas = new ExtendedMap<>();
 
     public Player player;
-    public Locale locale;
+    public UnitType type;
 
     public int money = 0;
-    public UnitType type = UnitTypes.dagger;
 
     public PlayerData(Player player) {
-        this.handlePlayerJoin(player);
-    }
-
-    public void handlePlayerJoin(Player player) {
         this.player = player;
-        this.locale = Bundle.locale(player);
         this.type = UnitTypes.dagger;
 
-        app.post(this::respawn);
+        this.respawn();
+    }
+
+    public void join(Player player) {
+        this.player = player;
+        this.respawn();
     }
 
     public void reset() {
         this.money = 0;
         this.type = UnitTypes.dagger;
 
-        app.post(this::respawn);
+        this.respawn();
     }
 
     public void afterWave() {
@@ -64,9 +57,9 @@ public class PlayerData implements LocaleProvider {
     }
 
     public void respawn() {
-        var unit = Units.closest(player.team(), player.x, player.y, u -> u.controller() instanceof CommandAI && u.type == type && !u.dead);
-        if (unit != null) {
-            controlUnit(unit);
+        var closest = Units.closest(player.team(), player.x, player.y, unit -> !unit.isPlayer() && unit.type == type && !unit.dead);
+        if (closest != null) {
+            controlUnit(closest);
             return;
         }
 
@@ -99,10 +92,5 @@ public class PlayerData implements LocaleProvider {
         unit.apply(StatusEffects.boss);
 
         return unit;
-    }
-
-    @Override
-    public Locale locale() {
-        return locale;
     }
 }

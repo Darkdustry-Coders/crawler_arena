@@ -26,7 +26,6 @@ public class Main extends Plugin {
     @Override
     public void init() {
         Bundle.load(Main.class);
-        Formatter.setFormatter(Bundle::format);
 
         CrawlerVars.load();
         UpgradeMenu.load();

@@ -11,7 +11,6 @@ import arena.boss.BulletSpawnAbility;
 import arena.boss.GroupSpawnAbility;
 import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
-import mindustry.ctype.MappableContent;
 import mindustry.game.EventType.GameOverEvent;
 import mindustry.game.Rules;
 import mindustry.game.Team;
@@ -60,7 +59,7 @@ public class CrawlerLogic {
     }
 
     public static void gameOver(boolean win) {
-        datas.eachValue(data -> Call.infoMessage(data.player.con, Bundle.get(win ? "events.victory" : "events.lose", data)));
+        datas.eachValue(data -> Call.infoMessage(data.player.con, Bundle.get(win ? "events.victory" : "events.lose", data.player)));
         Call.hideHudText();
 
         BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(win ? state.rules.defaultTeam : state.rules.waveTeam)));
@@ -160,15 +159,11 @@ public class CrawlerLogic {
     public static void join(Player player) {
         var data = datas.get(player.uuid());
         if (data != null) {
-            data.handlePlayerJoin(player);
+            data.join(player);
             Bundle.send(player, "events.join.already-played");
         } else {
             datas.put(player.uuid(), new PlayerData(player));
             Bundle.send(player, "events.join.welcome");
         }
-    }
-
-    public static char icon(MappableContent content) {
-        return Reflect.get(Iconc.class, Strings.kebabToCamel(content.getContentType().name() + "-" + content.name));
     }
 }
