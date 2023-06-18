@@ -82,7 +82,7 @@ public class Main extends Plugin {
                     return;
                 }
 
-                float delay = waveDelay + additionalDelay * state.wave;
+                int delay = waveDelay + additionalDelay * state.wave;
                 if (state.wave >= helpMinWave && state.wave % helpSpacing == 0) {
                     CrawlerLogic.spawnReinforcement();
                     delay += helpExtraTime; // Aid package needs time to deliver blocks
