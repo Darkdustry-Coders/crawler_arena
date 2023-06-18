@@ -11,6 +11,7 @@ import arena.boss.BulletSpawnAbility;
 import arena.boss.GroupSpawnAbility;
 import mindustry.content.StatusEffects;
 import mindustry.content.UnitTypes;
+import mindustry.ctype.MappableContent;
 import mindustry.game.EventType.GameOverEvent;
 import mindustry.game.Rules;
 import mindustry.game.Team;
@@ -108,7 +109,7 @@ public class CrawlerLogic {
             var boss = UnitTypes.eclipse.spawn(state.rules.waveTeam, x, y);
             boss.controller(new BossAI());
 
-            boss.armor(statScaling * 8000f);
+            boss.armor(statScaling * 48000f);
             boss.damageMultiplier(statScaling * 48f);
 
             boss.apply(StatusEffects.overclock, Float.POSITIVE_INFINITY);
