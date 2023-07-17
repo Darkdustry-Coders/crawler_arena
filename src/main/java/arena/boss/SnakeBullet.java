@@ -8,8 +8,8 @@ import mindustry.entities.bullet.BulletType;
 import mindustry.gen.*;
 
 import static arc.math.Mathf.*;
-import static mindustry.Vars.state;
-import static mindustry.content.UnitTypes.mono;
+import static mindustry.Vars.*;
+import static mindustry.content.UnitTypes.*;
 
 public class SnakeBullet extends BossBullet {
 

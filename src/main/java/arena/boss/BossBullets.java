@@ -9,7 +9,7 @@ import mindustry.entities.Damage;
 import mindustry.gen.*;
 import mindustry.world.blocks.defense.turrets.*;
 
-import static mindustry.Vars.state;
+import static mindustry.Vars.*;
 
 public class BossBullets {
 

@@ -3,18 +3,12 @@ package arena;
 import arc.Events;
 import arc.math.Mathf;
 import arc.struct.Seq;
-import arc.util.*;
-import arena.ai.BossAI;
-import arena.ai.ReinforcementAI;
-import arena.boss.BossBullets;
-import arena.boss.BulletSpawnAbility;
-import arena.boss.GroupSpawnAbility;
-import mindustry.content.StatusEffects;
-import mindustry.content.UnitTypes;
-import mindustry.ctype.MappableContent;
+import arc.util.Timer;
+import arena.ai.*;
+import arena.boss.*;
+import mindustry.content.*;
 import mindustry.game.EventType.GameOverEvent;
-import mindustry.game.Rules;
-import mindustry.game.Team;
+import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.type.UnitType;
 import mindustry.world.blocks.payloads.BuildPayload;
@@ -22,8 +16,8 @@ import useful.Bundle;
 
 import static arena.CrawlerVars.*;
 import static arena.Main.*;
-import static arena.PlayerData.datas;
-import static arena.boss.BossBullets.bullets;
+import static arena.PlayerData.*;
+import static arena.boss.BossBullets.*;
 import static mindustry.Vars.*;
 
 public class CrawlerLogic {
@@ -60,7 +54,7 @@ public class CrawlerLogic {
     }
 
     public static void gameOver(boolean win) {
-        datas.eachValue(data -> Call.infoMessage(data.player.con, Bundle.get(win ? "events.victory" : "events.lose", data.player)));
+        datas.eachValue(data -> Bundle.infoMessage(win ? "events.victory" : "events.lose", data.player));
         Call.hideHudText();
 
         BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(win ? state.rules.defaultTeam : state.rules.waveTeam)));

@@ -11,11 +11,11 @@ import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.Plugin;
 import mindustry.net.Administration.ActionType;
-import useful.*;
+import useful.Bundle;
 
 import static arena.CrawlerVars.*;
-import static arena.PlayerData.datas;
-import static arena.boss.BossBullets.bullets;
+import static arena.PlayerData.*;
+import static arena.boss.BossBullets.*;
 import static mindustry.Vars.*;
 
 public class Main extends Plugin {
@@ -74,7 +74,7 @@ public class Main extends Plugin {
             if (state.rules.waveTeam.data().unitCount == 0 && waveLaunched) {
                 waveLaunched = false;
 
-                // it can kill somebody
+                // it can kill someone
                 bullets.clear();
 
                 if (state.wave >= bossWave) {
@@ -100,9 +100,6 @@ public class Main extends Plugin {
 
     @Override
     public void registerClientCommands(CommandHandler handler) {
-        handler.<Player>register("upgrade", "Upgrade your unit.", (args, player) -> {
-            var data = datas.get(player.uuid());
-            UpgradeMenu.showUpgradeMenu(player, data);
-        });
+        handler.<Player>register("upgrade", "Upgrade your unit.", (args, player) -> UpgradeMenu.show(player, datas.get(player.uuid())));
     }
 }

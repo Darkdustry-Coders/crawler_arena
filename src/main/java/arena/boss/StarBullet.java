@@ -6,7 +6,7 @@ import mindustry.entities.Units;
 import mindustry.entities.bullet.BulletType;
 import mindustry.gen.Call;
 
-import static mindustry.Vars.state;
+import static mindustry.Vars.*;
 
 public class StarBullet extends BossBullet {
 

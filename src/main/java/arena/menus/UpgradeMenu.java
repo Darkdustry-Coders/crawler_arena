@@ -1,7 +1,6 @@
 package arena.menus;
 
-import arena.*;
-import mindustry.content.UnitTypes;
+import arena.PlayerData;
 import mindustry.core.UI;
 import mindustry.gen.Player;
 import mindustry.type.UnitType;
@@ -11,8 +10,8 @@ import useful.menu.Menu;
 import useful.menu.Menu.MenuView;
 import useful.menu.Menu.MenuView.OptionData;
 
-import static arena.CrawlerVars.unitCap;
-import static mindustry.Vars.state;
+import static arena.CrawlerVars.*;
+import static mindustry.Vars.*;
 
 public class UpgradeMenu {
 
@@ -43,67 +42,67 @@ public class UpgradeMenu {
         });
     }
     
-    public static void showUpgradeMenu(Player player, PlayerData data) {
+    public static void show(Player player, PlayerData data) {
         unitMenu.show(player, DATA, data);
     }
 
     public enum UnitCost implements OptionData {
-        dagger(UnitTypes.dagger, 25),
-        flare(UnitTypes.flare, 75),
-        nova(UnitTypes.nova, 100),
-        mace(UnitTypes.mace, 200),
-        stell(UnitTypes.stell, 200),
-        merui(UnitTypes.merui, 225),
-        elude(UnitTypes.elude, 250),
-        atrax(UnitTypes.atrax, 250),
-        horizon(UnitTypes.horizon, 250),
-        pulsar(UnitTypes.pulsar, 300),
-        retusa(UnitTypes.retusa, 400),
-        locus(UnitTypes.locus, 400),
-        avert(UnitTypes.avert, 450),
-        cleroi(UnitTypes.cleroi, 500),
-        fortress(UnitTypes.fortress, 500),
-        minke(UnitTypes.minke, 750),
-        oxynoe(UnitTypes.oxynoe, 850),
-        risso(UnitTypes.risso, 1000),
-        mega(UnitTypes.mega, 1500),
-        spiroct(UnitTypes.spiroct, 1500),
-        quasar(UnitTypes.quasar, 2000),
-        precept(UnitTypes.precept, 2250),
-        zenith(UnitTypes.zenith, 2500),
-        anthicus(UnitTypes.anthicus, 2500),
-        obviate(UnitTypes.obviate, 2750),
-        cyerce(UnitTypes.cyerce, 5000),
-        bryde(UnitTypes.bryde, 5000),
-        crawler(UnitTypes.crawler, 7500),
-        scepter(UnitTypes.scepter, 10000),
-        vela(UnitTypes.vela, 15000),
-        vanquish(UnitTypes.vanquish, 17500),
-        antumbra(UnitTypes.antumbra, 18000),
-        quell(UnitTypes.quell, 23500),
-        quad(UnitTypes.quad, 25000),
-        arkyid(UnitTypes.arkyid, 25000),
-        tecta(UnitTypes.tecta, 25000),
-        aegires(UnitTypes.aegires, 30000),
-        sei(UnitTypes.sei, 75000),
-        poly(UnitTypes.poly, 100000),
-        eclipse(UnitTypes.eclipse, 175000),
-        disrupt(UnitTypes.disrupt, 225000),
-        conquer(UnitTypes.conquer, 250000),
-        corvus(UnitTypes.corvus, 250000),
-        reign(UnitTypes.reign, 250000),
-        oct(UnitTypes.oct, 250000),
-        collaris(UnitTypes.collaris, 300000),
-        toxopid(UnitTypes.toxopid, 325000),
-        navanax(UnitTypes.navanax, 350000),
-        omura(UnitTypes.omura, 1500000),
-        mono(UnitTypes.mono, 3500000);
+        dagger(25),
+        flare(75),
+        nova(100),
+        mace(200),
+        stell(200),
+        merui(225),
+        elude(250),
+        atrax(250),
+        horizon(250),
+        pulsar(300),
+        retusa(400),
+        locus(400),
+        avert(450),
+        cleroi(500),
+        fortress(500),
+        minke(750),
+        oxynoe(850),
+        risso(1000),
+        mega(1500),
+        spiroct(1500),
+        quasar(2000),
+        precept(2250),
+        zenith(2500),
+        anthicus(2500),
+        obviate(2750),
+        cyerce(5000),
+        bryde(5000),
+        crawler(7500),
+        scepter(10000),
+        vela(15000),
+        vanquish(17500),
+        antumbra(18000),
+        quell(23500),
+        quad(25000),
+        arkyid(25000),
+        tecta(25000),
+        aegires(30000),
+        sei(75000),
+        poly(100000),
+        eclipse(175000),
+        disrupt(225000),
+        conquer(250000),
+        corvus(250000),
+        reign(250000),
+        oct(250000),
+        collaris(300000),
+        toxopid(325000),
+        navanax(350000),
+        omura(1500000),
+        mono(3500000);
 
         public final UnitType type;
         public final long cost;
 
-        UnitCost(UnitType type, int cost) {
-            this.type = type;
+        UnitCost(long cost) {
+            this.type = content.unit(name());
             this.cost = cost;
         }
 

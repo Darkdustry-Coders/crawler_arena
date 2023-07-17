@@ -5,7 +5,7 @@ import arc.util.Time;
 import mindustry.entities.abilities.Ability;
 import mindustry.gen.Unit;
 
-import static arc.math.Mathf.range;
+import static arc.math.Mathf.*;
 
 public class BulletSpawnAbility extends Ability {
 

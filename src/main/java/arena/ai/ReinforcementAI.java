@@ -1,10 +1,9 @@
 package arena.ai;
 
 import mindustry.entities.units.AIController;
-import mindustry.gen.Call;
-import mindustry.gen.Payloadc;
+import mindustry.gen.*;
 
-import static mindustry.Vars.world;
+import static mindustry.Vars.*;
 
 public class ReinforcementAI extends AIController {
 
