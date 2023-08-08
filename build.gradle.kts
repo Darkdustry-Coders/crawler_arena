@@ -17,7 +17,9 @@ dependencies {
     val usefulHash = "a3a201c3b6"
 
     compileOnly("com.github.anuken.arc:arc-core:v$mindustryVersion")
-    compileOnly("com.github.anuken.mindustry:core:v$mindustryVersion")
+    compileOnly("com.github.anuken.mindustry:core:v$mindustryVersion") {
+        exclude(group = "com.github.Anuken.Arc")
+    }
 
     implementation("com.github.xzxadixzx.useful-stuffs:bundle:$usefulHash")
     implementation("com.github.xzxadixzx.useful-stuffs:collections:$usefulHash")
