@@ -1,6 +1,6 @@
 {
   "name": "crawler-arena",
-  "minGameVersion": "145",
+  "minGameVersion": "145.1",
   "displayName": "Crawler Arena",
   "author": "Ilya246",
   "description": "A special gamemode for Darkdustry.",
