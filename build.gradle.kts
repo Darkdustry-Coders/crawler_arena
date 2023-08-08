@@ -16,12 +16,12 @@ dependencies {
     val mindustryVersion = json["minGameVersion"]
     val usefulHash = "a3a201c3b6"
 
-    compileOnly("com.github.Anuken.Arc:arc-core:v$mindustryVersion")
-    compileOnly("com.github.Anuken.Mindustry:core:v$mindustryVersion")
+    compileOnly("com.github.anuken.arc:arc-core:v$mindustryVersion")
+    compileOnly("com.github.anuken.mindustry:core:v$mindustryVersion")
 
-    implementation("com.github.xzxADIxzx.useful-stuffs:bundle:$usefulHash")
-    implementation("com.github.xzxADIxzx.useful-stuffs:collections:$usefulHash")
-    implementation("com.github.xzxADIxzx.useful-stuffs:menu:$usefulHash")
+    implementation("com.github.xzxadixzx.useful-stuffs:bundle:$usefulHash")
+    implementation("com.github.xzxadixzx.useful-stuffs:collections:$usefulHash")
+    implementation("com.github.xzxadixzx.useful-stuffs:menu:$usefulHash")
 }
 
 tasks.jar {
