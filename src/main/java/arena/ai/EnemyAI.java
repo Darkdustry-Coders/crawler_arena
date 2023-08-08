@@ -2,29 +2,33 @@ package arena.ai;
 
 import mindustry.entities.Units;
 import mindustry.entities.units.AIController;
+import mindustry.gen.Teamc;
 
 public class EnemyAI extends AIController {
 
+    public Teamc bestTarget;
+
     @Override
     public void updateUnit() {
-        if (retarget() || Units.invalidateTarget(target, unit, targetRange()))
-            target = findMainTarget(unit.x, unit.y, targetRange(), unit.type.targetAir, unit.type.targetGround);
+        if (retarget() || invalid(target, unit.range() * 1.25f))
+            target = findMainTarget(unit.x, unit.y, unit.range() * 1.25f, unit.type.targetAir, unit.type.targetGround);
 
-        boolean shouldShoot = target != null && unit.within(target, targetRange());
-        if (shouldShoot) unit.aimLook(target);
-        unit.controlWeapons(shouldShoot);
+        if (timer.get(timerTarget2, 120) || invalid(bestTarget))
+            bestTarget = findMainTarget(unit.x, unit.y, Float.MAX_VALUE, true, true);
 
-        var realTarget = findMainTarget(unit.x, unit.y, 999999f, true, true);
-        moveTo(realTarget != null ? realTarget : target, unit.range() * 0.5f);
+        boolean shoot = !invalid(target, suicide() ? unit.range() * 0.5f : unit.range());
+        if (shoot) unit.aimLook(target);
+        unit.controlWeapons(shoot);
 
+        moveTo(bestTarget, suicide() ? 0f : unit.range() * 0.5f);
         faceTarget();
     }
 
-    public float targetRange() {
-        return unit.range() * (isSuicide() ? 0.75f : 1.25f);
+    public boolean suicide() {
+        return unit.type.weapons.contains(weapon -> weapon.bullet.killShooter);
     }
 
-    public boolean isSuicide() {
-        return unit.type.weapons.contains(weapon -> weapon.bullet.killShooter);
+    public boolean invalid(Teamc target, float range) {
+        return Units.invalidateTarget(target, unit, range);
     }
 }

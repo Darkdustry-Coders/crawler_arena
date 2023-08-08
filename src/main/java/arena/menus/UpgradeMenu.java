@@ -10,7 +10,6 @@ import useful.menu.Menu;
 import useful.menu.Menu.MenuView;
 import useful.menu.Menu.MenuView.OptionData;
 
-import static arena.CrawlerVars.*;
 import static mindustry.Vars.*;
 
 public class UpgradeMenu {
@@ -41,7 +40,7 @@ public class UpgradeMenu {
             menu.option("ui.close");
         });
     }
-    
+
     public static void show(Player player, PlayerData data) {
         unitMenu.show(player, DATA, data);
     }
@@ -127,7 +126,7 @@ public class UpgradeMenu {
         }
 
         public boolean tooManyUnits(MenuView menu) {
-            return state.rules.defaultTeam.data().countType(menu.state.get(UNIT).type) > unitCap - amount;
+            return state.rules.defaultTeam.data().countType(menu.state.get(UNIT).type) > state.rules.unitCap - amount;
         }
 
         public boolean notEnoughMoney(MenuView menu) {
@@ -151,7 +150,10 @@ public class UpgradeMenu {
                 }
 
                 for (int i = 0; i < amount; i++)
-                    data.applyUnit(unit.type.spawn(view.player.x, view.player.y));
+                    if (i == 0)
+                        data.controlUnit(data.applyUnit(unit.type.spawn(view.player.x, view.player.y)));
+                    else
+                        data.applyUnit(unit.type.spawn(view.player.x, view.player.y));
 
                 data.money -= unit.cost * amount;
                 Bundle.announce(view.player, "upgrade.success", amount, unit.type.emoji(), unit.type.name);

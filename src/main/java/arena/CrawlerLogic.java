@@ -31,8 +31,9 @@ public class CrawlerLogic {
         rules.ghostBlocks = false;
 
         rules.unitCap = unitCap;
-        rules.modeName = "Crawler Arena";
         rules.env = defaultEnv;
+
+        rules.modeName = "Crawler Arena";
 
         rules.weather.clear();
         rules.hiddenBuildItems.clear();
@@ -45,7 +46,7 @@ public class CrawlerLogic {
         applyRules(state.rules);
 
         state.rules.defaultTeam.cores().each(Building::kill);
-        bullets.clear(); // it can kill everyone after new game
+        bullets.clear(); // it can kill someone after a new game
 
         firstWaveLaunched = false;
 
@@ -53,11 +54,12 @@ public class CrawlerLogic {
         statScaling = 1f;
     }
 
-    public static void gameOver(boolean win) {
-        datas.eachValue(data -> Bundle.infoMessage(win ? "events.victory" : "events.lose", data.player));
-        Call.hideHudText();
+    public static void gameOver(boolean victory) {
+        datas.eachValue(data -> Bundle.infoMessage(victory ? "events.victory" : "events.lose", data.player));
+        bullets.clear(); // it can kill someone
 
-        BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(win ? state.rules.defaultTeam : state.rules.waveTeam)));
+        Call.hideHudText();
+        BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(victory ? state.rules.defaultTeam : state.rules.waveTeam)));
 
         for (int i = 0; i < world.width() * world.height() / 2400; i++) // Boom Boom Bakudan!
             BossBullets.atomic(Mathf.random(world.unitWidth()), Mathf.random(world.unitHeight()));
@@ -112,6 +114,9 @@ public class CrawlerLogic {
 
             var abilities = Seq.with(boss.abilities);
 
+            abilities.add(new GroupSpawnAbility(content.unit("scathe-missile"), 1, -32f, 0f, 300f));
+            abilities.add(new GroupSpawnAbility(content.unit("scathe-missile"), 1, 32f, 0f, 300f));
+
             abilities.add(new GroupSpawnAbility(UnitTypes.zenith, 6, -64f, 64f));
             abilities.add(new GroupSpawnAbility(UnitTypes.zenith, 6, 64f, 64f));
             abilities.add(new GroupSpawnAbility(UnitTypes.antumbra, 3, 0, -96f));
@@ -122,9 +127,10 @@ public class CrawlerLogic {
 
             abilities.add(new BulletSpawnAbility(BossBullets::toxopidMount));
             abilities.add(new BulletSpawnAbility(BossBullets::corvusLaser, 1800f));
+            abilities.add(new BulletSpawnAbility(BossBullets::arcLightning, 300f));
             abilities.add(new BulletSpawnAbility(BossBullets::titaniumFuse));
             abilities.add(new BulletSpawnAbility(BossBullets::thoriumFuse));
-            abilities.add(new BulletSpawnAbility(BossBullets::arcLight, 300f));
+            abilities.add(new BulletSpawnAbility(BossBullets::sublimateFlame));
             abilities.add(new BulletSpawnAbility(BossBullets::atomic));
 
             boss.abilities(abilities.toArray());
@@ -153,12 +159,12 @@ public class CrawlerLogic {
 
     public static void join(Player player) {
         var data = datas.get(player.uuid());
-        if (data != null) {
-            data.join(player);
-            Bundle.send(player, "events.join.already-played");
-        } else {
+        if (data == null) {
             datas.put(player.uuid(), new PlayerData(player));
             Bundle.send(player, "events.join.welcome");
+        } else {
+            data.join(player);
+            Bundle.send(player, "events.join.already-played");
         }
     }
 }

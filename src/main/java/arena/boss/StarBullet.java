@@ -13,11 +13,12 @@ public class StarBullet extends BossBullet {
     public final BulletType bullet;
     public final Sound sound;
 
-    public float deg;
-    public float step;
-    public int amount;
-    public float speed;
-    public float rotateSpeed;
+    public final float step;
+    public final int amount;
+    public final float speed;
+    public final float rotateSpeed;
+
+    public float rotation;
 
     public StarBullet(float x, float y, int lifetime, int amount, float speed, BulletType bullet, Sound sound) {
         super(x, y, lifetime);
@@ -34,17 +35,15 @@ public class StarBullet extends BossBullet {
     @Override
     public void update() {
         super.update();
+        rotation -= rotateSpeed;
 
-        deg -= rotateSpeed;
         if (lifetime % amount == 0) Call.soundAt(sound, x, y, 0.8f, 1f);
         for (int i = 0; i < amount; i++)
-            bullet.createNet(state.rules.waveTeam, x, y, deg + i * step, bullet.damage, 1f, 1f);
+            bullet.createNet(state.rules.waveTeam, x, y, rotation + i * step, bullet.damage, 1f, 1f);
 
-        var target = Units.closestTarget(state.rules.waveTeam, x, y, 999999f);
+        var target = Units.closestTarget(state.rules.waveTeam, x, y, Float.MAX_VALUE);
         if (target == null) return;
 
-        Tmp.v1.set(target).sub(this);
-        if (Tmp.v1.len() > speed) Tmp.v1.setLength(speed);
-        add(Tmp.v1); // move to the nearest enemy
+        add(Tmp.v1.set(target).sub(this).limit(speed)); // move to the nearest enemy
     }
 }

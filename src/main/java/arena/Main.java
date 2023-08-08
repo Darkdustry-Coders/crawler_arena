@@ -15,7 +15,6 @@ import useful.Bundle;
 
 import static arena.CrawlerVars.*;
 import static arena.PlayerData.*;
-import static arena.boss.BossBullets.*;
 import static mindustry.Vars.*;
 
 public class Main extends Plugin {
@@ -25,7 +24,7 @@ public class Main extends Plugin {
 
     @Override
     public void init() {
-        Bundle.load(Main.class);
+        Bundle.load(getClass());
 
         CrawlerVars.load();
         UpgradeMenu.load();
@@ -73,9 +72,6 @@ public class Main extends Plugin {
 
             if (state.rules.waveTeam.data().unitCount == 0 && waveLaunched) {
                 waveLaunched = false;
-
-                // it can kill someone
-                bullets.clear();
 
                 if (state.wave >= bossWave) {
                     CrawlerLogic.gameOver(true); // it is the end
