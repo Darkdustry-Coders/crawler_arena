@@ -1,5 +1,6 @@
 package arena.menus;
 
+import arc.util.Structs;
 import arena.PlayerData;
 import mindustry.core.UI;
 import mindustry.gen.Player;
@@ -105,6 +106,10 @@ public class UpgradeMenu {
             this.cost = cost;
         }
 
+        public static UnitCost find(String input) {
+            return Structs.find(values(), unit -> unit.name().equalsIgnoreCase(input));
+        }
+
         @Override
         public void option(MenuView menu) {
             menu.option("upgrade.unit.button", Action.openWith(amountMenu, UNIT, this), type.name, type.emoji(), UI.formatAmount(cost));
@@ -145,7 +150,7 @@ public class UpgradeMenu {
                 }
 
                 if (notEnoughMoney(view)) {
-                    Bundle.announce(view.player, "upgrade.not-enough-money", data.money, UI.formatAmount(unit.cost * amount));
+                    Bundle.announce(view.player, "upgrade.not-enough-money", UI.formatAmount(data.money), UI.formatAmount(unit.cost * amount));
                     return;
                 }
 
