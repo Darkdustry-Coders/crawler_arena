@@ -16,11 +16,11 @@ public class CrawlerVars {
     /** The maximum number of units that players can spawn. */
     public static final int unitCap = 48;
 
-    /** The maximum number of units of the same type that can be spawned at the start of a wave. */
+    /** The maximum number of units of the same type that can be spawned in the wave. */
     public static final int maxUnits = 144;
 
     /** The higher this number, the slower unit's stats grow. */
-    public static final float statDiv = 96f;
+    public static final float statDiv = 80f;
 
     /** Minimum required wave to spawn reinforcement. */
     public static final int helpMinWave = 8;
@@ -94,7 +94,7 @@ public class CrawlerVars {
 
         abilities = OrderedMap.of(
                 UnitTypes.crawler, new UnitAbility(400f, 40f, 60f, UnitTypes.crawler),
-                UnitTypes.mono, new UnitAbility(100000f, 1000f, 900f, UnitTypes.omura, UnitTypes.navanax),
+                UnitTypes.mono, new UnitAbility(100000f, 100f, 900f, UnitTypes.omura, UnitTypes.navanax),
                 UnitTypes.poly, new UnitAbility(500f, 50f, 60f, UnitTypes.poly),
                 UnitTypes.omura, new UnitAbility(100000f, 20f, 30f, UnitTypes.flare)
         );

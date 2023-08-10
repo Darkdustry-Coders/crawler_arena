@@ -20,13 +20,11 @@ public class PlayerData {
     public Player player;
     public UnitType type;
 
-    public int money = 0;
+    public int money;
 
     public PlayerData(Player player) {
         this.player = player;
-        this.type = UnitTypes.dagger;
-
-        this.respawn();
+        this.reset();
     }
 
     public void join(Player player) {
@@ -71,6 +69,8 @@ public class PlayerData {
 
     public void controlUnit(Unit unit) {
         player.unit(unit);
+
+        Call.setPosition(player.con, unit.x, unit.y);
         Call.setCameraPosition(player.con, unit.x, unit.y);
     }
 

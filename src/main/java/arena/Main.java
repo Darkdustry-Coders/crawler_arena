@@ -5,17 +5,17 @@ import arc.util.*;
 import arena.ai.EnemyAI;
 import arena.boss.BossBullets;
 import arena.menus.UpgradeMenu;
+import arena.menus.UpgradeMenu.UnitCost;
 import mindustry.content.UnitTypes;
 import mindustry.core.UI;
 import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.Plugin;
 import mindustry.net.Administration.ActionType;
-import useful.*;
+import useful.Bundle;
 
 import static arena.CrawlerVars.*;
-import static arena.PlayerData.datas;
-import static arena.boss.BossBullets.bullets;
+import static arena.PlayerData.*;
 import static mindustry.Vars.*;
 
 public class Main extends Plugin {
@@ -25,7 +25,7 @@ public class Main extends Plugin {
 
     @Override
     public void init() {
-        Bundle.load(Main.class);
+        Bundle.load(getClass());
 
         CrawlerVars.load();
         UpgradeMenu.load();
@@ -74,9 +74,6 @@ public class Main extends Plugin {
             if (state.rules.waveTeam.data().unitCount == 0 && waveLaunched) {
                 waveLaunched = false;
 
-                // it can kill somebody
-                bullets.clear();
-
                 if (state.wave >= bossWave) {
                     CrawlerLogic.gameOver(true); // it is the end
                     return;
@@ -100,9 +97,43 @@ public class Main extends Plugin {
 
     @Override
     public void registerClientCommands(CommandHandler handler) {
-        handler.<Player>register("upgrade", "Upgrade your unit.", (args, player) -> {
+        handler.<Player>register("upgrade", "[type] [amount]", "Upgrade your unit.", (args, player) -> {
             var data = datas.get(player.uuid());
-            UpgradeMenu.showUpgradeMenu(player, data);
+            if (args.length == 0) {
+                UpgradeMenu.show(player, data);
+                return;
+            }
+
+            var unit = UnitCost.find(args[0]);
+            if (unit == null) {
+                Bundle.announce(player, "upgrade.unit-not-found");
+                return;
+            }
+
+            int amount = args.length > 1 ? Strings.parseInt(args[1]) : 1;
+            if (amount <= 0) {
+                Bundle.announce(player, "upgrade.invalid-amount");
+                return;
+            }
+
+            if (state.rules.defaultTeam.data().countType(unit.type) > state.rules.unitCap - amount) {
+                Bundle.announce(player, "upgrade.too-many-units", state.rules.defaultTeam.data().countType(unit.type));
+                return;
+            }
+
+            if (data.money < unit.cost * amount) {
+                Bundle.announce(player, "upgrade.not-enough-money", UI.formatAmount(data.money), UI.formatAmount(unit.cost * amount));
+                return;
+            }
+
+            for (int i = 0; i < amount; i++)
+                if (i == 0)
+                    data.controlUnit(data.applyUnit(unit.type.spawn(player.x, player.y)));
+                else
+                    data.applyUnit(unit.type.spawn(player.x, player.y));
+
+            data.money -= unit.cost * amount;
+            Bundle.announce(player, "upgrade.success", amount, unit.type.emoji(), unit.type.name);
         });
     }
 }

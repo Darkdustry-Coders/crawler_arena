@@ -1,34 +1,33 @@
 package arena.boss;
 
-import arc.func.*;
+import arc.func.Floatc2;
 import arc.util.Time;
 import mindustry.entities.abilities.Ability;
 import mindustry.gen.Unit;
 
-import static arc.math.Mathf.range;
-
 public class BulletSpawnAbility extends Ability {
 
-    public final Cons<Unit> bullet;
+    public final Floatc2 bullet;
+    public final float delay;
 
-    public float time;
-    public float delay;
+    public float timer;
 
     public BulletSpawnAbility(Floatc2 bullet) {
         this(bullet, 900f);
     }
 
     public BulletSpawnAbility(Floatc2 bullet, float delay) {
-        this.bullet = unit -> bullet.get(unit.x, unit.y);
-        this.time = Time.time + range(delay, delay * 2f);
+        this.bullet = bullet;
         this.delay = delay;
     }
 
     @Override
-    public void update(Unit unit) {
-        if (time > Time.time) return;
+    public void update(Unit parent) {
+        timer += Time.delta;
 
-        time = Time.time + delay;
-        bullet.get(unit);
+        if (timer >= delay) {
+            bullet.get(parent.x, parent.y);
+            timer = 0f;
+        }
     }
 }
