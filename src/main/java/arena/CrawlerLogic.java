@@ -45,8 +45,8 @@ public class CrawlerLogic {
 
         applyRules(state.rules);
 
-        state.rules.defaultTeam.cores().each(Building::kill);
         bullets.clear(); // it can kill someone after a new game
+        state.rules.defaultTeam.cores().each(Building::kill);
 
         firstWaveLaunched = false;
 
@@ -54,12 +54,12 @@ public class CrawlerLogic {
         statScaling = 1f;
     }
 
-    public static void gameOver(boolean victory) {
-        datas.eachValue(data -> Bundle.infoMessage(victory ? "events.victory" : "events.lose", data.player));
+    public static void gameOver(Team winner) {
         bullets.clear(); // it can kill someone
+        state.gameOver = true;
 
         Call.hideHudText();
-        BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(victory ? state.rules.defaultTeam : state.rules.waveTeam)));
+        BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(winner)));
 
         for (int i = 0; i < world.width() * world.height() / 2400; i++) // Boom Boom Bakudan!
             BossBullets.atomic(Mathf.random(world.unitWidth()), Mathf.random(world.unitHeight()));

@@ -155,10 +155,7 @@ public class UpgradeMenu {
                 }
 
                 for (int i = 0; i < amount; i++)
-                    if (i == 0)
-                        data.controlUnit(data.applyUnit(unit.type.spawn(view.player.x, view.player.y)));
-                    else
-                        data.applyUnit(unit.type.spawn(view.player.x, view.player.y));
+                    data.applyUnit(unit.type.spawn(player.x, player.y));
 
                 data.money -= unit.cost * amount;
                 Bundle.announce(view.player, "upgrade.success", amount, unit.type.emoji(), unit.type.name);
