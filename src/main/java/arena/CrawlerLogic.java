@@ -14,6 +14,7 @@ import mindustry.type.UnitType;
 import mindustry.world.blocks.payloads.BuildPayload;
 import useful.Bundle;
 
+import static arc.Core.app;
 import static arena.CrawlerVars.*;
 import static arena.Main.*;
 import static arena.PlayerData.*;
@@ -40,8 +41,10 @@ public class CrawlerLogic {
     }
 
     public static void play() {
-        datas.filter((uuid, data) -> data.player.con.isConnected());
-        datas.eachValue(PlayerData::reset);
+        app.post(() -> {
+            datas.filter((uuid, data) -> data.player.con.isConnected());
+            datas.eachValue(PlayerData::reset);
+        });
 
         applyRules(state.rules);
 
@@ -109,8 +112,8 @@ public class CrawlerLogic {
             var boss = UnitTypes.eclipse.spawn(state.rules.waveTeam, x, y);
             boss.controller(new BossAI());
 
-            boss.armor(statScaling * 48000f);
-            boss.damageMultiplier(statScaling * 48f);
+            boss.armor(statScaling * 64000f);
+            boss.damageMultiplier(statScaling * 64f);
 
             boss.apply(StatusEffects.overclock, Float.POSITIVE_INFINITY);
             boss.apply(StatusEffects.overdrive, Float.POSITIVE_INFINITY);
