@@ -5,7 +5,8 @@ import arena.PlayerData;
 import mindustry.core.UI;
 import mindustry.gen.Player;
 import mindustry.type.UnitType;
-import useful.*;
+import useful.Action;
+import useful.Bundle;
 import useful.State.StateKey;
 import useful.menu.Menu;
 import useful.menu.Menu.MenuView;
@@ -154,7 +155,9 @@ public class UpgradeMenu {
                     return;
                 }
 
-                for (int i = 0; i < amount; i++)
+                if (amount == 1)
+                    data.controlUnit(data.applyUnit(unit.type.spawn(player.x, player.y)));
+                else for (int i = 0; i < amount; i++)
                     data.applyUnit(unit.type.spawn(player.x, player.y));
 
                 data.money -= unit.cost * amount;

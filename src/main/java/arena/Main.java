@@ -126,7 +126,9 @@ public class Main extends Plugin {
                 return;
             }
 
-            for (int i = 0; i < amount; i++)
+            if (amount == 1)
+                data.controlUnit(data.applyUnit(unit.type.spawn(player.x, player.y)));
+            else for (int i = 0; i < amount; i++)
                 data.applyUnit(unit.type.spawn(player.x, player.y));
 
             data.money -= unit.cost * amount;

@@ -76,7 +76,7 @@ public class BossBullets {
     public static void impact(float x, float y) {
         Call.effect(Fx.impactReactorExplosion, x, y, 0, Color.white);
         Call.soundAt(Sounds.explosionbig, x, y, 0.8f, 1f);
-        Damage.damage(state.rules.waveTeam, x, y, 320f, 6000f);
+        Damage.damage(state.rules.waveTeam, x, y, 320f, 8400f);
     }
 
     public static void thorium(float x, float y) {

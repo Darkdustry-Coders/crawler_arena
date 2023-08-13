@@ -59,9 +59,13 @@ public class CrawlerLogic {
         state.gameOver = true;
 
         Call.hideHudText();
-        BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(winner)));
+        BossBullets.timer(0f, 0f, (x, y) -> {
+            state.rules.pvp = true;
+            Events.fire(new GameOverEvent(winner));
+            state.rules.pvp = false;
+        });
 
-        for (int i = 0; i < world.width() * world.height() / 2400; i++) // Boom Boom Bakudan!
+        for (int i = 0; i < world.width() * world.height() / 3600; i++) // Boom Boom Bakudan!
             BossBullets.atomic(Mathf.random(world.unitWidth()), Mathf.random(world.unitHeight()));
     }
 
