@@ -12,7 +12,7 @@ public class BulletSpawnAbility extends Ability {
     public float timer;
 
     public BulletSpawnAbility(Floatc2 bullet) {
-        this(bullet, 600f);
+        this(bullet, 900f);
     }
 
     public BulletSpawnAbility(Floatc2 bullet, float delay) {

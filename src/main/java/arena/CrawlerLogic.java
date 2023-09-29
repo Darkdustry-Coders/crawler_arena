@@ -155,11 +155,15 @@ public class CrawlerLogic {
             unit.maxHealth(Float.MAX_VALUE);
             unit.controller(new ReinforcementAI());
 
-            var block = i >= 3 ?
-                    commonReinforcement.orderedKeys().random() :
-                    guaranteedReinforcement.orderedKeys().random();
+            // Первые две меги доставляют гарантированные блоки
+            var reinforcement = i >= 2 ?
+                    commonReinforcement :
+                    guaranteedReinforcement;
 
-            for (int j = 0; j < commonReinforcement.get(block); j++)
+            var block = reinforcement.orderedKeys().random();
+            int amount = reinforcement.get(block);
+
+            for (int j = 0; j < amount; j++)
                 payloadc.addPayload(new BuildPayload(block, state.rules.defaultTeam));
         }
     }
