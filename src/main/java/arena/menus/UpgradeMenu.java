@@ -100,9 +100,9 @@ public class UpgradeMenu {
         mono(3500000);
 
         public final UnitType type;
-        public final long cost;
+        public final int cost;
 
-        UnitCost(long cost) {
+        UnitCost(int cost) {
             this.type = content.unit(name());
             this.cost = cost;
         }
@@ -151,7 +151,7 @@ public class UpgradeMenu {
                 }
 
                 if (notEnoughMoney(view)) {
-                    Bundle.announce(view.player, "upgrade.not-enough-money", UI.formatAmount(data.money), UI.formatAmount(unit.cost * amount));
+                    Bundle.announce(view.player, "upgrade.not-enough-money", UI.formatAmount(data.money), UI.formatAmount((long) unit.cost * amount));
                     return;
                 }
 
@@ -162,7 +162,7 @@ public class UpgradeMenu {
 
                 data.money -= unit.cost * amount;
                 Bundle.announce(view.player, "upgrade.success", amount, unit.type.emoji(), unit.type.name);
-            }, tooManyUnits(menu) || notEnoughMoney(menu) ? "scarlet" : "lime", amount, menu.state.get(UNIT).type.emoji(), UI.formatAmount(menu.state.get(UNIT).cost * amount));
+            }, tooManyUnits(menu) || notEnoughMoney(menu) ? "scarlet" : "lime", amount, menu.state.get(UNIT).type.emoji(), UI.formatAmount((long) menu.state.get(UNIT).cost * amount));
         }
     }
 }

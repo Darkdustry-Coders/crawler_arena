@@ -7,6 +7,7 @@ import arc.util.Timer;
 import mindustry.content.*;
 import mindustry.entities.Damage;
 import mindustry.gen.*;
+import mindustry.type.StatusEffect;
 import mindustry.world.blocks.defense.turrets.*;
 
 import static mindustry.Vars.*;
@@ -17,7 +18,7 @@ public class BossBullets {
 
     public static void update() {
         bullets.each(BossBullet::update);
-        bullets.filter(BossBullet::alive);
+        bullets.retainAll(BossBullet::alive);
     }
 
     // region bullets
@@ -76,13 +77,17 @@ public class BossBullets {
     public static void impact(float x, float y) {
         Call.effect(Fx.impactReactorExplosion, x, y, 0, Color.white);
         Call.soundAt(Sounds.explosionbig, x, y, 0.8f, 1f);
-        Damage.damage(state.rules.waveTeam, x, y, 320f, 8400f);
+
+        Damage.damage(state.rules.waveTeam, x, y, 300f, 9600f);
+        Damage.status(state.rules.waveTeam, x, y, 300f, StatusEffects.disarmed, 300f, true, true);
     }
 
     public static void thorium(float x, float y) {
         Call.effect(Fx.reactorExplosion, x, y, 0, Color.white);
         Call.soundAt(Sounds.explosionbig, x, y, 0.8f, 1f);
+
         Damage.damage(state.rules.waveTeam, x, y, 240f, 4800f);
+        Damage.status(state.rules.waveTeam, x, y, 300f, StatusEffects.slow, 300f, true, true);
     }
 
     // endregion

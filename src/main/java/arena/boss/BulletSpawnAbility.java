@@ -6,14 +6,13 @@ import mindustry.entities.abilities.Ability;
 import mindustry.gen.Unit;
 
 public class BulletSpawnAbility extends Ability {
-
     public final Floatc2 bullet;
     public final float delay;
 
     public float timer;
 
     public BulletSpawnAbility(Floatc2 bullet) {
-        this(bullet, 900f);
+        this(bullet, 600f);
     }
 
     public BulletSpawnAbility(Floatc2 bullet, float delay) {

@@ -14,7 +14,7 @@ import mindustry.type.UnitType;
 import mindustry.world.blocks.payloads.BuildPayload;
 import useful.Bundle;
 
-import static arc.Core.app;
+import static arc.Core.*;
 import static arena.CrawlerVars.*;
 import static arena.Main.*;
 import static arena.PlayerData.*;
@@ -62,11 +62,7 @@ public class CrawlerLogic {
         state.gameOver = true;
 
         Call.hideHudText();
-        BossBullets.timer(0f, 0f, (x, y) -> {
-            state.rules.pvp = true;
-            Events.fire(new GameOverEvent(winner));
-            state.rules.pvp = false;
-        });
+        BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(winner)));
 
         for (int i = 0; i < world.width() * world.height() / 3600; i++) // Boom Boom Bakudan!
             BossBullets.atomic(Mathf.random(world.unitWidth()), Mathf.random(world.unitHeight()));
@@ -112,11 +108,13 @@ public class CrawlerLogic {
             var boss = UnitTypes.eclipse.spawn(state.rules.waveTeam, x, y);
             boss.controller(new BossAI());
 
-            boss.armor(statScaling * 64000f);
-            boss.damageMultiplier(statScaling * 64f);
+            boss.armor(statScaling * 72000f);
+            boss.damageMultiplier(statScaling * 72f);
 
+            boss.apply(StatusEffects.fast, Float.POSITIVE_INFINITY);
             boss.apply(StatusEffects.overclock, Float.POSITIVE_INFINITY);
             boss.apply(StatusEffects.overdrive, Float.POSITIVE_INFINITY);
+            boss.apply(StatusEffects.shielded, Float.POSITIVE_INFINITY);
             boss.apply(StatusEffects.boss);
 
             var abilities = Seq.with(boss.abilities);
@@ -157,9 +155,11 @@ public class CrawlerLogic {
             unit.maxHealth(Float.MAX_VALUE);
             unit.controller(new ReinforcementAI());
 
-            var block = Seq.with(reinforcement.keys()).random();
+            var block = i >= 3 ?
+                    commonReinforcement.orderedKeys().random() :
+                    guaranteedReinforcement.orderedKeys().random();
 
-            for (int j = 0; j < reinforcement.get(block); j++)
+            for (int j = 0; j < commonReinforcement.get(block); j++)
                 payloadc.addPayload(new BuildPayload(block, state.rules.defaultTeam));
         }
     }

@@ -122,7 +122,7 @@ public class Main extends Plugin {
             }
 
             if (data.money < unit.cost * amount) {
-                Bundle.announce(player, "upgrade.not-enough-money", UI.formatAmount(data.money), UI.formatAmount(unit.cost * amount));
+                Bundle.announce(player, "upgrade.not-enough-money", UI.formatAmount(data.money), UI.formatAmount((long) unit.cost * amount));
                 return;
             }
 

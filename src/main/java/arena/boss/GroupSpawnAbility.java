@@ -13,7 +13,6 @@ import mindustry.type.UnitType;
 import static mindustry.Vars.*;
 
 public class GroupSpawnAbility extends Ability {
-
     public final Seq<Unit> units = new Seq<>();
 
     public final UnitType type;

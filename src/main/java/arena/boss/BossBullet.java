@@ -5,7 +5,6 @@ import arc.math.geom.Vec2;
 import static arena.boss.BossBullets.*;
 
 public class BossBullet extends Vec2 {
-
     public int lifetime;
 
     public BossBullet(float x, float y, int lifetime) {

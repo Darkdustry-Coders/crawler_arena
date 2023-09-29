@@ -7,7 +7,6 @@ import mindustry.content.Fx;
 import mindustry.gen.Call;
 
 public class AtomicBullet extends BossBullet {
-
     public float rotation;
     public float distance;
 

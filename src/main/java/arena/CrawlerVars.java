@@ -1,6 +1,6 @@
 package arena;
 
-import arc.struct.OrderedMap;
+import arc.struct.*;
 import mindustry.content.*;
 import mindustry.type.UnitType;
 import mindustry.world.Block;
@@ -20,7 +20,7 @@ public class CrawlerVars {
     public static final int maxUnits = 144;
 
     /** The higher this number, the slower unit's stats grow. */
-    public static final float statDiv = 80f;
+    public static final float statDiv = 72f;
 
     /** Minimum required wave to spawn reinforcement. */
     public static final int helpMinWave = 8;
@@ -35,9 +35,10 @@ public class CrawlerVars {
     public static final float moneyRamp = 0.67f;
 
     public static OrderedMap<UnitType, Integer> shifts;
-    public static OrderedMap<Block, Integer> reinforcement;
-
     public static OrderedMap<UnitType, UnitAbility> abilities;
+
+    public static OrderedMap<Block, Integer> commonReinforcement;
+    public static OrderedMap<Block, Integer> guaranteedReinforcement;
 
     public static void load() {
         shifts = OrderedMap.of(
@@ -48,12 +49,14 @@ public class CrawlerVars {
                 UnitTypes.toxopid, 20
         );
 
-        reinforcement = OrderedMap.of(
-                Blocks.itemSource, 6,
-                Blocks.liquidSource, 4,
-                Blocks.powerSource, 4,
-                Blocks.heatSource, 4,
+        abilities = OrderedMap.of(
+                UnitTypes.crawler, new UnitAbility(400f, 40f, 60f, UnitTypes.crawler),
+                UnitTypes.mono, new UnitAbility(10000f, 80f, 900f, UnitTypes.reign, UnitTypes.corvus, UnitTypes.toxopid, UnitTypes.eclipse, UnitTypes.oct, UnitTypes.omura, UnitTypes.navanax, UnitTypes.conquer, UnitTypes.collaris, UnitTypes.disrupt),
+                UnitTypes.poly, new UnitAbility(500f, 40f, 60f, UnitTypes.poly),
+                UnitTypes.omura, new UnitAbility(100000f, 20f, 60f, UnitTypes.flare)
+        );
 
+        commonReinforcement = OrderedMap.of(
                 Blocks.thoriumWallLarge, 8,
                 Blocks.surgeWallLarge, 6,
                 Blocks.tungstenWallLarge, 8,
@@ -92,11 +95,11 @@ public class CrawlerVars {
                 Blocks.malign, 1
         );
 
-        abilities = OrderedMap.of(
-                UnitTypes.crawler, new UnitAbility(400f, 40f, 60f, UnitTypes.crawler),
-                UnitTypes.mono, new UnitAbility(100000f, 100f, 900f, UnitTypes.omura, UnitTypes.navanax),
-                UnitTypes.poly, new UnitAbility(500f, 50f, 60f, UnitTypes.poly),
-                UnitTypes.omura, new UnitAbility(100000f, 20f, 30f, UnitTypes.flare)
+        guaranteedReinforcement = OrderedMap.of(
+                Blocks.itemSource, 6,
+                Blocks.liquidSource, 4,
+                Blocks.powerSource, 4,
+                Blocks.heatSource, 4
         );
     }
 
