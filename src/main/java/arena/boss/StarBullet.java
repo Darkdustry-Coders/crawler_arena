@@ -9,7 +9,6 @@ import mindustry.gen.Call;
 import static mindustry.Vars.*;
 
 public class StarBullet extends BossBullet {
-
     public final BulletType bullet;
     public final Sound sound;
 

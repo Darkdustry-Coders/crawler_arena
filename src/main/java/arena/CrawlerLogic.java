@@ -14,6 +14,7 @@ import mindustry.type.UnitType;
 import mindustry.world.blocks.payloads.BuildPayload;
 import useful.Bundle;
 
+import static arc.Core.*;
 import static arena.CrawlerVars.*;
 import static arena.Main.*;
 import static arena.PlayerData.*;
@@ -40,13 +41,15 @@ public class CrawlerLogic {
     }
 
     public static void play() {
-        datas.filter((uuid, data) -> data.player.con.isConnected());
-        datas.eachValue(PlayerData::reset);
+        app.post(() -> {
+            datas.filter((uuid, data) -> data.player.con.isConnected());
+            datas.eachValue(PlayerData::reset);
+        });
 
         applyRules(state.rules);
 
-        state.rules.defaultTeam.cores().each(Building::kill);
         bullets.clear(); // it can kill someone after a new game
+        state.rules.defaultTeam.cores().each(Building::kill);
 
         firstWaveLaunched = false;
 
@@ -54,14 +57,14 @@ public class CrawlerLogic {
         statScaling = 1f;
     }
 
-    public static void gameOver(boolean victory) {
-        datas.eachValue(data -> Bundle.infoMessage(victory ? "events.victory" : "events.lose", data.player));
+    public static void gameOver(Team winner) {
         bullets.clear(); // it can kill someone
+        state.gameOver = true;
 
         Call.hideHudText();
-        BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(victory ? state.rules.defaultTeam : state.rules.waveTeam)));
+        BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(winner)));
 
-        for (int i = 0; i < world.width() * world.height() / 2400; i++) // Boom Boom Bakudan!
+        for (int i = 0; i < world.width() * world.height() / 3600; i++) // Boom Boom Bakudan!
             BossBullets.atomic(Mathf.random(world.unitWidth()), Mathf.random(world.unitHeight()));
     }
 
@@ -105,11 +108,13 @@ public class CrawlerLogic {
             var boss = UnitTypes.eclipse.spawn(state.rules.waveTeam, x, y);
             boss.controller(new BossAI());
 
-            boss.armor(statScaling * 48000f);
-            boss.damageMultiplier(statScaling * 48f);
+            boss.armor(statScaling * 72000f);
+            boss.damageMultiplier(statScaling * 72f);
 
+            boss.apply(StatusEffects.fast, Float.POSITIVE_INFINITY);
             boss.apply(StatusEffects.overclock, Float.POSITIVE_INFINITY);
             boss.apply(StatusEffects.overdrive, Float.POSITIVE_INFINITY);
+            boss.apply(StatusEffects.shielded, Float.POSITIVE_INFINITY);
             boss.apply(StatusEffects.boss);
 
             var abilities = Seq.with(boss.abilities);
@@ -150,9 +155,15 @@ public class CrawlerLogic {
             unit.maxHealth(Float.MAX_VALUE);
             unit.controller(new ReinforcementAI());
 
-            var block = Seq.with(reinforcement.keys()).random();
+            // Первые две меги доставляют гарантированные блоки
+            var reinforcement = i >= 2 ?
+                    commonReinforcement :
+                    guaranteedReinforcement;
 
-            for (int j = 0; j < reinforcement.get(block); j++)
+            var block = reinforcement.orderedKeys().random();
+            int amount = reinforcement.get(block);
+
+            for (int j = 0; j < amount; j++)
                 payloadc.addPayload(new BuildPayload(block, state.rules.defaultTeam));
         }
     }

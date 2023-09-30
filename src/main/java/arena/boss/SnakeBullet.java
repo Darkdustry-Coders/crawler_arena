@@ -12,7 +12,6 @@ import mindustry.gen.Statusc;
 import static mindustry.Vars.state;
 
 public class SnakeBullet extends BossBullet {
-
     public final BulletType bullet;
     public final Sound sound;
 

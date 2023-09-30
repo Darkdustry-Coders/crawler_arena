@@ -67,7 +67,7 @@ public class Main extends Plugin {
             if (state.rules.defaultTeam.data().unitCount == 0 && waveLaunched) {
                 waveLaunched = false;
 
-                CrawlerLogic.gameOver(false);
+                CrawlerLogic.gameOver(state.rules.waveTeam);
                 return;
             }
 
@@ -75,7 +75,7 @@ public class Main extends Plugin {
                 waveLaunched = false;
 
                 if (state.wave >= bossWave) {
-                    CrawlerLogic.gameOver(true); // it is the end
+                    CrawlerLogic.gameOver(state.rules.defaultTeam);
                     return;
                 }
 
@@ -122,15 +122,14 @@ public class Main extends Plugin {
             }
 
             if (data.money < unit.cost * amount) {
-                Bundle.announce(player, "upgrade.not-enough-money", UI.formatAmount(data.money), UI.formatAmount(unit.cost * amount));
+                Bundle.announce(player, "upgrade.not-enough-money", UI.formatAmount(data.money), UI.formatAmount((long) unit.cost * amount));
                 return;
             }
 
-            for (int i = 0; i < amount; i++)
-                if (i == 0)
-                    data.controlUnit(data.applyUnit(unit.type.spawn(player.x, player.y)));
-                else
-                    data.applyUnit(unit.type.spawn(player.x, player.y));
+            if (amount == 1)
+                data.controlUnit(data.applyUnit(unit.type.spawn(player.x, player.y)));
+            else for (int i = 0; i < amount; i++)
+                data.applyUnit(unit.type.spawn(player.x, player.y));
 
             data.money -= unit.cost * amount;
             Bundle.announce(player, "upgrade.success", amount, unit.type.emoji(), unit.type.name);
