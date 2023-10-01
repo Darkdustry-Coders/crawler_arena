@@ -14,7 +14,7 @@ public class CrawlerVars {
     public static final int firstWaveDelay = 15, waveDelay = 10, additionalDelay = 1;
 
     /** The maximum number of units that players can spawn. */
-    public static final int unitCap = 48;
+    public static final int unitCap = 32;
 
     /** The maximum number of units of the same type that can be spawned in the wave. */
     public static final int maxUnits = 144;
