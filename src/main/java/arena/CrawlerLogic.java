@@ -108,8 +108,8 @@ public class CrawlerLogic {
             var boss = UnitTypes.eclipse.spawn(state.rules.waveTeam, x, y);
             boss.controller(new BossAI());
 
-            boss.armor(statScaling * 72000f);
-            boss.damageMultiplier(statScaling * 72f);
+            boss.armor(statScaling * 96000f);
+            boss.damageMultiplier(statScaling * 96f);
 
             boss.apply(StatusEffects.fast, Float.POSITIVE_INFINITY);
             boss.apply(StatusEffects.overclock, Float.POSITIVE_INFINITY);
