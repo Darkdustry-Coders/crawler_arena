@@ -77,11 +77,11 @@ public class BossBullets {
         Call.effect(Fx.impactReactorExplosion, x, y, 0, Color.white);
         Call.soundAt(Sounds.explosionbig, x, y, 0.8f, 1f);
 
-        Damage.damage(state.rules.waveTeam, x, y, 300f, 9600f);
-        Damage.status(state.rules.waveTeam, x, y, 300f, StatusEffects.disarmed, 300f, true, true);
+        Damage.damage(state.rules.waveTeam, x, y, 1024f, 9600f);
+        Damage.status(state.rules.waveTeam, x, y, 1024f, StatusEffects.disarmed, 300f, true, true);
 
         Groups.unit.each(unit -> {
-            float distance = 300f - unit.dst(x, y);
+            float distance = 1024f - unit.dst(x, y);
             if (distance <= 0f) return;
 
             unit.impulseNet(Tmp.v1.set(unit).sub(x, y).setLength(distance * 256f));
@@ -92,8 +92,8 @@ public class BossBullets {
         Call.effect(Fx.reactorExplosion, x, y, 0, Color.white);
         Call.soundAt(Sounds.explosionbig, x, y, 0.8f, 1f);
 
-        Damage.damage(state.rules.waveTeam, x, y, 240f, 4800f);
-        Damage.status(state.rules.waveTeam, x, y, 300f, StatusEffects.slow, 300f, true, true);
+        Damage.damage(state.rules.waveTeam, x, y, 256f, 4800f);
+        Damage.status(state.rules.waveTeam, x, y, 256f, StatusEffects.slow, 300f, true, true);
     }
 
     // endregion
