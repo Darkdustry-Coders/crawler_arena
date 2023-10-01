@@ -29,7 +29,7 @@ public class CrawlerVars {
     public static final int helpSpacing = 2;
 
     /** Extra time needed to get support. */
-    public static final int helpExtraTime = 5;
+    public static final int helpExtraTime = 15;
 
     public static final float moneyExpBase = 2.2f;
     public static final float moneyRamp = 0.67f;
