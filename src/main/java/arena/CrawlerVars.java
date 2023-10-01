@@ -8,7 +8,7 @@ import mindustry.world.Block;
 public class CrawlerVars {
 
     /** Wave when it's over. */
-    public static final int bossWave = 25;
+    public static final int bossWave = 2;
 
     /** Interval between waves in ticks. */
     public static final int firstWaveDelay = 15, waveDelay = 10, additionalDelay = 1;

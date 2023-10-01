@@ -40,7 +40,7 @@ public class GroupSpawnAbility extends Ability {
     public void update(Unit parent) {
         timer += Time.delta * state.rules.unitBuildSpeed(parent.team);
 
-        if (timer >= delay && Units.canCreate(parent.team, parent.type)) {
+        if (timer >= delay && Units.canCreate(parent.team, type)) {
             float cx = parent.x + Angles.trnsx(parent.rotation, x, y);
             float cy = parent.y + Angles.trnsy(parent.rotation, x, y);
 

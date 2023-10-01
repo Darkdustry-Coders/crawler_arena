@@ -108,8 +108,8 @@ public class CrawlerLogic {
             var boss = UnitTypes.eclipse.spawn(state.rules.waveTeam, x, y);
             boss.controller(new BossAI());
 
-            boss.armor(statScaling * 96000f);
-            boss.damageMultiplier(statScaling * 96f);
+            boss.armor(statScaling * 72000f);
+            boss.damageMultiplier(statScaling * 72f);
 
             boss.apply(StatusEffects.fast, Float.POSITIVE_INFINITY);
             boss.apply(StatusEffects.overclock, Float.POSITIVE_INFINITY);
@@ -122,12 +122,12 @@ public class CrawlerLogic {
             abilities.add(new GroupSpawnAbility(content.unit("scathe-missile"), 1, -32f, 0f, 300f));
             abilities.add(new GroupSpawnAbility(content.unit("scathe-missile"), 1, 32f, 0f, 300f));
 
-            abilities.add(new GroupSpawnAbility(UnitTypes.zenith, 6, -64f, 64f));
-            abilities.add(new GroupSpawnAbility(UnitTypes.zenith, 6, 64f, 64f));
-            abilities.add(new GroupSpawnAbility(UnitTypes.antumbra, 3, 0, -96f));
+            abilities.add(new GroupSpawnAbility(UnitTypes.zenith, 3, -64f, 64f));
+            abilities.add(new GroupSpawnAbility(UnitTypes.zenith, 3, 64f, 64f));
+            abilities.add(new GroupSpawnAbility(UnitTypes.antumbra, 2, 0, -96f));
 
-            abilities.add(new GroupSpawnAbility(UnitTypes.quell, 3, -96f, 96f));
-            abilities.add(new GroupSpawnAbility(UnitTypes.quell, 3, 96f, 96f));
+            abilities.add(new GroupSpawnAbility(UnitTypes.quell, 2, -96f, 96f));
+            abilities.add(new GroupSpawnAbility(UnitTypes.quell, 2, 96f, 96f));
             abilities.add(new GroupSpawnAbility(UnitTypes.disrupt, 1, 0, -128f));
 
             abilities.add(new BulletSpawnAbility(BossBullets::toxopidMount));

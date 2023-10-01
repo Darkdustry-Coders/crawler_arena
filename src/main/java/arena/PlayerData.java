@@ -33,7 +33,7 @@ public class PlayerData {
     }
 
     public void reset() {
-        this.money = 0;
+        this.money = 1234567890;
         this.type = UnitTypes.dagger;
 
         this.respawn();

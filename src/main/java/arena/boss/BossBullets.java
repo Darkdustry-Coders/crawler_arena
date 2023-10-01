@@ -69,7 +69,7 @@ public class BossBullets {
     }
 
     public static void inst(float x, float y) {
-        Call.effect(Fx.instBomb, x, y, 0, Color.white);
+        Call.effect(Fx.instBomb, x, y, 0f, Color.white);
         Call.soundAt(Sounds.railgun, x, y, 0.8f, 1f);
     }
 
@@ -81,10 +81,10 @@ public class BossBullets {
         Damage.status(state.rules.waveTeam, x, y, 1024f, StatusEffects.disarmed, 300f, true, true);
 
         Groups.unit.each(unit -> {
-            float distance = 1024f - unit.dst(x, y);
+            float distance = 256f - unit.dst(x, y);
             if (distance <= 0f) return;
 
-            unit.impulseNet(Tmp.v1.set(unit).sub(x, y).setLength(distance * 256f));
+            unit.move(Tmp.v1.set(unit).sub(x, y).setLength(distance * 8f));
         });
     }
 
