@@ -3,11 +3,10 @@ package arena.boss;
 import arc.func.Floatc2;
 import arc.graphics.Color;
 import arc.struct.Seq;
-import arc.util.Timer;
+import arc.util.*;
 import mindustry.content.*;
 import mindustry.entities.Damage;
 import mindustry.gen.*;
-import mindustry.type.StatusEffect;
 import mindustry.world.blocks.defense.turrets.*;
 
 import static mindustry.Vars.*;
@@ -80,6 +79,13 @@ public class BossBullets {
 
         Damage.damage(state.rules.waveTeam, x, y, 300f, 9600f);
         Damage.status(state.rules.waveTeam, x, y, 300f, StatusEffects.disarmed, 300f, true, true);
+
+        Groups.unit.each(unit -> {
+            float distance = 300f - unit.dst(x, y);
+            if (distance <= 0f) return;
+
+            unit.impulseNet(Tmp.v1.set(unit).sub(x, y).setLength(distance * 256f));
+        });
     }
 
     public static void thorium(float x, float y) {
