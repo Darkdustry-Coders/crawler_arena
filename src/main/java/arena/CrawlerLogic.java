@@ -62,7 +62,7 @@ public class CrawlerLogic {
         state.gameOver = true;
 
         Call.hideHudText();
-        BossBullets.timer(0f, 0f, (x, y) -> Events.fire(new GameOverEvent(winner)));
+        BossBullets.timer(world.unitWidth() / 2f, world.unitHeight() / 2f, (x, y) -> Events.fire(new GameOverEvent(winner)));
 
         for (int i = 0; i < world.width() * world.height() / 3600; i++) // Boom Boom Bakudan!
             BossBullets.atomic(Mathf.random(world.unitWidth()), Mathf.random(world.unitHeight()));
@@ -102,7 +102,7 @@ public class CrawlerLogic {
     public static void spawnBoss() {
         Bundle.announce("events.boss");
 
-        BossBullets.timer(world.width() * 4f, world.height() * 4f, (x, y) -> {
+        BossBullets.timer(world.unitWidth() / 2f, world.unitHeight() / 2f, (x, y) -> {
             BossBullets.impact(x, y); // some cool effects
 
             var boss = UnitTypes.eclipse.spawn(state.rules.waveTeam, x, y);

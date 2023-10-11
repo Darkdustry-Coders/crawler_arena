@@ -7,8 +7,8 @@ import mindustry.content.*;
 import mindustry.entities.Units;
 import mindustry.entities.abilities.UnitSpawnAbility;
 import mindustry.gen.*;
-import mindustry.graphics.Pal;
 import mindustry.type.UnitType;
+import mindustry.world.Tile;
 import useful.*;
 
 import static arena.CrawlerVars.*;
@@ -33,7 +33,7 @@ public class PlayerData {
     }
 
     public void reset() {
-        this.money = 1234567890;
+        this.money = 0;
         this.type = UnitTypes.dagger;
 
         this.respawn();
@@ -41,15 +41,13 @@ public class PlayerData {
 
     public void afterWave() {
         if (!player.con.isConnected()) return;
-        money += Mathf.pow(moneyExpBase, 3 + state.wave * moneyRamp);
+        money += Mathf.ceil(Mathf.pow(moneyExpBase, 3 + state.wave * moneyRamp));
 
         if (player.dead())
             respawn();
 
         if (player.unit().health < player.unit().maxHealth) {
             player.unit().heal();
-            Call.effect(player.con, Fx.greenCloud, player.unit().x, player.unit().y, 0f, Pal.heal);
-
             Bundle.send(player, "events.heal");
         }
     }
@@ -61,10 +59,18 @@ public class PlayerData {
             return;
         }
 
-        var tile = world.tile(world.width() / 2 + Mathf.range(8), world.height() / 2 + Mathf.range(8));
-        if (!type.flying && tile.solid()) tile.removeNet();
+        var tiles = new Seq<Tile>();
+        var center = world.tile(world.width() / 2, world.height() / 2);
 
-        controlUnit(applyUnit(type.spawn(tile.worldx(), tile.worldy())));
+        center.circle(8, (x, y) -> {
+            if (type.flying || world.isAccessible(x, y))
+                tiles.add(world.tile(x, y));
+        });
+
+        if (tiles.isEmpty())
+            center.removeNet();
+
+        controlUnit(applyUnit(type.spawn(tiles.any() ? tiles.random() : center)));
     }
 
     public void controlUnit(Unit unit) {
