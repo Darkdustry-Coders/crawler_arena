@@ -148,7 +148,7 @@ public class CrawlerLogic {
         Timer.schedule(() -> Bundle.announce("events.aid"), 3f);
 
         for (int i = 0; i <= state.wave; i++) {
-            var unit = UnitTypes.mega.spawn(Team.derelict, Mathf.random(120f), world.unitHeight() / 2f + Mathf.range(120f));
+            var unit = UnitTypes.mega.spawn(Team.derelict, Mathf.random(120f), world.unitHeight() / 2f + Mathf.range(state.wave * 10f));
             if (!(unit instanceof Payloadc payloadc)) return; // Just in case
 
             unit.health(Float.MAX_VALUE);
