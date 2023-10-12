@@ -81,7 +81,7 @@ public class BossBullets {
         Damage.status(state.rules.waveTeam, x, y, 1024f, StatusEffects.disarmed, 300f, true, true);
 
         Groups.unit.each(unit -> {
-            float distance = 256f - unit.dst(x, y);
+            float distance = 320f - unit.dst(x, y);
             if (distance <= 0f) return;
 
             unit.move(Tmp.v1.set(unit).sub(x, y).setLength(distance * 8f));
