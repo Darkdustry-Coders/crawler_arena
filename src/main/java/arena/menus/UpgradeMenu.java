@@ -113,7 +113,9 @@ public class UpgradeMenu {
 
         @Override
         public void option(MenuView menu) {
-            menu.option("upgrade.unit.button", Action.openWith(amountMenu, UNIT, this), type.name, type.emoji(), UI.formatAmount(cost));
+            var data = PlayerData.datas.get(menu.player.uuid());
+            var color = data.money >= cost ? "" : "[red]";
+            menu.option("upgrade.unit.button", Action.openWith(amountMenu, UNIT, this), color + type.name, type.emoji(), UI.formatAmount(cost));
         }
     }
 

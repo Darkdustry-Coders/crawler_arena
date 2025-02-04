@@ -8,6 +8,7 @@ import arena.menus.UpgradeMenu;
 import arena.menus.UpgradeMenu.UnitCost;
 import mindustry.content.UnitTypes;
 import mindustry.core.UI;
+import mindustry.game.EventType;
 import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.Plugin;
@@ -50,6 +51,7 @@ public class Main extends Plugin {
 
         Events.on(PlayEvent.class, event -> CrawlerLogic.play());
         Events.on(PlayerJoin.class, event -> CrawlerLogic.join(event.player));
+        Events.on(UnitBulletDestroyEvent.class, event -> CrawlerLogic.killed(event.unit, event.bullet));
 
         Timer.schedule(BossBullets::update, 0f, .1f);
 

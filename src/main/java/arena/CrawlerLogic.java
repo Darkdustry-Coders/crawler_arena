@@ -2,7 +2,9 @@ package arena;
 
 import arc.Events;
 import arc.math.Mathf;
+import arc.struct.IntIntMap;
 import arc.struct.Seq;
+import arc.util.Log;
 import arc.util.Timer;
 import arena.ai.*;
 import arena.boss.*;
@@ -97,6 +99,25 @@ public class CrawlerLogic {
 
         var unit = type.spawn(state.rules.waveTeam, tile.worldx(), tile.worldy());
         unit.health = unit.maxHealth *= statScaling / 5;
+    }
+
+    private static IntIntMap AWARDS = new IntIntMap() {{
+        put(UnitTypes.crawler.id, 1);
+        put(UnitTypes.atrax.id, 25);
+        put(UnitTypes.spiroct.id, 125);
+        put(UnitTypes.arkyid.id, 1500);
+        put(UnitTypes.toxopid.id, 6500);
+        put(UnitTypes.antumbra.id, 12500);
+        put(UnitTypes.disrupt.id, 12000);
+    }};
+
+    public static void killed(Unit unit, Bullet bullet) {
+        if (!AWARDS.containsKey(unit.type().id)) return;
+        if (!(bullet.owner instanceof Unit)) return;
+        var killer = ((Unit) bullet.owner).getPlayer();
+        if (killer == null) return;
+        var data = PlayerData.datas.get(killer.uuid());
+        data.money += AWARDS.get(unit.type().id);
     }
 
     public static void spawnBoss() {
